@@ -10,7 +10,7 @@
 -compile(export_all).
 %%-export([Function/Arity, ...]).
 
--include("yaws_api.hrl").
+-include("/usr/lib/yaws/include/yaws_api.hrl").
 
 -behaviour(gen_server).
 
@@ -38,8 +38,8 @@
 -define(EMAIL_SENDER, "info@idrott.se").
 -define(MAILSERVER, "mail.bevemyr.com").
 
--define(USER_DB, "user.db.json").
--define(USER_DB_TMP, "user.db.json.tmp").
+-define(USER_DB, "/home/share/jb/work/idrott/user.db.json").
+-define(USER_DB_TMP, "/home/share/jb/work/idrott/user.db.json.tmp").
 
 %%
 
@@ -115,7 +115,7 @@ do_op(Unknown, _L) ->
 %%% API
 %%%----------------------------------------------------------------------
 start() ->
-    gen_server:start({local, ?SERVER}, monark, [], []).
+    gen_server:start({local, ?SERVER}, ?MODULE, [], []).
 
 stop() ->
     gen_server:call(?SERVER, stop, infinity).
@@ -148,14 +148,16 @@ init([]) ->
 handle_call(stop, _From, S) ->
     {stop, normal, S};
 handle_call({login, User, Password}, _From, S) ->
-    case get_user_by_id(User, S) of
-        U=#user{password = Password} ->
+    Md5Pass = ?b2l(base64:encode(crypto:hash(md5, Password))),
+    case get_user_by_name(User, S) of
+        U=#user{password = Md5Pass} ->
             %% login successful
-            Res = {struct, [{status, "ok"}, {"sid", U#user.sid}]};
+            Res = {struct, [{status, "ok"}, {"sid", U#user.sid},
+			    {group, ?a2l(U#user.role)}]};
         #user{} ->
-            Res = {struct, [{state, "error"}, {"reason", "invalid password"}]};
+            Res = {struct, [{status, "error"}, {"reason", "invalid password"}]};
         _ ->
-            Res = {struct, [{state, "error"}, {"reason", "unknown user"}]}
+            Res = {struct, [{status, "error"}, {"reason", "unknown user"}]}
     end,
     {reply, Res, S};
             
@@ -179,9 +181,19 @@ handle_call({send_reset_password, User}, _From, S) ->
     end,
     {reply, Res, NewS};
             
+handle_call({get_user, Sid, _L}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        U=#user{} ->
+            %% login successful
+            Res = {struct, [{status, "ok"}, {user, user2object(U)}]};
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]}
+    end,
+    {reply, Res, S};
+
 handle_call(_Request, _From, S) ->
-    Reply = ok,
-    {reply, Reply, S}.
+    Res = {struct, [{status, "error"}, {"reason", "unknown request"}]},
+    {reply, Res, S}.
 
 %%----------------------------------------------------------------------
 %% Func: handle_cast/2
@@ -226,7 +238,7 @@ rpcreply(Response) ->
 
 read_users() ->
     {ok, B} = file:read_file(?USER_DB),
-    {array, Users} = json2:decode_string(B),
+    {ok, {array, Users}} = json2:decode_string(?b2l(B)),
     [object2user(U) || U <- Users].
 
 store_users(Users) ->
@@ -243,7 +255,7 @@ user2object(U) ->
       {"address", U#user.address},
       {"sid", U#user.sid},
       {"confirmed", U#user.confirmed},
-      {"role", U#user.role},
+      {"role", ?a2l(U#user.role)},
       {"passwd_reset_id", U#user.passwd_reset_id},
       {"passwd_reset_send_time", U#user.passwd_reset_send_time}]}.
 
@@ -267,7 +279,7 @@ object2user(U, [{"address", Address}|Props]) ->
 object2user(U, [{"sid", Sid}|Props]) ->
     object2user(U#user{sid=Sid}, Props);
 object2user(U, [{"confirmed", Confirmed}|Props]) ->
-    object2user(U#user{confirmed=?l2a(Confirmed)}, Props);
+    object2user(U#user{confirmed=Confirmed}, Props);
 object2user(U, [{"role", Role}|Props]) ->
     object2user(U#user{role=?l2a(Role)}, Props);
 object2user(U, [{"passwd_reset_id", PRI}|Props]) ->

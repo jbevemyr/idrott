@@ -1,0 +1,24 @@
+[
+    {
+	"username": "johan",
+	"password": "m9hbifDY23/6vX+X8iTF5A==",
+	"name": "Johan Bevemyr",
+	"address": "Gosta Tamms vag 16",
+	"sid": "1234567890",
+	"confirmed": false,
+	"role": "admin",
+	"passwd_reset_id": "",
+	"passwd_reset_send_time": ""
+    },
+    {
+	"username": "katrin",
+	"password": "m9hbifDY23/6vX+X8iTF5A==",
+	"name": "Katrin Bevemyr",
+	"address": "Gosta Tamms vag 16",
+	"sid": "0123456789",
+	"confirmed": false,
+	"role": "admin",
+	"passwd_reset_id": "",
+	"passwd_reset_send_time": ""
+    }
+]
