@@ -58,30 +58,52 @@ do_op("login", L) ->
     Password = get_val("password", L, ""),
     Res = gen_server:call(?SERVER, {login, User, Password}, infinity),
     rpcreply(Res);
+%% http://idrott/idrott/send_reset_password?user=johan
 do_op("send_reset_password", L) ->
     User = get_val("user", L, ""),
     Res = gen_server:call(?SERVER, {send_reset_password, User}, infinity),
     rpcreply(Res);
-do_op("list_users", L) ->
-    Sid = get_val("sid", L, ""),
-    Res = gen_server:call(?SERVER, {list_users, Sid}, infinity),
+%% http://idrott/idrott/reset_password?rpid=1234567890&password=tentamen
+do_op("reset_password", L) ->
+    Rpid = get_val("rpid", L, ""),
+    Password = get_val("password", L, ""),
+    Res = gen_server:call(?SERVER, {reset_password, Rpid, Password}, infinity),
     rpcreply(Res);
+%% http://idrott/idrott/set_password?sid=1234567890&old_password=tentamen&new_password=test
+do_op("set_password", L) ->
+    Sid = get_val("sid", L, ""),
+    OldPass = get_val("old_password", L, ""),
+    NewPass = get_val("new_password", L, ""),
+    Res = gen_server:call(?SERVER, {set_password, Sid, OldPass, NewPass, L}, infinity),
+    rpcreply(Res);
+%% http://idrott/idrott/set_user_password?sid=1234567890&username=jb&password=test
+do_op("set_user_password", L) ->
+    Sid = get_val("sid", L, ""),
+    Username = get_val("username", L, ""),
+    NewPass = get_val("new_password", L, ""),
+    Res = gen_server:call(?SERVER, {set_user_password, Sid, Username, NewPass, L}, infinity),
+    rpcreply(Res);
+%% http://idrott/idrott/get_all_users?sid=1234567890
+do_op("get_all_users", L) ->
+    Sid = get_val("sid", L, ""),
+    Res = gen_server:call(?SERVER, {get_all_users, Sid}, infinity),
+    rpcreply(Res);
+%% http://idrott/idrott/get_user?sid=1234567890
 do_op("get_user", L) ->
     Sid = get_val("sid", L, ""),
     Res = gen_server:call(?SERVER, {get_user, Sid, L}, infinity),
     rpcreply(Res);
+%% http://idrott/idrott/set_user?sid=1234567890&foo=bar
 do_op("set_user", L) ->
     Sid = get_val("sid", L, ""),
     Res = gen_server:call(?SERVER, {set_user, Sid, L}, infinity),
     rpcreply(Res);
-do_op("set_password", L) ->
-    Sid = get_val("sid", L, ""),
-    Res = gen_server:call(?SERVER, {set_password, Sid, L}, infinity),
-    rpcreply(Res);
+%% http://idrott/idrott/add_user?sid=1234567890&username=jb&password=test&role=user&foo=bar
 do_op("add_user", L) ->
     Sid = get_val("sid", L, ""),
     Res = gen_server:call(?SERVER, {add_user, Sid, L}, infinity),
     rpcreply(Res);
+%% http://idrott/idrott/del_user?sid=1234567890&username=jb
 do_op("del_user", L) ->
     Sid = get_val("sid", L, ""),
     Res = gen_server:call(?SERVER, {del_user, Sid, L}, infinity),
@@ -97,14 +119,13 @@ do_op(Unknown, _L) ->
 -record(user, {
           username = [],          %% string() - username (email addess)
           password = [],          %% string() - password MD5
-          name = [],              %% string() - user full name
-          address = [],           %% string() - user snail mail address
           sid = [],               %% string() - session id
           confirmed = false,      %% boolean() - confirmed
           role = user,            %% admin | user - privilege group
           passwd_reset_id = [],   %% string() - password reset id
-          passwd_reset_send_time=0  %% date_time() - send time time of last
-                                  %% password reset email
+          passwd_reset_send_time=0, %% date_time() - send time time of last
+                                    %% password reset email
+          data=[]                 %% [{string(), string()}]
          }).
 
 -record(state, {
@@ -160,7 +181,6 @@ handle_call({login, User, Password}, _From, S) ->
             Res = {struct, [{status, "error"}, {"reason", "unknown user"}]}
     end,
     {reply, Res, S};
-            
 handle_call({send_reset_password, User}, _From, S) ->
     case get_user_by_name(User, S) of
         U=#user{} ->
@@ -170,7 +190,9 @@ handle_call({send_reset_password, User}, _From, S) ->
                       "You have requested a password reset. Follow the link\n"
                       "below to reset the password. Ignore this email if you haven't\n"
                       "requested a reset.",
-                      "http://www.idrott.org/reset_password.yaws?rpid="++RPid, []),
+                      "http://www.idrott.org/reset_password.html?rpid="++RPid, []),
+            %% Note that the reset_password.html page should make a AJAX call to
+            %% the reset_password?rpdi=<rpid from post to .html page>&password=<new password>
             Res = {struct, [{state, "ok"}]},
             NewUser = U#user{passwd_reset_id=RPid, passwd_reset_send_time=gnow()},
             NewUsers = update_user(NewUser, S#state.users),
@@ -180,13 +202,157 @@ handle_call({send_reset_password, User}, _From, S) ->
             NewS = S
     end,
     {reply, Res, NewS};
-            
+handle_call({reset_password, Rpid, Password}, _From, S) ->
+    case get_user_by_rpid(Rpid, S) of
+        U=#user{} ->
+            Age = days_diff(U#user.passwd_reset_send_time, ktime:gnow()),
+            if Age < 5 ->
+                    %% login successful
+                    Md5Pass = ?b2l(base64:encode(crypto:hash(md5, Password))),
+                    NewU = U#user{password=Md5Pass},
+                    Res = {struct, [{status, "ok"}, {user, user2object(U)}]},
+                    {reply, Res, S#state{users=update_user(NewU, S#state.users)}};
+               true ->
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "password reset link has expired"}]},
+                    {reply, Res, S}
+            end;
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]},
+            {reply, Res, S}
+    end;
+handle_call({set_password, Sid, OldPass, NewPass, _L}, _From, S) ->
+    Md5OldPass = ?b2l(base64:encode(crypto:hash(md5, OldPass))),
+    Md5NewPass = ?b2l(base64:encode(crypto:hash(md5, NewPass))),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when Md5OldPass == U#user.password ->
+            %% successful auth of old pass
+            NewU = U#user{password=Md5NewPass},
+            Res = {struct, [{status, "ok"}]},
+            {reply, Res, S#state{users=update_user(NewU, S#state.users)}};
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]},
+            {reply, Res, S}
+    end;
+handle_call({set_user_password, Sid, Username, NewPass, _L}, _From, S) ->
+    Md5NewPass = ?b2l(base64:encode(crypto:hash(md5, NewPass))),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            case get_user_by_name(Username, S) of
+                OU=#user{} ->
+                    NewU = OU#user{password=Md5NewPass},
+                    Res = {struct, [{status, "ok"}]},
+                    {reply, Res, S#state{users=update_user(NewU, S#state.users)}};
+                false ->
+                    Res = {struct, [{status, "error"}, {"reason", "unknown user"}]},
+                    {reply, Res, S}
+            end;
+        #user{} ->
+            Res = {struct, [{status, "error"}, {"reason", "only allowed for admin user"}]},
+            {reply, Res, S};
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]},
+            {reply, Res, S}
+    end;
 handle_call({get_user, Sid, _L}, _From, S) ->
     case get_user_by_id(Sid, S) of
         U=#user{} ->
             %% login successful
             Res = {struct, [{status, "ok"}, {user, user2object(U)}]};
         _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]}
+    end,
+    {reply, Res, S};
+handle_call({set_user, Sid, L}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        U=#user{} ->
+            %% login successful
+            NewU = apply_user_ops(U,L),
+            Res = {struct, [{status, "ok"}]},
+            {reply, Res, S#state{users=update_user(NewU, S#state.users)}};
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]},
+            {reply, Res, S}
+    end;
+handle_call({add_user, Sid, L}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            %% login successful
+            Username = get_val("username", L, ""),
+            Password = get_val("password", L, ""),
+            Role = get_val("role", L, ""),
+            Exists = get_user_by_name(Username, S) =/= false,
+            if Username == "" ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "invalid username"}]};
+               Password == "" ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "invalid password"}]};
+               Role == "" ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "invalid role"}]};
+               Exists ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "a user with the same name already exists"}]};
+               true ->
+                    Md5Pass = ?b2l(base64:encode(crypto:hash(md5, Password))),
+                    Data = [D || D={Key,_} <- L, not lists:member(Key, ["sid","username",
+                                                                        "password", "role"])],
+                    NewU = #user{username=Username, password=Md5Pass, sid=mk_id(S),
+                                 role=?l2a(Role), data=Data},
+                    store_users([NewU|S#state.users]),
+                    Res = {struct, [{status, "ok"}]},
+                    NewS = S#state{users=[NewU|S#state.users]}
+            end;
+        #user{} ->
+            %% login successful
+            NewS = S,
+            Res = {struct, [{status, "error"}, {"reason", "only admin can create users"}]};
+        _ ->
+            NewS = S,
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]}
+    end,
+    {reply, Res, NewS};
+handle_call({del_user, Sid, L}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            %% login successful
+            Username = get_val("username", L, ""),
+            DelUser = get_user_by_name(Username, S),
+            if Username == "" ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "invalid username"}]};
+               DelUser == false ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "the user does not exist"}]};
+               true ->
+                    NewUsers = lists:delete(DelUser, S#state.users),
+                    store_users(NewUsers),
+                    Res = {struct, [{status, "ok"}]},
+                    NewS = S#state{users=NewUsers}
+            end;
+        #user{} ->
+            %% login successful
+            NewS = S,
+            Res = {struct, [{status, "error"}, {"reason", "only admin can remove users"}]};
+        _ ->
+            NewS = S,
+            Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]}
+    end,
+    {reply, Res, NewS};
+handle_call({get_all_users, Sid}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        #user{} ->
+            %% login successful
+            Res = {struct, [{status, "ok"},
+                            {users, {array, [user2object(U) || U <- S#state.users]}}]};
+            _ ->
             Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]}
     end,
     {reply, Res, S};
@@ -251,44 +417,67 @@ user2object(U) ->
     {struct, 
      [{"username", U#user.username},
       {"password", U#user.password},
-      {"name", U#user.name},
-      {"address", U#user.address},
       {"sid", U#user.sid},
       {"confirmed", U#user.confirmed},
       {"role", ?a2l(U#user.role)},
       {"passwd_reset_id", U#user.passwd_reset_id},
-      {"passwd_reset_send_time", U#user.passwd_reset_send_time}]}.
+      {"passwd_reset_send_time", U#user.passwd_reset_send_time}|
+      U#user.data]}.
 
 object2user({struct, Props}) ->
-    object2user(#user{}, Props).
+    object2user(#user{}, Props, _Data=[]).
 
-object2user(U, []) ->
+object2user(U, [], Data) ->
     if U#user.username == [] orelse U#user.sid ->
             throw({error, "incomplete user"});
        true ->
-            U
+            U#user{data=Data}
     end;
-object2user(U, [{"username", Username}|Props]) ->
-    object2user(U#user{username=Username}, Props);
-object2user(U, [{"password", Password}|Props]) ->
-    object2user(U#user{password=Password}, Props);
-object2user(U, [{"name", Name}|Props]) ->
-    object2user(U#user{name=Name}, Props);
-object2user(U, [{"address", Address}|Props]) ->
-    object2user(U#user{address=Address}, Props);
-object2user(U, [{"sid", Sid}|Props]) ->
-    object2user(U#user{sid=Sid}, Props);
-object2user(U, [{"confirmed", Confirmed}|Props]) ->
-    object2user(U#user{confirmed=Confirmed}, Props);
-object2user(U, [{"role", Role}|Props]) ->
-    object2user(U#user{role=?l2a(Role)}, Props);
-object2user(U, [{"passwd_reset_id", PRI}|Props]) ->
-    object2user(U#user{passwd_reset_id=PRI}, Props);
-object2user(U, [{"passwd_reset_send_time", PRST}|Props]) ->
-    object2user(U#user{passwd_reset_send_time=PRST}, Props);
-object2user(U, [Unknown|Props]) ->
+object2user(U, [{"username", Username}|Props], Data) ->
+    object2user(U#user{username=Username}, Props, Data);
+object2user(U, [{"password", Password}|Props], Data) ->
+    object2user(U#user{password=Password}, Props, Data);
+object2user(U, [{"sid", Sid}|Props], Data) ->
+    object2user(U#user{sid=Sid}, Props, Data);
+object2user(U, [{"confirmed", Confirmed}|Props], Data) ->
+    object2user(U#user{confirmed=Confirmed}, Props, Data);
+object2user(U, [{"role", Role}|Props], Data) ->
+    object2user(U#user{role=?l2a(Role)}, Props, Data);
+object2user(U, [{"passwd_reset_id", PRI}|Props], Data) ->
+    object2user(U#user{passwd_reset_id=PRI}, Props, Data);
+object2user(U, [{"passwd_reset_send_time", PRST}|Props], Data) ->
+    object2user(U#user{passwd_reset_send_time=PRST}, Props, Data);
+object2user(U, [D={Key,_Value}|Props], Data)
+  when is_list(Key) ->
+    object2user(U, Props, [D|Data]);
+object2user(U, [Unknown|Props], Data) ->
     error_logger:format("unknown user property ~p", [Unknown]),
-    object2user(U, Props).
+    object2user(U, Props, Data).
+
+
+apply_user_ops(U, []) ->
+    U;
+apply_user_ops(U, [{"sid", _}|Ops]) ->
+    apply_user_ops(U, Ops);
+apply_user_ops(U, [{"password", _}|Ops]) ->
+    apply_user_ops(U, Ops);
+apply_user_ops(U, [{"username", _}|Ops]) ->
+    apply_user_ops(U, Ops);
+apply_user_ops(U, [{"passwd_reset_id", _}|Ops]) ->
+    apply_user_ops(U, Ops);
+apply_user_ops(U, [{"passwd_reset_send_time", _}|Ops]) ->
+    apply_user_ops(U, Ops);
+apply_user_ops(U, [{"role", NewRole}|Ops]) ->
+    if U#user.role == admin ->
+            apply_user_ops(U#user{role=?a2l(NewRole)}, Ops);
+       true ->
+            apply_user_ops(U, Ops)
+    end;
+apply_user_ops(U, [{Key,Value}|Ops]) ->
+    Data = lists:keydelete(Key, 1, U#user.data),
+    apply_user_ops(U#user{data=[{Key, Value}|Data]}, Ops);
+apply_user_ops(U, [_|Ops]) ->
+    apply_user_ops(U, Ops).
 
 get_user_by_id(User, S) ->
     case lists:keysearch(User, #user.sid, S#state.users) of
@@ -306,7 +495,7 @@ get_user_by_name(User, S) ->
             false
     end.
 
-get_user_by_prid(PRID, S) ->
+get_user_by_rpid(PRID, S) ->
     case lists:keysearch(PRID, #user.passwd_reset_id, S#state.users) of
         {value, U=#user{}} ->
             U;
