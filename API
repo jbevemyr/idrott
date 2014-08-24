@@ -1,19 +1,50 @@
 http://idrott/idrott/login?user=johan&password=test
 
+        {status: "ok", sid: <sid>}
+        {status: "error", reason: <reason>}
+
 http://idrott/idrott/send_reset_password?user=johan
+
+        {status: "ok"}
+        {status: "error", reason: <reason>}
 
 http://idrott/idrott/reset_password?rpid=1234567890&password=test
 
+        {status: "ok"}
+        {status: "error", reason: <reason>}
+
+
 http://idrott/idrott/set_password?sid=1234567890&old_password=test&new_password=test2
+
+        {status: "ok"}
+        {status: "error", reason: <reason>}
 
 http://idrott/idrott/set_user_password?sid=1234567890&username=jb&password=test
 
+        {status: "ok"}
+        {status: "error", reason: <reason>}
+
 http://idrott/idrott/get_all_users?sid=1234567890
+
+        {status: "ok", users: [ object() ]}
+        {status: "error", reason: <reason>}
 
 http://idrott/idrott/get_user?sid=1234567890
 
+        {status: "ok", user: object()}
+        {status: "error", reason: <reason>}
+
 http://idrott/idrott/set_user?sid=1234567890&foo=bar
+
+        {status: "ok"}
+        {status: "error", reason: <reason>}
 
 http://idrott/idrott/add_user?sid=1234567890&username=jb&password=test&role=user&foo=bar
 
+        {status: "ok"}
+        {status: "error", reason: <reason>}
+
 http://idrott/idrott/del_user?sid=1234567890&username=jb
+
+        {status: "ok"}
+        {status: "error", reason: <reason>}

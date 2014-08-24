@@ -1,8 +1,8 @@
-%    -*- Erlang -*- 
-%    File:	idrott.erl  (~jb/work/idrott/src/idrott.erl)
-%    Author:	Johan Bevemyr
-%    Created:	Tue Aug  5 14:29:44 2014
-%    Purpose:   
+%    -*- Erlang -*-
+%    File:      idrott.erl  (~jb/work/idrott/src/idrott.erl)
+%    Author:    Johan Bevemyr
+%    Created:   Tue Aug  5 14:29:44 2014
+%    Purpose:
 
 -module('idrott').
 -author('jb@bevemyr.com').
@@ -19,7 +19,7 @@
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
-	 code_change/3]).
+         code_change/3]).
 
 %% appmod callback
 -export([out/1]).
@@ -45,14 +45,15 @@
 
 out(A) ->
     L = case (A#arg.req)#http_request.method of
-	    'GET' ->
-		yaws_api:parse_query(A);
-	    'POST' ->
-		yaws_api:parse_post(A)
-	end,
+            'GET' ->
+                yaws_api:parse_query(A);
+            'POST' ->
+                yaws_api:parse_post(A)
+        end,
     %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
     do_op(A#arg.appmoddata, L).
 
+%% http://idrott/idrott/login?user=johan&password=test
 do_op("login", L) ->
     User = get_val("user", L, ""),
     Password = get_val("password", L, ""),
@@ -63,13 +64,13 @@ do_op("send_reset_password", L) ->
     User = get_val("user", L, ""),
     Res = gen_server:call(?SERVER, {send_reset_password, User}, infinity),
     rpcreply(Res);
-%% http://idrott/idrott/reset_password?rpid=1234567890&password=tentamen
+%% http://idrott/idrott/reset_password?rpid=1234567890&password=test
 do_op("reset_password", L) ->
     Rpid = get_val("rpid", L, ""),
     Password = get_val("password", L, ""),
     Res = gen_server:call(?SERVER, {reset_password, Rpid, Password}, infinity),
     rpcreply(Res);
-%% http://idrott/idrott/set_password?sid=1234567890&old_password=tentamen&new_password=test
+%% http://idrott/idrott/set_password?sid=1234567890&old_password=test&new_password=test2
 do_op("set_password", L) ->
     Sid = get_val("sid", L, ""),
     OldPass = get_val("old_password", L, ""),
@@ -174,7 +175,7 @@ handle_call({login, User, Password}, _From, S) ->
         U=#user{password = Md5Pass} ->
             %% login successful
             Res = {struct, [{status, "ok"}, {"sid", U#user.sid},
-			    {group, ?a2l(U#user.role)}]};
+                            {group, ?a2l(U#user.role)}]};
         #user{} ->
             Res = {struct, [{status, "error"}, {"reason", "invalid password"}]};
         _ ->
@@ -412,9 +413,9 @@ store_users(Users) ->
     String = json2:encode({array, UserStructs}),
     file:write_file(?USER_DB_TMP, String),
     file:rename(?USER_DB_TMP, ?USER_DB).
-    
+
 user2object(U) ->
-    {struct, 
+    {struct,
      [{"username", U#user.username},
       {"password", U#user.password},
       {"sid", U#user.sid},
@@ -541,20 +542,20 @@ gtostr(Secs, date) ->
 gtostr(Secs, time) ->
     {_, {Hour, Minute, Second}} = calendar:gregorian_seconds_to_datetime(Secs),
     lists:flatten(io_lib:format("~2.2.0w:~2.2.0w:~2.2.0w",
-				[Hour, Minute, Second]));
+                                [Hour, Minute, Second]));
 gtostr(Secs, time24hm) ->
     {_, {Hour, Minute, _Sec}} = calendar:gregorian_seconds_to_datetime(Secs),
     lists:flatten(io_lib:format("~2.2.0w:~2.2.0w", [Hour, Minute]));
 gtostr(Secs, date_time) ->
     {{Year, Month, Day}, {Hour, Minute, Second}} =
-	calendar:gregorian_seconds_to_datetime(Secs),
+        calendar:gregorian_seconds_to_datetime(Secs),
     lists:flatten(io_lib:format("~w-~2.2.0w-~2.2.0w ~2.2.0w:~2.2.0w:~2.2.0w",
-				[Year, Month, Day, Hour, Minute, Second]));
+                                [Year, Month, Day, Hour, Minute, Second]));
 gtostr(Secs, date_time_nospace) ->
     {{Year, Month, Day}, {Hour, Minute, Second}} =
-	calendar:gregorian_seconds_to_datetime(Secs),
+        calendar:gregorian_seconds_to_datetime(Secs),
     lists:flatten(io_lib:format("~w-~2.2.0w-~2.2.0w_~2.2.0w:~2.2.0w:~2.2.0w",
-				[Year, Month, Day, Hour, Minute, Second])).
+                                [Year, Month, Day, Hour, Minute, Second])).
 
 
 days_diff(A, B) when is_integer(A), is_integer(B) ->
@@ -570,7 +571,7 @@ date2gdate(YMD) ->
 
 get_val(Key, L, Default) ->
     case lists:keysearch(Key, 1, L) of
-	{value, {_, undefined}} -> Default;
-	{value, {_, Val}} -> Val;
-	_ -> Default
+        {value, {_, undefined}} -> Default;
+        {value, {_, Val}} -> Val;
+        _ -> Default
     end.
