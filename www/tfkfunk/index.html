@@ -1,0 +1,392 @@
+<!DOCTYPE html> 
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+  <title>Tureberg FK - funktionärer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.css"/>
+  <link rel="stylesheet" href="jquery/jquery-mobile-theme-053329-0/themes/BevemyrMobileV1.min.css" />
+  <script src="jquery/jquery-2.1.1.js"></script>
+  <script src="jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.js"></script>
+  <script src="js/db.js"></script>
+
+  <script>
+    $(document).on("pagecreate", "#login", function() {
+    //          $(function () {
+    $("#login_submit").on('click', function(e) {
+      $.ajax({
+        url: "http://idrott.bevemyr.com/idrott/login?user="+$("#login_name").val()+"&password="
+	          +$("#login_passwd").val(),
+	        dataType: "json",
+	        success: function(status) {
+    alert(status.status);
+	           if(status.status == "ok") { // string otherwise an object session/group
+                     sessionid = status.sid;
+                     aaagroup = status.group;
+alert(status.group);
+	             $.mobile.changePage($("#admin-eventlist"));
+                   } else {
+	             sessionid = status.session;
+                     aaagroup = status.group;
+	             $.mobile.changePage($("#func-eventlist"));
+	           }
+	        },
+	        error: function(status) {
+	           alert(status.status);
+	           $.mobile.changePage($("#login"));  // should be errorpage
+	        }
+	    }
+	  )});
+/*
+    $("#...button save userdata").on('click', function(e) {
+         var status = {...};
+         if (status == ""or{} {
+         } else {
+         };
+*/
+	  });
+  </script>
+
+<script>
+$( document ).on( "pagecreate", function() {
+    var nextId = 1;
+    $("#add").click(function() {
+        nextId++;
+        var content = "<div data-role='collapsible' id='set" + nextId + "'><h3>Section " + nextId + "</h3><p>I am the collapsible content in a set so this feels like an accordion. I am hidden by default because I have the 'collapsed' state; you need to expand the header to see me.</p></div>";
+        $( "#set" ).append( content ).collapsibleset( "refresh" );
+    });
+    $( "#expand" ).click(function() {
+        $("#set").children(":last").collapsible( "expand" );
+    });
+    $( "#collapse" ).click(function() {
+        $( "#set" ).children( ":last" ).collapsible( "collapse" );
+    });
+});
+</script>
+
+</head>
+
+<body>
+<!-- Login page -->
+<div data-role="page" id="login">
+  <div data-role="header">
+    <h1>Logga in</h1>
+  </div>
+  <div data-role="main" class="ui-content">
+    <label for="login_name">Namn</label>
+    <input type="text" data-clear-btn="true" name="login_name" id="login_name" placeholder="E-post" value="">
+    <label for="login_passwd">Lösenord</label>
+    <input type="password" data-clear-btn="true" name="login_passwd" id="login_passwd" placeholder="Lösenord" value="">
+    <button class="ui-shadow ui-btn ui-corner-all" type="submit" id="login_submit">Logga in</button>  
+  </div>
+
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+<!-- Klubbadministratör pages -->
+<!-- Eventlist page -->
+<div data-role="page" id="admin-eventlist">
+  <div data-role="header" style="overflow:hidden;">
+    <h1>Klubbadministratör</h1>
+    <a href="#admin-es" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    <div data-role="navbar" class="ui-state-persist">
+        <ul>
+            <li><a href="#admin-eventlist" class="ui-btn-active">Evenemang</a></li>
+            <li><a href="#admin-funclist">Funktionärslista</a></li>
+            <li><a href="#admin-schedules">Plan</a></li>
+        </ul>
+    </div><!-- /navbar -->
+</div><!-- /header -->
+  <div role="main" class="ui-content">
+    <table data-role="table" id="movie-table" data-mode="reflow" class="ui-responsive">
+      <thead>
+	<tr>
+	  <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
+	  <th data-priority="persist">Evenemang</th>
+	  <th data-priority="persist">Datum</th>
+	</tr> 
+      </thead>
+      <tbody>
+	<tr>
+	  <td>Ja</td>
+	  <td>SAYO (dag 1)</td>
+	  <td>2015-06-06</td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+
+<!-- Funclist page -->
+<div data-role="page" id="admin-funclist">
+  <div data-role="header" style="overflow:hidden;">
+    <h1>Klubbadministratör</h1>
+    <a href="#admin-es" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    <div data-role="navbar" class="ui-state-persist">
+        <ul>
+            <li><a href="#admin-eventlist">Evenemang</a></li>
+            <li><a href="#admin-funclist" class="ui-btn-active">Funktionärslista</a></li>
+            <li><a href="#admin-schedules">Plan</a></li>
+        </ul>
+    </div><!-- /navbar -->
+</div><!-- /header -->
+  <div role="main" class="ui-content">
+    <table data-role="table" id="movie-table" data-mode="reflow" class="ui-responsive">
+      <thead>
+	<tr>
+	  <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
+	  <th data-priority="persist">Evenemang</th>
+	  <th data-priority="persist">Datum</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>Ja</td>
+	  <td>SAYO (dag 1)</td>
+	  <td>2015-06-06</td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+
+<!-- Schedules page -->
+<div data-role="page" id="admin-schedules">
+  <div data-role="header" style="overflow:hidden;">
+    <h1>Klubbadministratör</h1>
+     <a href="#admin-es" data-icon="gear" data-mini="true" class="ui-btn-right">Inställningar</a>
+    <div data-role="navbar" class="ui-state-persist">
+        <ul>
+            <li><a href="#admin-eventlist">Evenemang</a></li>
+            <li><a href="#admin-funclist">Funktionärslista</a></li>
+            <li><a href="#admin-schedules" class="ui-btn-active">Plan</a></li>
+        </ul>
+    </div><!-- /navbar -->
+</div><!-- /header -->
+  <div role="main" class="ui-content">
+
+    <button type="button" data-icon="gear" data-iconpos="right" data-mini="true" data-inline="true" id="add">Add</button>
+    <button type="button" data-icon="plus" data-iconpos="right" data-mini="true" data-inline="true" id="expand">Expand last</button>
+    <button type="button" data-icon="minus" data-iconpos="right" data-mini="true" data-inline="true" id="collapse">Collapse last</button>
+    <button type="button" data-icon="search" data-iconpos="right" data-mini="true" data-inline="true" id="search-expand">Search and expand</button>
+
+    <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" id="set">
+      <div data-role="collapsible" id="set1">
+	<h4>Vildsvinet 2015</h4>
+	<p>Norrorts bästa terränglopp.</p>
+	<p><strong>Tid</strong> (2014-04-16)</p>
+	<p><strong>Plats</strong> Väsjöbacken</p>
+	<p><strong>PM</strong></p>
+	<p><strong>Tidsprogram</strong></p>
+	<p><strong>Bemanning</strong></p>
+	<p><strong>Noteringar</strong></p>
+	<p>Lite korta noteringar kring status, max 2 rader.</p>
+        <p class="ui-li-aside"><i><strong>senast uppdaterat</strong> 2014-08-09</i></p>
+      </div>
+
+      <div data-role="collapsible" id="set2">
+	<h4>SAYO 2015</h4>
+	<p>Norrorts bästa tävling.</p>
+	<p><strong>Tid</strong> (2014-06-06 - 2014-06-08)</p>
+	<p><strong>Plats</strong> Sollentunavallen</p>
+	<p><strong>PM</strong></p>
+	<p><strong>Tidsprogram</strong></p>
+	<p><strong>Bemanning</strong></p>
+	<p><strong>Noteringar</strong></p>
+	<p>Lite korta noteringar kring status, max 2 rader.</p>
+        <p class="ui-li-aside"><i><strong>senast uppdaterat</strong> 2014-08-09</i></p>
+      </div>
+    </div>
+  </div>
+
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+<!-- Event setting page -->
+<div data-role="page" id="mall">
+  <div data-role="header">
+    <a href="#" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+    <h1>mall</h1>
+  </div>
+  
+  <div role="main" class="ui-content">
+  </div>
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+
+
+<!-- Event setting page -->
+<div data-role="page" id="admin-es">
+  <div data-role="header">
+    <a href="#" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+    <h1>Evenemangsinställningar</h1>
+    <button class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save</button>
+  </div>
+  
+  <div role="main" class="ui-content">
+    <label for="us_name">Namn</label>
+    <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
+    
+    <label for="us_email">Datum</label>
+    <input type="text" data-clear-btn="true" name="us_email" id="us_email" placeholder="" value="">
+
+    <label for="us_phone">Plats</label>
+    <input type="text" data-clear-btn="true" name="us_phone" id="us_phone" placeholder="Text input" value="">
+
+    <label for="us_group">PM</label>
+    <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
+  </div>
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+
+<!-- Func pages -->
+<!-- My events page -->
+<div data-role="page" id="func-myevents">
+  <div data-role="header" style="overflow:hidden;">
+    <h1>Mina åtaganden</h1>
+    <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    <div data-role="navbar" class="ui-state-persist">
+        <ul>
+            <li><a href="#func-myevents2">Mina åtaganden</a></li>
+            <li><a href="#func-myevents" class="ui-btn-active">Mina åtaganden</a></li>
+            <li><a href="#func-requests">Önskningar</a></li>
+        </ul>
+    </div><!-- /navbar -->
+</div><!-- /header -->
+  <div role="main" class="ui-content">
+    <table data-role="table" id="movie-table" data-mode="reflow" class="ui-responsive">
+      <thead>
+	<tr>
+	  <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
+	  <th data-priority="persist">Evenemang</th>
+	  <th data-priority="persist">Datum</th>
+	</tr> 
+      </thead>
+      <tbody>
+	<tr>
+	  <td>Ja</td>
+	  <td>SAYO (dag 1)</td>
+	  <td>2015-06-06</td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+<!-- My events page, 2 -->
+<div data-role="page" id="func-myevents2">
+  <div data-role="header" style="overflow:hidden;">
+    <h1>Mina åtaganden 2</h1>
+    <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    <div data-role="navbar" class="ui-state-persist">
+        <ul>
+            <li><a href="#func-myevents2" class="ui-btn-active">Mina åtaganden</a></li>
+            <li><a href="#func-myevents">Mina åtaganden</a></li>
+            <li><a href="#func-requests">Önskningar</a></li>
+        </ul>
+    </div><!-- /navbar -->
+</div><!-- /header -->
+  <div role="main" class="ui-content">
+<ul data-role="listview" data-inset="true">
+    <li data-role="list-divider">Friday, October 8, 2010 <span class="ui-li-count">2</span></li>
+    <li><a href="index.html">
+    <h2>Stephen Weber</h2>
+    <p><strong>You've been invited to a meeting at Filament Group in Boston, MA</strong></p>
+    <p>Hey Stephen, if you're available at 10am tomorrow, we've got a meeting with the jQuery team.</p>
+        <p class="ui-li-aside"><strong>6:24</strong>PM</p>
+    </a></li>
+    <li><a href="index.html">
+    <h2>jQuery Team</h2>
+    <p><strong>Boston Conference Planning</strong></p>
+    <p>In preparation for the upcoming conference in Boston, we need to start gathering a list of sponsors and speakers.</p>
+        <p class="ui-li-aside"><strong>9:18</strong>AM</p>
+    </a></li>
+    <li data-role="list-divider">Thursday, October 7, 2010 <span class="ui-li-count">1</span></li>
+    <li><a href="index.html">
+    <h2>Avery Walker</h2>
+    <p><strong>Re: Dinner Tonight</strong></p>
+    <p>Sure, let's plan on meeting at Highland Kitchen at 8:00 tonight. Can't wait!</p>
+        <p class="ui-li-aside"><strong>4:48</strong>PM</p>
+    </a></li>
+</ul>
+
+  </div>
+
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+
+<!-- Requests page -->
+<div data-role="page" id="func-requests">
+  <div data-role="header" style="overflow:hidden;">
+    <h1>Önskningar</h1>
+    <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    <div data-role="navbar" class="ui-state-persist">
+        <ul>
+            <li><a href="#func-myevents2">Mina åtaganden</a></li>
+            <li><a href="#func-myevents">Mina åtaganden</a></li>
+            <li><a href="#func-requests" class="ui-btn-active">Önskningar</a></li>
+        </ul>
+    </div><!-- /navbar -->
+</div><!-- /header -->
+  <div role="main" class="ui-content">
+    <table data-role="table" id="movie-table" data-mode="reflow" class="ui-responsive">
+      <thead>
+	<tr>
+	  <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
+	  <th data-priority="persist">Evenemang</th>
+	  <th data-priority="persist">Datum</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>Ja</td>
+	  <td>SAYO (dag 1)</td>
+	  <td>2015-06-06</td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div data-role="footer">Tureberg FK</div>
+</div>
+
+
+<!-- User settings page -->
+<div data-role="page" id="func-us">
+	<div data-role="header">
+	  <a href="#" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+	  <h1>Användarinställningar</h1>
+	  <button class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save</button>
+	</div>
+
+	<div role="main" class="ui-content">
+	  <label for="us_name">Namn</label>
+	  <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
+
+	  <label for="us_email">E-post</label>
+	  <input type="text" data-clear-btn="true" name="us_email" id="us_email" placeholder="" value="">
+
+	  <label for="us_phone">Telefon</label>
+	  <input type="text" data-clear-btn="true" name="us_phone" id="us_phone" placeholder="Text input" value="">
+
+	  <label for="us_group">Grupp</label>
+	  <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
+	</div>
+	<div data-role="footer">Tureberg FK</div>
+</div>
+
+
+
+</body>
+</html>
