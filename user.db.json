@@ -1,2 +1,31 @@
-{"username":"johan","password":"m9hbifDY23/6vX+X8iTF5A==","sid":"1234567890","confirmed":false,"role":"admin","passwd_reset_id":"","passwd_reset_send_time":"","name":"Johan Bevemyr","address":"Gosta Tamms vag 16","group":"", "events": [{"eventid": 1,"confirmed":"yes", "comment":"blå tröja"}], "tel":"0708989899", "email": "jb@bevemyr.com","comment":"krattar bra"},
-{"username":"katrin","password":"m9hbifDY23/6vX+X8iTF5A==","sid":"0123456789","confirmed":false,"role":"admin","passwd_reset_id":"","passwd_reset_send_time":"","name":"Katrin Bevemyr","address":"Gosta Tamms vag 16",[{"username":"jb","password":"CY9rzUYh03PK3k6DJie09g==","sid":"16448336156586708993","confirmed":false,"role":"user","passwd_reset_id":"","passwd_reset_send_time":0,"group":"", "events": [{"eventid": 1,"confirmed":"no", "comment":"blå tröja"}], "tel":"0708989800", "email": "kati@bevemyr.com","comment":"mäter bra"}]
+[
+    {"username":"johan",
+     "password":"m9hbifDY23/6vX+X8iTF5A==",
+     "sid":"1234567890",
+     "confirmed":false,
+     "role":"admin",
+     "passwd_reset_id":"",
+     "passwd_reset_send_time":"",
+     "name":"Johan Bevemyr",
+     "address":"Gosta Tamms vag 16",
+     "group":"",
+     "events": [{"eventid": 1,"confirmed":"yes", "comment":"blå tröja"}],
+     "tel":"0708989899",
+     "email":"jb@bevemyr.com",
+     "comment":"krattar bra"
+    },
+    {"username":"katrin",
+     "password":"m9hbifDY23/6vX+X8iTF5A==",
+     "sid":"0123456789",
+     "confirmed":false,
+     "role":"admin",
+     "passwd_reset_id":"",
+     "passwd_reset_send_time":"",
+     "name":"Katrin Bevemyr",
+     "address":"Gosta Tamms vag 16",
+     "events": [{"eventid": 1,"confirmed":"no", "comment":"blå tröja"}],
+     "tel":"0708989800",
+     "email": "kati@bevemyr.com",
+     "comment":"mäter bra"
+    }
+]
