@@ -1,6 +1,6 @@
 http://idrott/idrott/login?user=johan&password=test
 
-        {status: "ok", sid: <sid>}
+        {status: "ok", sid: <sid>, group: <groupname>}
         {status: "error", reason: <reason>}
 
 http://idrott/idrott/send_reset_password?user=johan
