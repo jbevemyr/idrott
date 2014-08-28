@@ -102,13 +102,12 @@
 <div data-role="page" id="admin-startpage">
   <p>Klubbadministratör</p>
   <div data-role="header" style="overflow:hidden;">
-    <h3>Turebergs friidrott klubb</h3>
+    <h3>Evenemangsadministration</h3>
     <a href="#admin-es" data-icon="gear" class="ui-btn-right">Inställningar</a>
   </div>
 
   <div role="main" class="ui-content">
     <ul data-role="listview" data-inset="true">
-      <li data-role="list-divider">Evenemangsadministration</li>
       <li><a href="#admin-eventlist">Events</a></li>
       <li><a href="#admin-funclist">Funktionärer</a></li>
       <li><a href="#admin-adminlist">Kontakt</a></li>
@@ -198,7 +197,7 @@
   <div data-role="header" style="overflow:hidden;">
     <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
     <h1>Klubbadministratör</h1>
-    <a href="#" data-icon="gear" data-mini="true" class="ui-btn-right" id=>New</a>
+    <a href="#" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
   </div><!-- /header -->
   <div role="main" class="ui-content">
 
@@ -277,21 +276,20 @@
 <div data-role="page" id="func-startpage">
   <p>Funktionär</p>
   <div data-role="header" style="overflow:hidden;">
-    <h1>Turebergs FK</h1>
+    <h1>Funktionsärsuppdrag</h1>
     <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
   </div>
 
   <div role="main" class="ui-content">
     <ul data-role="listview" data-inset="true">
-      <li data-role="list-divider">Funktionärs uppdrag</li>
-      <li><a href="#">Förfrågningar</a></li>
+      <li><a href="#func-requests">Förfrågningar</a></li>
       <li><a href="#func-myevents">Mina uppdrag</a></li>
-      <li><a href="#">Kontakt</a></li>
+      <li><a href="#">Klubb kontakt</a></li>
       <li><a href="#">Manual</a></li>
     </ul>
   </div>
 
-  <div data-role="footer"></div>
+  <div data-role="footer">Tureberg FK</div>
 </div>
 
 
@@ -301,13 +299,8 @@
     <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
     <h1>Mina åtaganden</h1>
     <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
-    <div data-role="navbar" class="ui-state-persist">
-        <ul>
-            <li><a href="#func-myevents" class="ui-btn-active">Mina åtaganden</a></li>
-            <li><a href="#func-requests">Önskningar</a></li>
-        </ul>
-    </div><!-- /navbar -->
   </div><!-- /header -->
+
   <div role="main" class="ui-content">
     <ul data-role="listview" data-inset="true">
       <li data-role="list-divider">Friday, October 8, 2010 <span class="ui-li-count">2</span></li>
@@ -343,15 +336,9 @@
     <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
     <h1>Önskningar</h1>
     <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
-    <div data-role="navbar" class="ui-state-persist">
-        <ul>
-            <li><a href="#func-myevents">Mina åtaganden</a></li>
-            <li><a href="#func-requests" class="ui-btn-active">Önskningar</a></li>
-        </ul>
-    </div><!-- /navbar -->
-</div><!-- /header -->
+  </div><!-- /header -->
   <div role="main" class="ui-content">
-    <table data-role="table" id="movie-table" data-mode="reflow" class="ui-responsive">
+    <table data-role="table" id="func-reqs-table" data-mode="reflow" class="ui-responsive">
       <thead>
 	<tr>
 	  <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
@@ -375,26 +362,35 @@
 
 <!-- User settings page -->
 <div data-role="page" id="func-us">
-	<div data-role="header">
-	  <a href="#" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
-	  <h1>Användarinställningar</h1>
-	  <button class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save</button>
-	</div>
+  <div data-role="header">
+    <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+    <h1>Användarinställningar</h1>
+    <button class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save</button>
+  </div>
 
-	<div role="main" class="ui-content">
-	  <label for="us_name">Namn</label>
-	  <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
+  <div role="main" class="ui-content">
+    <div data-role="controlgroup">
+    <div class="ui-field-contain">
+      <label for="us_name">Namn</label>
+      <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
+    </div>
+      
+    <div class="ui-field-contain">
+      <label for="us_email">E-post</label>
+      <input type="text" data-clear-btn="true" name="us_email" id="us_email" placeholder="" value="">
+    </div>
 
-	  <label for="us_email">E-post</label>
-	  <input type="text" data-clear-btn="true" name="us_email" id="us_email" placeholder="" value="">
+    <div class="ui-field-contain">
+      <label for="us_phone">Telefon</label>
+      <input type="text" data-clear-btn="true" name="us_phone" id="us_phone" placeholder="Text input" value="">
+    </div>
 
-	  <label for="us_phone">Telefon</label>
-	  <input type="text" data-clear-btn="true" name="us_phone" id="us_phone" placeholder="Text input" value="">
-
-	  <label for="us_group">Grupp</label>
-	  <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
-	</div>
-	<div data-role="footer">Tureberg FK</div>
+    <div class="ui-field-contain">
+      <label for="us_group">Grupp</label>
+      <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
+    </div>
+  </div>
+  <div data-role="footer">Tureberg FK</div>
 </div>
 
 
