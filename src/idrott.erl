@@ -570,7 +570,7 @@ read_users() ->
 
 store_users(Users) ->
     UserStructs = [user2object(U) || U <- Users],
-    String = json2:encode({array, UserStructs}),
+    String = idrott_json2:encode_pretty({array, UserStructs}),
     file:write_file(?USER_DB_TMP, String),
     file:rename(?USER_DB_TMP, ?USER_DB).
 
@@ -652,7 +652,7 @@ read_events() ->
 
 store_events(Events) ->
     EventStructs = [event2object(E) || E <- Events],
-    String = json2:encode({array, EventStructs}),
+    String = idrott_json2:encode_pretty({array, EventStructs}),
     file:write_file(?EVENTS_DB_TMP, String),
     file:rename(?EVENTS_DB_TMP, ?EVENTS_DB).
 
@@ -728,7 +728,8 @@ get_user_by_rpid(PRID, S) ->
     end.
 
 update_user(User, Users) ->
-    NewUsers = lists:keyreplace(User#user.username, #user.username, Users, User),
+    NewUsers = lists:keyreplace(User#user.username,
+                                #user.username, Users, User),
     store_users(NewUsers),
     NewUsers.
 

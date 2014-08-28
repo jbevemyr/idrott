@@ -7,7 +7,8 @@ DEBUG_FLAGS =
 endif
 
 MODULES=idrott \
-	ktime
+	ktime \
+	idrott_json2
 
 EBIN_FILES=$(MODULES:%=../ebin/%.$(EMULATOR)) 
 
