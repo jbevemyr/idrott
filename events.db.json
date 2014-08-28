@@ -1,0 +1,11 @@
+[
+    {
+        "id": 3,
+        "name": "my first event",
+        "date": "2014-12-22",
+        "location": "vallen",
+        "funcinfo": [ "johan", "katrin" ],
+        "funccount": 2,
+        "funccall": "open"
+    }
+]

@@ -41,8 +41,42 @@
 -define(USER_DB, "/home/share/jb/work/idrott/user.db.json").
 -define(USER_DB_TMP, "/home/share/jb/work/idrott/user.db.json.tmp").
 
+-define(EVENTS_DB, "/home/share/jb/work/idrott/events.db.json").
+-define(EVENTS_DB_TMP, "/home/share/jb/work/idrott/events.db.json.tmp").
+
 %%
 
+-record(post_state, {count=0, acc=[]}).
+
+out(#arg{req = #http_request{method = 'POST'},
+         headers = #headers{
+           content_type = "multipart/form-data"++_}} = A) ->
+    case yaws_api:parse_multipart_post(A) of
+        [] ->
+            Res = {struct, [{status, "error"},{reason, "broken post"}]},
+            rpcreply(Res);
+        {cont, _, _}
+          when is_record(A#arg.state, post_state),
+               A#arg.state#post_state.count == 10 ->
+            Res = {struct, [{status, "error"},{reason, "to big post"}]},
+            rpcreply(Res);
+        {cont, Cont, Res}  ->
+            PState = A#arg.state,
+            Count = PState#post_state.count,
+            Acc = PState#post_state.acc,
+            {get_more, Cont, PState#post_state{count=Count+1,acc=[Acc|Res]}};
+        {result, Res} ->
+            PState = A#arg.state,
+            Acc = PState#post_state.acc,
+            PostStr = clean_leading_ws(remove_unescape(?b2l(?l2b([Acc|Res])))),
+            case json2:decode_string(PostStr) of
+                {ok, L} ->
+                    do_op(A#arg.appmoddata, L);
+                _ ->
+                    Res = {struct, [{status, "error"},{reason, "invalid json"}]},
+                    rpcreply(Res)
+            end
+    end;
 out(A) ->
     L = case (A#arg.req)#http_request.method of
             'GET' ->
@@ -109,6 +143,33 @@ do_op("del_user", L) ->
     Sid = get_val("sid", L, ""),
     Res = gen_server:call(?SERVER, {del_user, Sid, L}, infinity),
     rpcreply(Res);
+%% http://idrott/idrott/get_all_events?sid=1234567890
+do_op("get_all_events", L) ->
+    Sid = get_val("sid", L, ""),
+    Res = gen_server:call(?SERVER, {get_all_events, Sid, L}, infinity),
+    rpcreply(Res);
+%% http://idrott/idrott/get_all_users_in_event?sid=1234567890&eventid=45
+do_op("get_all_users_in_event", L) ->
+    Sid = get_val("sid", L, ""),
+    Res = gen_server:call(?SERVER, {get_all_users_in_event, Sid, L}, infinity),
+    rpcreply(Res);
+%% http://idrott/idrott/create_event?sid=1234567890&name=foo&date=2014-10-01&pm=foo&timeschedule=foo&location=vallen&funcinfo=foo&funccount=10&funccall=open
+do_op("create_event", L) ->
+    Sid = get_val("sid", L, ""),
+    Res = gen_server:call(?SERVER, {create_event, Sid, L}, infinity),
+    rpcreply(Res);
+do_op("change_event", L) ->
+    Sid = get_val("sid", L, ""),
+    Res = gen_server:call(?SERVER, {change_event, Sid, L}, infinity),
+    rpcreply(Res);
+do_op("get_event", L) ->
+    Sid = get_val("sid", L, ""),
+    Res = gen_server:call(?SERVER, {get_event, Sid, L}, infinity),
+    rpcreply(Res);
+do_op("confirm_event", L) ->
+    Sid = get_val("sid", L, ""),
+    Res = gen_server:call(?SERVER, {confirm_event, Sid, L}, infinity),
+    rpcreply(Res);
 do_op(Unknown, _L) ->
     Error = lists:flatten(io_lib:format("unknown request: ~p", [Unknown])),
     error_logger:format("~s", [Error]),
@@ -129,8 +190,17 @@ do_op(Unknown, _L) ->
           data=[]                 %% [{string(), string()}]
          }).
 
+-record(event, {
+          id,                  %% integer() - unique event id
+          name=[],             %% string() - event name
+          date="2014-10-01",   %% string() - event date
+          data=[]              %% [{string(), string{}}]
+         }).
+
 -record(state, {
-          users=[]            %% list of #user{}
+          users=[],            %% list of #user{}
+          events=[],
+          event_id=0
          }).
 
 %%%----------------------------------------------------------------------
@@ -156,7 +226,8 @@ init([]) ->
     {X,Y,Z} = erlang:now(),
     random:seed(X, Y, Z),
     Users = read_users(),
-    {ok, #state{users=Users}}.
+    Events = read_events(),
+    {ok, #state{users=Users, events=Events}}.
 
 %%----------------------------------------------------------------------
 %% Func: handle_call/3
@@ -353,8 +424,54 @@ handle_call({get_all_users, Sid}, _From, S) ->
             %% login successful
             Res = {struct, [{status, "ok"},
                             {users, {array, [user2object(U) || U <- S#state.users]}}]};
-            _ ->
+        _ ->
             Res = {struct, [{status, "error"}, {"reason", "unknown sid"}]}
+    end,
+    {reply, Res, S};
+handle_call({get_all_events, Sid, _L}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        #user{} ->
+            %% login successful
+            Res = {struct, [{status, "ok"},
+                            {events, {array, [event2object(U) || U <- S#state.events]}}]};
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown event id"}]}
+    end,
+    {reply, Res, S};
+handle_call({get_all_users_in_event, Sid, L}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        #user{} ->
+            %% login successful
+            EId = to_int(get_val("id", L, "")),
+            case get_event_by_id(EId, S) of
+                E=#event{} ->
+                    Users = get_event_users(E, S),
+                    UsersJson = {array, [user2object(U) || U <- Users]},
+                    Res = {struct, [{status, "ok"}, {"users", UsersJson}]};
+                _ ->
+                    Res = {struct, [{status, "error"}, {"reason", "unknown event id"}]}
+            end;
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown session id"}]}
+    end,
+    {reply, Res, S};
+
+handle_call({create_event, Sid, L}, _From, S) ->
+    case get_user_by_id(Sid, S) of
+        U=#user when U#user.role == admin ->
+            %% login successful
+            Name = get_val("name", L, ""),
+            Location = get_val("location", L, ""),
+            
+            if Name == "" ->
+                    Res = {struct, [{status, "error"},
+                                    {"reason", "events must have a name"}]};
+               true ->
+
+        U=#user{} ->
+            Res = {struct, [{status, "error"}, {"reason", "only admin can create events"}]};
+        _ ->
+            Res = {struct, [{status, "error"}, {"reason", "unknown session id"}]}
     end,
     {reply, Res, S};
 
@@ -480,6 +597,64 @@ apply_user_ops(U, [{Key,Value}|Ops]) ->
 apply_user_ops(U, [_|Ops]) ->
     apply_user_ops(U, Ops).
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+read_events() ->
+    {ok, B} = file:read_file(?EVENTS_DB),
+    {ok, {array, Events}} = json2:decode_string(?b2l(B)),
+    [object2event(E) || E <- Events].
+
+store_events(Events) ->
+    EventStructs = [event2object(E) || E <- Events],
+    String = json2:encode({array, EventStructs}),
+    file:write_file(?EVENTS_DB_TMP, String),
+    file:rename(?EVENTS_DB_TMP, ?EVENTS_DB).
+
+event2object(E) ->
+    {struct,
+     [{"id", ?i2l(E#event.id)},
+      {"name", E#event.name},
+      {"date", E#event.date}|
+      E#event.data]}.
+
+object2event({struct, Props}) ->
+    object2event(#event{}, Props, _Data=[]).
+
+object2event(E, [], Data) ->
+    if E#event.id == undefined ->
+            throw({error, "incomplete event"});
+       true ->
+            E#event{data=Data}
+    end;
+object2event(E, [{"name", Name}|Props], Data) ->
+    object2event(E#event{name=Name}, Props, Data);
+object2event(E, [{"date", Date}|Props], Data) ->
+    object2event(E#event{date=Date}, Props, Data);
+object2event(E, [{"id", Id}|Props], Data) ->
+    object2event(E#event{id=Id}, Props, Data);
+object2event(E, [D={Key,_Value}|Props], Data)
+  when is_list(Key) ->
+    object2event(E, Props, [D|Data]);
+object2event(E, [Unknown|Props], Data) ->
+    error_logger:format("unknown user property ~p", [Unknown]),
+    object2event(E, Props, Data).
+
+
+apply_event_ops(E, []) ->
+    E;
+apply_event_ops(E, [{"name", Name}|Ops]) ->
+    apply_event_ops(E#event{name=Name}, Ops);
+apply_event_ops(E, [{"date", Date}|Ops]) ->
+    apply_event_ops(E#event{date=Date}, Ops);
+apply_event_ops(E, [{Key,Value}|Ops]) ->
+    Data = lists:keydelete(Key, 1, E#event.data),
+    apply_event_ops(E#event{data=[{Key, Value}|Data]}, Ops);
+apply_event_ops(E, [_|Ops]) ->
+    apply_event_ops(E, Ops).
+
+%%
+
 get_user_by_id(User, S) ->
     case lists:keysearch(User, #user.sid, S#state.users) of
         {value, U=#user{}} ->
@@ -506,6 +681,17 @@ get_user_by_rpid(PRID, S) ->
 
 update_user(User, Users) ->
     lists:keyreplace(User#user.username, #user.username, Users, User).
+
+get_event_by_id(Id, S) ->
+    case lists:keysearch(Id, #event.id, S#state.events) of
+        {value, E=#event{}} ->
+            E;
+        false ->
+            false
+    end.
+
+update_event(Event, Events) ->
+    lists:keyreplace(Event#event.id, #event.id, Events, Event).
 
 %%
 
@@ -575,3 +761,40 @@ get_val(Key, L, Default) ->
         {value, {_, Val}} -> Val;
         _ -> Default
     end.
+
+
+to_int(Str) ->
+    case catch ?l2i(Str) of
+        I when is_integer(I) ->
+            I;
+        _ ->
+            -1
+    end.
+
+get_event_users(E, S) ->
+    F = fun(UId) ->
+                case get_user_by_name(UId, S) of
+                    false ->
+                        false;
+                    User ->
+                        {true, User}
+                end
+        end,
+    case get_val("funcinfo", E#event.data, []) of
+        {array, Users} ->
+            lists:zf(F, Users);
+        _ ->
+            []
+    end.
+
+remove_unescape([]) -> [];
+remove_unescape([$\\, $t|Rest]) -> [$\t|remove_unescape(Rest)];
+remove_unescape([$\\, $n|Rest]) -> [$\t|remove_unescape(Rest)];
+remove_unescape([$\\, $r|Rest]) -> [$\t|remove_unescape(Rest)];
+remove_unescape([C|Rest]) -> [C|remove_unescape(Rest)].
+
+clean_leading_ws([$\t|Rest]) -> clean_leading_ws(Rest);
+clean_leading_ws([$\n|Rest]) -> clean_leading_ws(Rest);
+clean_leading_ws([$\r|Rest]) -> clean_leading_ws(Rest);
+clean_leading_ws([$ |Rest]) -> clean_leading_ws(Rest);
+clean_leading_ws(Rest) -> Rest.
