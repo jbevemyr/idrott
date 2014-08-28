@@ -34,12 +34,18 @@ http://idrott/idrott/get_user?sid=1234567890
         {status: "ok", user: object()}
         {status: "error", reason: <reason>}
 
-http://idrott/idrott/set_user?sid=1234567890&foo=bar
+http://idrott/idrott/set_user?sid=1234567890
+POST json object for user settings, ie POST:ing the
+json object { "username": "kalle", "groups": [ "foo", "bar" ]}
+will set those attributes in the user
 
         {status: "ok"}
         {status: "error", reason: <reason>}
 
-http://idrott/idrott/add_user?sid=1234567890&username=jb&password=test&role=user&foo=bar
+http://idrott/idrott/add_user?sid=1234567890&username=jb&password=test&role=user
+POST json object for user settings, ie POST:ing the
+json object { "groups": [ "foo", "bar" ]}
+will set those attributes in the user
 
         {status: "ok"}
         {status: "error", reason: <reason>}
@@ -48,3 +54,37 @@ http://idrott/idrott/del_user?sid=1234567890&username=jb
 
         {status: "ok"}
         {status: "error", reason: <reason>}
+
+http://idrott/idrott/get_all_events?sid=1234567890
+
+        {status: "ok", events: [ <event> ]}
+        {status: "error", reason: <reason>}
+
+http://idrott/idrott/get_all_users_in_event?sid=1234567890&id=<eventid>
+
+        {status: "ok", useers: [ <user> ]}
+        {status: "error", reason: <reason>}
+
+http://idrott/idrott/create_event?sid=1234567890
+POST json object for event, ie POST:ing the json object
+{ "name": <name>, "date": <date>}
+will create an event with those attributes
+
+        {status: "ok", event: <event>}
+        {status: "error", reason: <reason>}
+
+http://idrott/idrott/change_event?sid=1234567890&id=<eventid>
+POST json object for event, ie POST:ing the json object
+{ "name": <name>, "date": <date>}
+will set those attributes in the event
+
+        {status: "ok", event: <event>}
+        {status: "error", reason: <reason>}
+
+
+http://idrott/idrott/get_event?sid=1234567890&id=<eventid>
+
+        {status: "ok", event: <event>}
+        {status: "error", reason: <reason>}
+
+

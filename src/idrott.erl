@@ -728,7 +728,9 @@ get_user_by_rpid(PRID, S) ->
     end.
 
 update_user(User, Users) ->
-    lists:keyreplace(User#user.username, #user.username, Users, User).
+    NewUsers = lists:keyreplace(User#user.username, #user.username, Users, User),
+    store_users(NewUsers),
+    NewUsers..
 
 get_event_by_id(Id, S) ->
     case lists:keysearch(Id, #event.id, S#state.events) of
@@ -739,7 +741,9 @@ get_event_by_id(Id, S) ->
     end.
 
 update_event(Event, Events) ->
-    lists:keyreplace(Event#event.id, #event.id, Events, Event).
+    NewEvents = lists:keyreplace(Event#event.id, #event.id, Events, Event),
+    store_events(NewEvents),
+    NewEvents.
 
 %%
 
