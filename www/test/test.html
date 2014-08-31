@@ -1,0 +1,124 @@
+<!DOCTYPE html> 
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+  <title>APi test</title>
+  <script src="http://idrott.bevemyr.com/www/jquery/jquery-2.1.1.js"></script>
+  <script src="http://idrott.bevemyr.com/www/jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.js"></script>
+
+  <script>
+// Här behöver man lägga till en hantering av användare som inte loggat in och försöker nå en specifik sida.
+   sessionid = "1234567890";
+   testcount = 0;
+
+   $(document).ready(function() {
+     run_tests();
+   });
+
+   function add_result(str) {
+       $("#result").append($('<p>').append(str));
+   }
+
+   function run_tests() {
+     var f = "test"+testcount;
+     if (document[f] == null) {
+       // done
+       add_result("SUCCESS");
+     }
+     else {
+       testcount += 1;
+       add_result("running test: "+testcount);
+       eval(f+"()");
+     }
+   }
+
+   function test1() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/login?user=johan&password=test",
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") { // string otherwise an object session/group
+           add_result("---- ok");
+           sessionid = status.sid;
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   function test2() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/set_password?sid="+sessionid+
+            "&old_password=test&new_password=test2",
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") { // string otherwise an object session/group
+           add_result("---- ok");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+	
+   function test3() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/set_password?sid="+sessionid+
+            "&old_password=test2&new_password=test",
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") { // string otherwise an object session/group
+           add_result("---- ok");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   function test4() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/set_user_password?sid="+sessionid+
+            "&username=test&password=newpass",
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") { // string otherwise an object session/group
+           add_result("---- ok");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+  </script>
+</head>
+<body>
+  <div id=result>
+  </div>
+</body>
+</html>
