@@ -43,18 +43,7 @@
      var toPage = $.mobile.pageContainer.pagecontainer("getActivePage")[0].id;
      // alert("adding content to admin-funclist-table:"+toPage);
      if(toPage == "admin-funclist") {
-       get_all_users(sessionid, 
-                     function(users) {
-                       for (var i = 0; i < users.length;  i++) {
-			 var row = $('<tr>');
-		         row.appendTo("#admin-funclist-table");
-		         row.append($('<td>').append(users[i].name));
-                         row.append($('<td>').append(users[i].role)); //group
-                         row.append($('<td>').append(users[i].address)); //comment
-                         row.append($('<td>').append(users[i].sid)); //tele
-                         row.append($('<td>').append(users[i].username)); //email
-                       }
-                     });
+       get_all_users(sessionid, layout_all_users);
        $("#admin-funclist-table").table("rebuild");
      };
    });
@@ -125,7 +114,6 @@
   <div data-role="header" style="overflow:hidden;">
     <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
     <h1>Klubbadministratör</h1>
-    <a href="#admin-es" data-icon="gear" class="ui-btn-right">Inställningar</a>
   </div><!-- /header -->
   <div role="main" class="ui-content">
     <h1>Funktionärslista</h1>
@@ -135,11 +123,11 @@
     <table data-role="table" id="admin-funclist-table" data-filter="true" data-input="#admin-funclist-filter" data-mode="reflow" class="ui-responsive">
       <thead>
 	<tr>
-	  <th data-priority="1">Namn </th>
+	  <th data-priority="1">Namn</th>
 	  <th data-priority="persist">Grupp</th>
-	  <th data-priority="persist">Not</th>
+	  <th data-priority="persist">Tel</th>
 	  <th data-priority="persist">Email</th>
-	  <th data-priority="persist">Tel</th>	  
+	  <th data-priority="persist">Notering</th>	  
 	  <th data-priority="persist"><a href="#" data-icon="gear" class="ui-btn-right"></th>
 	</tr>
       </thead>
@@ -157,7 +145,7 @@
   <div data-role="header" style="overflow:hidden;">
     <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
     <h1>Klubbadministratör</h1>
-    <a href="#admin-es" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    <a href="#" data-icon="gear" class="ui-btn-right">Inställningar</a>
   </div><!-- /header -->
   <div role="main" class="ui-content">
     <h1>Adminstratörslista</h1>
@@ -169,9 +157,9 @@
 	<tr>
 	  <th data-priority="1">Namn</th>
 	  <th data-priority="persist">Grupp</th>
-	  <th data-priority="persist">Not</th>
+	  <th data-priority="persist">Tel</th>
 	  <th data-priority="persist">Email</th>
-	  <th data-priority="persist">Tel</th>	  
+	  <th data-priority="persist">Notering</th>	  
 	  <th data-priority="persist"></th>
 	</tr>
       </thead>
@@ -179,9 +167,9 @@
 	<tr>
 	  <td data-priority="1">Namnet</td>
 	  <td data-priority="persist">Gruppen</td>
-	  <td data-priority="persist">Notering</td>
+	  <td data-priority="persist">09090909</td>
 	  <td data-priority="persist">@@</td>
-	  <td data-priority="persist">ring</td>	  
+	  <td data-priority="persist">kan svara på alla frågor</td>	  
 	  <td data-priority="persist"><a href="#" data-icon="gear" class="ui-btn-right">...</a></td>
 	</tr>
       </tbody>
@@ -201,9 +189,8 @@
   </div><!-- /header -->
   <div role="main" class="ui-content">
 
-    <button type="button" data-icon="gear" data-iconpos="right" data-mini="true" data-inline="true" id="add">Add</button>
-
     <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" id="set">
+   
       <div data-role="collapsible" id="set1">
 	<h4>Vildsvinet 2015</h4>
 	<p><strong>Tid</strong> (2014-04-16)</p>
@@ -369,27 +356,30 @@
   </div>
 
   <div role="main" class="ui-content">
-    <div data-role="controlgroup">
-    <div class="ui-field-contain">
-      <label for="us_name">Namn</label>
-      <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
-    </div>
+    <form>
+      <ul data-role="listview" data-inset="true">
+	<li class="ui-field-contain">
+	  <label for="us_name">Namn</label>
+	  <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
+	</li>
       
-    <div class="ui-field-contain">
-      <label for="us_email">E-post</label>
-      <input type="text" data-clear-btn="true" name="us_email" id="us_email" placeholder="" value="">
-    </div>
+	<li class="ui-field-contain">
+	    <label for="us_email">E-post</label>
+	    <input type="text" data-clear-btn="true" name="us_email" id="us_email" placeholder="" value="">
+	</li>
 
-    <div class="ui-field-contain">
-      <label for="us_phone">Telefon</label>
-      <input type="text" data-clear-btn="true" name="us_phone" id="us_phone" placeholder="Text input" value="">
-    </div>
+	<li class="ui-field-contain">
+	  <label for="us_phone">Telefon</label>
+	  <input type="text" data-clear-btn="true" name="us_phone" id="us_phone" placeholder="Text input" value="">
+	</li>
 
-    <div class="ui-field-contain">
-      <label for="us_group">Grupp</label>
-      <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
-    </div>
+	<li class="ui-field-contain">
+	  <label for="us_group">Grupp</label>
+	  <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
+	</li>
+      </ul>
   </div>
+
   <div data-role="footer">Tureberg FK</div>
 </div>
 
