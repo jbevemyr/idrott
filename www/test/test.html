@@ -372,6 +372,111 @@
      );
    }
 
+   // get users for event
+   function test14() {
+     test_event_id = 0;
+     $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sessionid,
+	    JSON.stringify({
+              name: "test event",
+              date: "2014-12-22",
+              location: "vallen",
+              funccount: 4,
+              funccall: "open"
+	    }),
+	    function(status) {
+	      if(status.status == "ok") { // string otherwise an object session/group
+                test_event_id = event.id;
+                add_result("  "+JSON.stringify(status.event));
+                add_result("---- ok");
+                run_tests();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
+   function test14() {
+     $.post("http://idrott.bevemyr.com/idrott/change_event?sid="+sessionid,
+	    JSON.stringify({
+              id: test_event_id,
+              date: "2014-12-23",
+	    }),
+	    function(status) {
+	      if(status.status == "ok" &&  status.event.date == "2014-12-23") {
+                add_result("---- ok");
+                run_tests();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
+   function test15() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/get_event?id="+test_event_id+
+            "&sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok" && status.event.id == test_event_id) {
+           add_result("---- ok ");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   function test16() {
+     $.post("http://idrott.bevemyr.com/idrott/get_selected_events?sid="+sessionid,
+	    JSON.stringify({
+              date: "2014-12-23",
+	    }),
+	    function(status) {
+	      if(status.status == "ok" &&  $.isArray(status.events)) {
+                add_result("---- ok");
+                run_tests();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
+   function test17() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/del_event?id="+test_event_id+
+            "&sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") {
+           add_result("---- ok ");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
   </script>
 </head>
 <body>

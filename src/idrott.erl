@@ -603,7 +603,8 @@ do_cmd("change_event", L0, Json, S) ->
                     Event = apply_event_ops(Event0, L),
                     NewEvents = update_event(Event, S#state.events),
                     NewS = S#state{events=NewEvents},
-                    Res = {struct, [{status, "ok"}]}
+                    Res = {struct, [{status, "ok"},
+                                    {event, event2object(Event)}]}
             end;
         #user{} ->
             NewS = S,
@@ -627,7 +628,7 @@ do_cmd("get_event", L, _Json, S) ->
                                     {reason, "invalid event id"}]};
                 Event ->
                     Res = {struct, [{status, "ok"},
-                                    {events, event2object(Event)}]}
+                                    {event, event2object(Event)}]}
             end;
         _ ->
             Res = {struct, [{status, "error"},
@@ -648,6 +649,34 @@ do_cmd("get_selected_events", L, Json, S) ->
             NewS = S,
             Res = {struct, [{status, "error"},
                             {reason, "only allowed for admin user"}]};
+        _ ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "unknown sid"}]}
+    end,
+    {Res, NewS};
+do_cmd("del_event", L, _Json, S) ->
+    Sid = get_val("sid", L, ""),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            %% login successful
+            Id = to_int(get_val("id", L, "")),
+            DelEvent = get_event_by_id(Id, S),
+            if DelEvent == false ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {reason, "the event does not exist"}]};
+               true ->
+                    NewEvents = lists:delete(DelEvent, S#state.events),
+                    store_events(NewEvents),
+                    Res = {struct, [{status, "ok"}]},
+                    NewS = S#state{events=NewEvents}
+            end;
+        #user{} ->
+            %% login successful
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "only admin can remove event"}]};
         _ ->
             NewS = S,
             Res = {struct, [{status, "error"},
