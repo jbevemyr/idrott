@@ -401,6 +401,26 @@ do_cmd("get_named_user", L, _Json, S) ->
     end,
     {Res, S};
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
+do_cmd("set_selected_users", L, Json, S) ->
+    Sid = get_val("sid", L, ""),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            Users = get_user_by_select(Json, S),
+            NewS = S,
+            Res = {struct, [{status, "ok"},
+                            {users, {array, [user2object(SU) ||
+                                                SU <- Users]}}]};
+        #user{} ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "only allowed for admin user"}]};
+        _ ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "unknown sid"}]}
+    end,
+    {Res, NewS};
+%% http://idrott/idrott/set_user?sid=1234567890&foo=bar
 do_cmd("set_user", L, Json, S) ->
     Sid = get_val("sid", L, ""),
     case get_user_by_id(Sid, S) of
@@ -415,6 +435,33 @@ do_cmd("set_user", L, Json, S) ->
                             {reason, "unknown sid"}]},
             {Res, S}
     end;
+%% http://idrott/idrott/set_user?sid=1234567890&foo=bar
+do_cmd("set_named_user", L, Json, S) ->
+    Sid = get_val("sid", L, ""),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            Username = get_val("username", L, ""),
+            case get_user_by_name(Username, S) of
+                OU=#user{} ->
+                    U2 = apply_user_ops(OU,L),
+                    NewU = apply_user_json(U2, Json),
+                    Res = {struct, [{status, "ok"}]},
+                    NewS = S#state{users=update_user(NewU, S#state.users)};
+                false ->
+                    NewS = S,
+                    Res = {struct, [{status, "error"},
+                                    {reason, "unknown user"}]}
+            end;
+        #user{} ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "only allowed for admin user"}]};
+        _ ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "unknown sid"}]}
+    end,
+    {Res, NewS};
 %% http://idrott/idrott/add_user?sid=1234567890&username=jb&password=test&role=user&foo=bar
 do_cmd("add_user", L0, Json, S) ->
     Sid = get_val("sid", L0, ""),
@@ -779,6 +826,47 @@ get_user_by_name(User, S) ->
     case lists:keysearch(User, #user.username, S#state.users) of
         {value, U=#user{}} ->
             U;
+        false ->
+            false
+    end.
+
+get_user_by_select({struct, Opts}, S) ->
+    filter_users(S#state.users, Opts, _Acc=[]).
+
+filter_users([], _Opts, Acc) ->
+    Acc;
+filter_users([U|Us], Opts, Acc) ->
+    case has_opts(Opts, U) of
+        true ->
+            filter_users(Us, Opts, [U|Acc]);
+        false ->
+            filter_users(Us, Opts, Acc)
+    end.
+
+has_opts([], _U) ->
+    true;
+has_opts([{username, Name}|Opts], U) ->
+    if U#user.username == Name ->
+            has_opts(Opts, U);
+       true ->
+            false
+    end;
+has_opts([{confirmed, C}|Opts], U) ->
+    if U#user.confirmed == C ->
+            has_opts(Opts, U);
+       true ->
+            false
+    end;
+has_opts([{role, Role}|Opts], U) ->
+    if U#user.confirmed == Role ->
+            has_opts(Opts, U);
+       true ->
+            false
+    end;
+has_opts([Opt|Opts], U) ->
+    case lists:member(Opt, U#user.data) of
+        true ->
+            has_opts(Opts, U);
         false ->
             false
     end.

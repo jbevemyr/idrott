@@ -270,6 +270,68 @@
      });
    }
 
+   function test10() {
+     $.post("http://idrott.bevemyr.com/idrott/get_selected_users?sid="+sessionid,
+	    JSON.stringify({
+	      role: "user",
+	      confirmed: false
+	    }),
+	    function(status) {
+	      if(status.status == "ok") { // string otherwise an object session/group
+                add_result("  "+JSON.stringify(status.users));
+                add_result("---- ok");
+                run_tests();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
+   function test11() {
+     test11_timestamp = new Date().getTime();
+     $.post("http://idrott.bevemyr.com/idrott/set_named_user?username=test&sid="+sessionid,
+	    JSON.stringify({testattribute: test11_timestamp }),
+	    function(status) {
+	      if(status.status == "ok") {
+		test11b();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
+   function test11b() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/get_named_user?username=test&sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") {
+	   if (status.user.testattribute == test11_timestamp) {
+	     add_result("  "+status.user.testattribute);
+             add_result("---- ok ");
+	   }
+	   else {
+	     add_result("---- fail: bad timestamp returned");
+	   }
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
   </script>
 </head>
 <body>
