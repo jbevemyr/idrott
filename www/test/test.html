@@ -10,7 +10,10 @@
    sessionid = "1234567890";
    testcount = 0;
 
+   $.mobile.loading().hide();
+
    $(document).ready(function() {
+     $.mobile.loadingMessage = false;
      run_tests();
    });
 
