@@ -7,7 +7,6 @@
   <script src="http://idrott.bevemyr.com/www/jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.js"></script>
 
   <script>
-// Här behöver man lägga till en hantering av användare som inte loggat in och försöker nå en specifik sida.
    sessionid = "1234567890";
    testcount = 0;
 
@@ -20,13 +19,13 @@
    }
 
    function run_tests() {
+     testcount += 1;
      var f = "test"+testcount;
-     if (document[f] == null) {
+     if (window[f] == null) {
        // done
-       add_result("SUCCESS");
+       add_result("DONE");
      }
      else {
-       testcount += 1;
        add_result("running test: "+testcount);
        eval(f+"()");
      }
@@ -34,7 +33,7 @@
 
    function test1() {
      $.ajax({
-       url: "http://idrott.bevemyr.com/idrott/login?user=johan&password=test",
+       url: "http://idrott.bevemyr.com/idrott/login?user=johan&password=tentamen",
        dataType: "json",
        success: function(status) {
 	 if(status.status == "ok") { // string otherwise an object session/group
@@ -56,7 +55,7 @@
    function test2() {
      $.ajax({
        url: "http://idrott.bevemyr.com/idrott/set_password?sid="+sessionid+
-            "&old_password=test&new_password=test2",
+            "&old_password=tentamen&new_password=test2",
        dataType: "json",
        success: function(status) {
 	 if(status.status == "ok") { // string otherwise an object session/group
@@ -77,7 +76,7 @@
    function test3() {
      $.ajax({
        url: "http://idrott.bevemyr.com/idrott/set_password?sid="+sessionid+
-            "&old_password=test2&new_password=test",
+            "&old_password=test2&new_password=tentamen",
        dataType: "json",
        success: function(status) {
 	 if(status.status == "ok") { // string otherwise an object session/group
@@ -115,6 +114,162 @@
        }
      });
    }
+
+   function test5() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/get_all_users?sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") { // string otherwise an object session/group
+           add_result("---- ok");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   function test6() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/get_user?sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") { // string otherwise an object session/group
+           add_result("---- ok");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   function test7() {
+     test7_timestamp = new Date().getTime();
+     $.post("http://idrott.bevemyr.com/idrott/set_user?sid="+sessionid,
+	    JSON.stringify({testattribute: test7_timestamp }),
+	    function(status) {
+	      if(status.status == "ok") {
+		test7b();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
+   function test7b() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/get_user?sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") {
+	   if (status.user.testattribute == test7_timestamp) {
+	     add_result("  "+status.user.testattribute);
+             add_result("---- ok ");
+	   }
+	   else {
+	     add_result("---- fail: bad timestamp returned");
+	   }
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   function test8() {
+     $.post("http://idrott.bevemyr.com/idrott/add_user?sid="+sessionid,
+	    JSON.stringify({
+	      username: "test8",
+	      password: "test8",
+	      role: "user",
+	      confirmed: false,
+	      comment: "new test user",
+	      email: "test8@bevemyr.com",
+	      tel: "09-38383833",
+	      events: [ { eventid: 1, confirmed: "yes", comment: "blå tröja" } ],
+	      group: "",
+	      address: "Gösta Tamms väg 16",
+	      name: "test8 bar"
+	    }),
+	    function(status) {
+	      if(status.status == "ok") { // string otherwise an object session/group
+		test8b();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
+   function test8b() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/get_named_user?username=test8&sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") {
+	   if (status.user.username == "test8") {
+	     add_result("  "+status.user.sid);
+             add_result("---- ok ");
+	   }
+	   else {
+	     add_result("---- fail: bad username : ");
+	   }
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   function test9() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/del_user?username=test8&sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok") {
+           add_result("---- ok ");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
   </script>
 </head>
 <body>
