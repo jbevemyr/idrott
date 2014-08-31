@@ -1,45 +1,67 @@
 [
-    {"username":"johan",
-     "password":"m9hbifDY23/6vX+X8iTF5A==",
-     "sid":"1234567890",
-     "confirmed":false,
-     "role":"admin",
-     "passwd_reset_id":"",
-     "passwd_reset_send_time":"",
-     "name":"Johan Bevemyr",
-     "address":"Gosta Tamms vag 16",
-     "group":"",
-     "events": [{"eventid": 1,"confirmed":"yes", "comment":"blå tröja"}],
-     "tel":"0708989899",
-     "email":"jb@bevemyr.com",
-     "comment":"krattar bra"
-    },
-    {"username":"katrin",
-     "password":"m9hbifDY23/6vX+X8iTF5A==",
-     "sid":"0123456789",
-     "confirmed":false,
-     "role":"admin",
-     "passwd_reset_id":"",
-     "passwd_reset_send_time":"",
-     "name":"Katrin Bevemyr",
-     "address":"Gosta Tamms vag 16",
-     "events": [{"eventid": 1,"confirmed":"no", "comment":"blå tröja"}],
-     "tel":"0708989800",
-     "email": "kati@bevemyr.com",
-     "comment":"mäter bra"
-    }
-    {"username":"test",
-     "password":"m9hbifDY23/6vX+X8iTF5A==",
-     "sid":"9012345678",
-     "confirmed":false,
-     "role":"user",
-     "passwd_reset_id":"",
-     "passwd_reset_send_time":"",
-     "name":"Test user",
-     "address":"Gosta Tamms vag 16",
-     "events": [{"eventid": 1,"confirmed":"no", "comment":"blå tröja"}],
-     "tel":"0708989800",
-     "email": "test@bevemyr.com",
-     "comment":"mäter bra"
-    }
+ {
+  "username":"johan",
+  "password":"m9hbifDY23/6vX+X8iTF5A==",
+  "sid":"1234567890",
+  "confirmed":false,
+  "role":"admin",
+  "passwd_reset_id":"",
+  "passwd_reset_send_time":"",
+  "testattribute":1409483580015,
+  "comment":"krattar bra",
+  "email":"jb@bevemyr.com",
+  "tel":"0708989899",
+  "events":[
+            {
+             "eventid":1,
+             "confirmed":"yes",
+             "comment":"blå tröja"
+            }
+           ],
+  "group":"",
+  "address":"Gosta Tamms vag 16",
+  "name":"Johan Bevemyr"
+ },
+ {
+  "username":"katrin",
+  "password":"m9hbifDY23/6vX+X8iTF5A==",
+  "sid":"0123456789",
+  "confirmed":false,
+  "role":"admin",
+  "passwd_reset_id":"",
+  "passwd_reset_send_time":"",
+  "comment":"mäter bra",
+  "email":"kati@bevemyr.com",
+  "tel":"0708989800",
+  "events":[
+            {
+             "eventid":1,
+             "confirmed":"no",
+             "comment":"blå tröja"
+            }
+           ],
+  "address":"Gosta Tamms vag 16",
+  "name":"Katrin Bevemyr"
+ },
+ {
+  "username":"test",
+  "password":"1B2M2Y8AsgTpgAmY7PhCfg==",
+  "sid":"9012345678",
+  "confirmed":false,
+  "role":"user",
+  "passwd_reset_id":"",
+  "passwd_reset_send_time":"",
+  "comment":"mäter bra",
+  "email":"test@bevemyr.com",
+  "tel":"0708989800",
+  "events":[
+            {
+             "eventid":1,
+             "confirmed":"no",
+             "comment":"blå tröja"
+            }
+           ],
+  "address":"Gosta Tamms vag 16",
+  "name":"Test user"
+ }
 ]

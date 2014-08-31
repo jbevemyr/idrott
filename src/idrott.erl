@@ -51,6 +51,7 @@
 out(#arg{req = #http_request{method = 'POST'},
          headers = #headers{
            content_type = "multipart/form-data"++_}} = A) ->
+    io:format("here\n", []),
     case yaws_api:parse_multipart_post(A) of
         [] ->
             Res = {struct, [{status, "error"},{reason, "broken post"}]},
@@ -71,13 +72,47 @@ out(#arg{req = #http_request{method = 'POST'},
             PostStr = clean_leading_ws(remove_unescape(?b2l(?l2b([Acc|Res])))),
             case json2:decode_string(PostStr) of
                 {ok, Json} ->
+                    io:format("Json=~p\n", [Json]),
                     L = yaws_api:parse_query(A),
-                    do_op(A#arg.appmoddata, L, Json); 
-                _ ->
+                    do_op(A#arg.appmoddata, L, Json);
+                _Reason ->
+                    io:format("json=~p\n", [PostStr]),
+                    io:format("got error ~p\n", [_Reason]),
                     Res = {struct, [{status, "error"},
                                     {reason, "invalid json"}]},
                     rpcreply(Res)
             end
+    end;
+out(#arg{req = #http_request{method = 'POST'},
+         headers = #headers{
+           content_type = "application/x-www-form-urlencoded"++_}} = A) ->
+    Clidata = ?b2l(A#arg.clidata),
+    DecodedClidata = yaws_api:url_decode(Clidata),
+    L = yaws_api:parse_query(A),
+    %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
+    case json2:decode_string(remove_unescape(DecodedClidata)) of
+        {ok, Json} ->
+            do_op(A#arg.appmoddata, L, Json);
+        _Reason ->
+            io:format("json=~p\n", [DecodedClidata]),
+            io:format("got error ~p\n", [_Reason]),
+            Res = {struct, [{status, "error"},
+                            {reason, "invalid json"}]},
+            rpcreply(Res)
+    end;
+out(#arg{req = #http_request{method = 'POST'}} = A) ->
+    Clidata = ?b2l(A#arg.clidata),
+    L = yaws_api:parse_query(A),
+    %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
+    case json2:decode_string(remove_unescape(Clidata)) of
+        {ok, Json} ->
+            do_op(A#arg.appmoddata, L, Json);
+        _Reason ->
+            io:format("json=~p\n", [Clidata]),
+            io:format("got error ~p\n", [_Reason]),
+            Res = {struct, [{status, "error"},
+                            {reason, "invalid json"}]},
+            rpcreply(Res)
     end;
 out(A) ->
     QueryL = yaws_api:parse_query(A),
@@ -85,6 +120,7 @@ out(A) ->
             'GET' ->
                 QueryL;
             'POST' ->
+                io:format("post=~p\n", [yaws_api:parse_post(A)]),
                 QueryL ++ yaws_api:parse_post(A)
         end,
     %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
@@ -162,10 +198,10 @@ handle_call(stop, _From, S) ->
     {stop, normal, S};
 
 handle_call({Cmd, L, Json}, _From, S) ->
-    try 
+    try
         {Res, NewS} = do_cmd(Cmd, L, Json, S),
         {reply, Res, NewS}
-    catch 
+    catch
         X:Y ->
             error_logger:format("error during exection of cmd ~p: ~p ~p\n",
                                 [{Cmd, L, Json}, {X,Y}, erlang:get_stacktrace()]),
@@ -301,7 +337,7 @@ do_cmd("set_user_password", L, _Json, S) ->
                     NewU = OU#user{password=Md5NewPass},
                     Res = {struct, [{status, "ok"}]},
                     NewS = S#state{users=update_user(NewU, S#state.users)},
-                    {reply, Res, NewS};
+                    {Res, NewS};
                 false ->
                     Res = {struct, [{status, "error"},
                                     {reason, "unknown user"}]},
@@ -342,6 +378,28 @@ do_cmd("get_user", L, _Json, S) ->
                             {reason, "unknown sid"}]}
     end,
     {Res, S};
+%% http://idrott/idrott/get_named_user?sid=1234567890&username=jb
+do_cmd("get_named_user", L, _Json, S) ->
+    Sid = get_val("sid", L, ""),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            Username = get_val("username", L, ""),
+            case get_user_by_name(Username, S) of
+                OU=#user{} ->
+                    Res = {struct, [{status, "ok"},
+                                    {user, user2object(OU)}]};
+                false ->
+                    Res = {struct, [{status, "error"},
+                                    {reason, "unknown user"}]}
+            end;
+        #user{} ->
+            Res = {struct, [{status, "error"},
+                            {reason, "only allowed for admin user"}]};
+        _ ->
+            Res = {struct, [{status, "error"},
+                            {reason, "unknown sid"}]}
+    end,
+    {Res, S};
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
 do_cmd("set_user", L, Json, S) ->
     Sid = get_val("sid", L, ""),
@@ -358,8 +416,9 @@ do_cmd("set_user", L, Json, S) ->
             {Res, S}
     end;
 %% http://idrott/idrott/add_user?sid=1234567890&username=jb&password=test&role=user&foo=bar
-do_cmd("add_user", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("add_user", L0, Json, S) ->
+    Sid = get_val("sid", L0, ""),
+    L = merge_attrs(L0, Json),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             %% login successful
@@ -386,11 +445,11 @@ do_cmd("add_user", L, _Json, S) ->
                                      "already exists"}]};
                true ->
                     Md5Pass = ?b2l(base64:encode(crypto:hash(md5, Password))),
-                    Data = [D || D={Key,_} <- L,
-                                 not lists:member(Key, ["sid","username",
-                                                        "password", "role"])],
-                    NewU = #user{username=Username, password=Md5Pass, sid=mk_id(S),
-                                 role=?l2a(Role), data=Data},
+                    U2 = #user{username=Username,
+                               password=Md5Pass,
+                               sid=mk_id(S),
+                               role=?l2a(Role)},
+                    NewU = apply_user_json(U2, Json),
                     store_users([NewU|S#state.users]),
                     Res = {struct, [{status, "ok"}]},
                     NewS = S#state{users=[NewU|S#state.users]}
@@ -642,6 +701,11 @@ apply_user_ops(U, [_|Ops]) ->
 
 apply_user_json(U, {struct, Ops}) ->
     apply_user_ops(U, Ops).
+
+merge_attrs(L, {struct, Ops}) ->
+    L ++ Ops;
+merge_attrs(L, _Json) ->
+    L.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -34,6 +34,11 @@ http://idrott/idrott/get_user?sid=1234567890
         {status: "ok", user: object()}
         {status: "error", reason: <reason>}
 
+http://idrott/idrott/get_named_user?sid=1234567890&username=jb
+
+        {status: "ok", user: object()}
+        {status: "error", reason: <reason>}
+
 http://idrott/idrott/set_user?sid=1234567890
 POST json object for user settings, ie POST:ing the
 json object { "username": "kalle", "groups": [ "foo", "bar" ]}
