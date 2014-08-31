@@ -356,7 +356,7 @@
    function test13() {
      $.post("http://idrott.bevemyr.com/idrott/get_selected_users?sid="+sessionid,
 	    JSON.stringify({
-              events: [{eventid, 1}]
+              events: [{eventid: 1}]
 	    }),
 	    function(status) {
 	      if(status.status == "ok") { // string otherwise an object session/group
