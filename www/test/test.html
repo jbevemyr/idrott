@@ -373,8 +373,8 @@
    }
 
    // get users for event
+   test_event_id = 0;
    function test14() {
-     test_event_id = 0;
      $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sessionid,
 	    JSON.stringify({
               name: "test event",
