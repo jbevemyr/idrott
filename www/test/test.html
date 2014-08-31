@@ -332,6 +332,46 @@
      });
    }
 
+   function test12() {
+     $.ajax({
+       url: "http://idrott.bevemyr.com/idrott/get_all_events?sid="+sessionid,
+       dataType: "json",
+       success: function(status) {
+	 if(status.status == "ok" && $.isArray(status.events)) {
+           add_result("---- ok ");
+           run_tests();
+         } else {
+           add_result("---- fail: "+status.reason);
+           run_tests();
+	 }
+       },
+       error: function(status) {
+         add_result("---- fail: "+status);
+         run_tests();
+       }
+     });
+   }
+
+   // get users for event
+   function test13() {
+     $.post("http://idrott.bevemyr.com/idrott/get_selected_users?sid="+sessionid,
+	    JSON.stringify({
+              events: [{eventid, 1}]
+	    }),
+	    function(status) {
+	      if(status.status == "ok") { // string otherwise an object session/group
+                add_result("  "+JSON.stringify(status.users));
+                add_result("---- ok");
+                run_tests();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
   </script>
 </head>
 <body>

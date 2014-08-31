@@ -79,11 +79,6 @@ http://idrott/idrott/get_all_events?sid=1234567890
         {status: "ok", events: [ <event> ]}
         {status: "error", reason: <reason>}
 
-http://idrott/idrott/get_all_users_in_event?sid=1234567890&id=<eventid>
-
-        {status: "ok", useers: [ <user> ]}
-        {status: "error", reason: <reason>}
-
 http://idrott/idrott/create_event?sid=1234567890
 POST json object for event, ie POST:ing the json object
 { "name": <name>, "date": <date>}
@@ -104,6 +99,13 @@ will set those attributes in the event
 http://idrott/idrott/get_event?sid=1234567890&id=<eventid>
 
         {status: "ok", event: <event>}
+        {status: "error", reason: <reason>}
+
+
+http://idrott/idrott/get_selected_events?sid=1234567890
+POST json object to match with
+
+        {status: "ok", events: [<event>]}
         {status: "error", reason: <reason>}
 
 

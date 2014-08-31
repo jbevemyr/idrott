@@ -401,7 +401,7 @@ do_cmd("get_named_user", L, _Json, S) ->
     end,
     {Res, S};
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
-do_cmd("set_selected_users", L, Json, S) ->
+do_cmd("get_selected_users", L, Json, S) ->
     Sid = get_val("sid", L, ""),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
@@ -559,28 +559,6 @@ do_cmd("get_all_events", L, _Json, S) ->
                             {reason, "unknown event id"}]}
     end,
     {Res, S};
-%% http://idrott/idrott/get_all_users_in_event?sid=1234567890&eventid=45
-do_cmd("get_all_users_in_event", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
-    case get_user_by_id(Sid, S) of
-        #user{} ->
-            %% login successful
-            EId = to_int(get_val("id", L, "")),
-            case get_event_by_id(EId, S) of
-                E=#event{} ->
-                    Users = get_event_users(E, S),
-                    UsersJson = {array, [user2object(U) || U <- Users]},
-                    Res = {struct, [{status, "ok"},
-                                    {users, UsersJson}]};
-                _ ->
-                    Res = {struct, [{status, "error"},
-                                    {reason, "unknown event id"}]}
-            end;
-        _ ->
-            Res = {struct, [{status, "error"},
-                            {reason, "unknown session id"}]}
-    end,
-    {Res, S};
 %% http://idrott/idrott/create_event?sid=1234567890&name=foo&date=2014-10-01&pm=foo&timeschedule=foo&location=vallen&funcinfo=foo&funccount=10&funccall=open
 do_cmd("create_event", L0, Json, S) ->
     Sid = get_val("sid", L0, ""),
@@ -656,6 +634,26 @@ do_cmd("get_event", L, _Json, S) ->
                             {reason, "unknown event id"}]}
     end,
     {Res, S};
+%% http://idrott/idrott/set_user?sid=1234567890&foo=bar
+do_cmd("get_selected_events", L, Json, S) ->
+    Sid = get_val("sid", L, ""),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            Events = get_event_by_select(Json, S),
+            NewS = S,
+            Res = {struct, [{status, "ok"},
+                            {events, {array, [event2object(E) ||
+                                                 E <- Events]}}]};
+        #user{} ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "only allowed for admin user"}]};
+        _ ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "unknown sid"}]}
+    end,
+    {Res, NewS};
 do_cmd(Unknown, _L, _Json, S) ->
     Error = lists:flatten(io_lib:format("unknown request: ~p", [Unknown])),
     error_logger:format("~s", [Error]),
@@ -845,29 +843,82 @@ filter_users([U|Us], Opts, Acc) ->
 
 has_opts([], _U) ->
     true;
-has_opts([{username, Name}|Opts], U) ->
+has_opts([{"username", Name}|Opts], U) ->
     if U#user.username == Name ->
             has_opts(Opts, U);
        true ->
             false
     end;
-has_opts([{confirmed, C}|Opts], U) ->
+has_opts([{"confirmed", C}|Opts], U) ->
     if U#user.confirmed == C ->
             has_opts(Opts, U);
        true ->
             false
     end;
-has_opts([{role, Role}|Opts], U) ->
-    if U#user.confirmed == Role ->
+has_opts([{"role", Role}|Opts], U) ->
+    case ?a2l(U#user.role) of
+        Role ->
             has_opts(Opts, U);
-       true ->
+        _ ->
             false
+    end;
+has_opts([Opt={Key, MObject}|Opts], U) ->
+    case lists:keysearch(Key, 1, U#user.data) of
+        {value, {_, UObject}} ->
+            case match_object(MObject, UObject) of
+                true ->
+                    has_opts(Opts, U);
+                false ->
+                    false
+            end;
+        _ ->
+            case lists:member(Opt, U#user.data) of
+                true ->
+                    has_opts(Opts, U);
+                false ->
+                    false
+            end
     end;
 has_opts([Opt|Opts], U) ->
     case lists:member(Opt, U#user.data) of
         true ->
             has_opts(Opts, U);
         false ->
+            false
+    end.
+
+match_object(X, X) ->
+    true;
+match_object({array, MArray}, {array, Array}) ->
+    match_all(MArray, Array);
+match_object({struct, MStruct}, {struct, Struct}) ->
+    match_struct(MStruct, Struct);
+match_object(_, _) ->
+    false.
+
+match_all([], _Array) ->
+    true;
+match_all([M|Ms], Array) ->
+    case [true || O <- Array,
+                  match_object(M, O)] of
+        [] ->
+            false;
+        _ ->
+            match_all(Ms, Array)
+    end.
+
+match_struct([], _Struct) ->
+    true;
+match_struct([{K,V}|Ms], Struct) ->
+    case lists:keysearch(K, 1, Struct) of
+        {value, {_, S}} ->
+            case match_object(V, S) of
+                true ->
+                    match_struct(Ms, Struct);
+                false ->
+                    false
+            end;
+        _ ->
             false
     end.
 
@@ -889,6 +940,41 @@ get_event_by_id(Id, S) ->
     case lists:keysearch(Id, #event.id, S#state.events) of
         {value, E=#event{}} ->
             E;
+        false ->
+            false
+    end.
+
+get_event_by_select({struct, Opts}, S) ->
+    filter_events(S#state.events, Opts, _Acc=[]).
+
+filter_events([], _Opts, Acc) ->
+    Acc;
+filter_events([E|Es], Opts, Acc) ->
+    case event_has_opts(Opts, E) of
+        true ->
+            filter_events(Es, Opts, [E|Acc]);
+        false ->
+            filter_events(Es, Opts, Acc)
+    end.
+
+event_has_opts([], _E) ->
+    true;
+event_has_opts([{"name", Name}|Opts], E) ->
+    if E#event.name == Name ->
+            event_has_opts(Opts, E);
+       true ->
+            false
+    end;
+event_has_opts([{"date", D}|Opts], E) ->
+    if E#event.date == D ->
+            event_has_opts(Opts, E);
+       true ->
+            false
+    end;
+event_has_opts([Opt|Opts], E) ->
+    case lists:member(Opt, E#event.data) of
+        true ->
+            event_has_opts(Opts, E);
         false ->
             false
     end.
