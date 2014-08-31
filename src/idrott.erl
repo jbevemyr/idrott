@@ -559,18 +559,14 @@ do_cmd("get_all_events", L, _Json, S) ->
                             {reason, "unknown event id"}]}
     end,
     {Res, S};
-%% http://idrott/idrott/create_event?sid=1234567890&name=foo&date=2014-10-01&pm=foo&timeschedule=foo&location=vallen&funcinfo=foo&funccount=10&funccall=open
-do_cmd("create_event", L0, Json, S) ->
-    Sid = get_val("sid", L0, ""),
+%% http://idrott/idrott/create_event?sid=1234567890
+do_cmd("create_event", L, Json, S) ->
+    Sid = get_val("sid", L, ""),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
-            L = case Json of
-                     {struct, Ops} ->  L0 ++ Ops;
-                     _ -> L0
-                 end,
             %% login successful
             {S2, Id} = new_event_id(S),
-            Event = apply_event_ops(#event{id=Id}, L),
+            Event = apply_event_json(#event{id=Id}, Json),
             NewS = S2#state{events=[Event|S2#state.events]},
             Res = {struct, [{status, "ok"},
                             {event, event2object(Event)}]};
@@ -828,6 +824,9 @@ apply_event_ops(E, []) ->
     E;
 apply_event_ops(E, [{"name", Name}|Ops]) ->
     apply_event_ops(E#event{name=Name}, Ops);
+apply_event_ops(E, [{"id", _Id}|Ops]) ->
+    %% ignore
+    apply_event_ops(E, Ops);
 apply_event_ops(E, [{"date", Date}|Ops]) ->
     apply_event_ops(E#event{date=Date}, Ops);
 apply_event_ops(E, [{Key,Value}|Ops]) ->
@@ -837,7 +836,7 @@ apply_event_ops(E, [_|Ops]) ->
     apply_event_ops(E, Ops).
 
 apply_event_json(E, {struct, Ops}) ->
-    apply_event_json(E, Ops).
+    apply_event_ops(E, Ops).
 
 %%
 
@@ -1121,7 +1120,7 @@ clean_leading_ws(Rest) -> Rest.
 
 new_event_id(S) ->
     Id = S#state.event_id+1,
-    case get_event_by_id(S, Id) of
+    case get_event_by_id(Id, S) of
         false ->
             {S#state{event_id=Id}, Id};
         _ ->
