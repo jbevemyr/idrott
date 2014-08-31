@@ -28,4 +28,18 @@
      "email": "kati@bevemyr.com",
      "comment":"mäter bra"
     }
+    {"username":"test",
+     "password":"m9hbifDY23/6vX+X8iTF5A==",
+     "sid":"9012345678",
+     "confirmed":false,
+     "role":"user",
+     "passwd_reset_id":"",
+     "passwd_reset_send_time":"",
+     "name":"Test user",
+     "address":"Gosta Tamms vag 16",
+     "events": [{"eventid": 1,"confirmed":"no", "comment":"blå tröja"}],
+     "tel":"0708989800",
+     "email": "test@bevemyr.com",
+     "comment":"mäter bra"
+    }
 ]
