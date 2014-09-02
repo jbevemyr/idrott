@@ -69,15 +69,12 @@ out(#arg{req = #http_request{method = 'POST'},
         {result, Res} ->
             PState = A#arg.state,
             Acc = PState#post_state.acc,
-            PostStr = clean_leading_ws(remove_unescape(?b2l(?l2b([Acc|Res])))),
+            PostStr = skip_ws(dequote(?b2l(?l2b([Acc|Res])))),
             case json2:decode_string(PostStr) of
                 {ok, Json} ->
-                    io:format("Json=~p\n", [Json]),
                     L = yaws_api:parse_query(A),
                     do_op(A#arg.appmoddata, L, Json);
                 _Reason ->
-                    io:format("json=~p\n", [PostStr]),
-                    io:format("got error ~p\n", [_Reason]),
                     Res = {struct, [{status, "error"},
                                     {reason, "invalid json"}]},
                     rpcreply(Res)
@@ -90,7 +87,7 @@ out(#arg{req = #http_request{method = 'POST'},
     DecodedClidata = yaws_api:url_decode(Clidata),
     L = yaws_api:parse_query(A),
     %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
-    case json2:decode_string(remove_unescape(DecodedClidata)) of
+    case json2:decode_string(dequote(DecodedClidata)) of
         {ok, Json} ->
             do_op(A#arg.appmoddata, L, Json);
         _Reason ->
@@ -104,7 +101,7 @@ out(#arg{req = #http_request{method = 'POST'}} = A) ->
     Clidata = ?b2l(A#arg.clidata),
     L = yaws_api:parse_query(A),
     %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
-    case json2:decode_string(remove_unescape(Clidata)) of
+    case json2:decode_string(dequote(Clidata)) of
         {ok, Json} ->
             do_op(A#arg.appmoddata, L, Json);
         _Reason ->
@@ -291,7 +288,7 @@ do_cmd("reset_password", L, _Json, S) ->
     Password = get_val("password", L, ""),
     case get_user_by_rpid(Rpid, S) of
         U=#user{} ->
-            Age = days_diff(U#user.passwd_reset_send_time, ktime:gnow()),
+            Age = days_diff(U#user.passwd_reset_send_time, gnow()),
             if Age < 5 ->
                     %% login successful
                     Md5Pass = ?b2l(base64:encode(crypto:hash(md5, Password))),
@@ -1106,17 +1103,17 @@ get_event_users(E, S) ->
             []
     end.
 
-remove_unescape([]) -> [];
-remove_unescape([$\\, $t|Rest]) -> [$\t|remove_unescape(Rest)];
-remove_unescape([$\\, $n|Rest]) -> [$\t|remove_unescape(Rest)];
-remove_unescape([$\\, $r|Rest]) -> [$\t|remove_unescape(Rest)];
-remove_unescape([C|Rest]) -> [C|remove_unescape(Rest)].
+dequote([]) -> [];
+dequote([$\\, $t|Rest]) -> [$\t|dequote(Rest)];
+dequote([$\\, $n|Rest]) -> [$\t|dequote(Rest)];
+dequote([$\\, $r|Rest]) -> [$\t|dequote(Rest)];
+dequote([C|Rest]) -> [C|dequote(Rest)].
 
-clean_leading_ws([$\t|Rest]) -> clean_leading_ws(Rest);
-clean_leading_ws([$\n|Rest]) -> clean_leading_ws(Rest);
-clean_leading_ws([$\r|Rest]) -> clean_leading_ws(Rest);
-clean_leading_ws([$ |Rest]) -> clean_leading_ws(Rest);
-clean_leading_ws(Rest) -> Rest.
+skip_ws([$\t|Rest]) -> skip_ws(Rest);
+skip_ws([$\n|Rest]) -> skip_ws(Rest);
+skip_ws([$\r|Rest]) -> skip_ws(Rest);
+skip_ws([$ |Rest]) -> skip_ws(Rest);
+skip_ws(Rest) -> Rest.
 
 new_event_id(S) ->
     Id = S#state.event_id+1,
