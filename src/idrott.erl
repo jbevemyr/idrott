@@ -426,6 +426,33 @@ do_cmd("get_selected_users", L, Json, S) ->
                             {reason, "unknown sid"}]}
     end,
     {Res, NewS};
+
+%% http://idrott/idrott/send_reset_password?user=johan
+do_cmd("mail_selected_users", L, {struct, JsonL}, S) ->
+    Sid = get_val("sid", L, ""),
+    case get_user_by_id(Sid, S) of
+        U=#user{} when U#user.role == admin ->
+            Selection = get_val("recievers", JsonL, []),
+            Subject = get_val("subject", JsonL, []),
+            Message = get_val("message", JsonL, []),
+            Users = get_user_by_select(Selection, S),
+            Recipients = [get_user_opt("email", SU, "no-address") || SU <- Users],
+            smtp:send(?MAILSERVER, ?EMAIL_SENDER, Recipients, Subject, Message),
+            NewS = S,
+            Res = {struct, [{status, "ok"},
+                            {sent_to, {array, [user2object(SU) ||
+                                                SU <- Users]}}]};
+        #user{} ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "only allowed for admin user"}]};
+        _ ->
+            NewS = S,
+            Res = {struct, [{status, "error"},
+                            {reason, "unknown sid"}]}
+    end,
+    {Res, NewS};
+
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
 do_cmd("set_user", L, Json, S) ->
     Sid = get_val("sid", L, ""),
@@ -719,6 +746,28 @@ user2object(U) ->
       {"passwd_reset_id", U#user.passwd_reset_id},
       {"passwd_reset_send_time", U#user.passwd_reset_send_time}|
       U#user.data]}.
+
+get_user_opt("username", U, _Default) ->
+    U#user.username;
+get_user_opt("password", U, _Default) ->
+    U#user.password;
+get_user_opt("sid", U, _Default) ->
+    U#user.sid;
+get_user_opt("confirmed", U, _Default) ->
+    U#user.confirmed;
+get_user_opt("role", U, _Default) ->
+    U#user.role;
+get_user_opt("password_reset_id", U, _Default) ->
+    U#user.passwd_reset_id;
+get_user_opt("password_reset_send_time", U, _Default) ->
+    U#user.passwd_reset_send_time;
+get_user_opt(Key, U, Default) ->
+    case lists:keysearch(Key, 1, U#user.data) of
+        {value, {_, Val}} ->
+            Val;
+        _ ->
+            Default
+    end.
 
 object2user({struct, Props}) ->
     object2user(#user{}, Props, _Data=[]).
@@ -1132,3 +1181,5 @@ new_event_id(S) ->
         _ ->
             new_event_id(S#state{event_id=Id})
     end.
+
+    

@@ -480,6 +480,27 @@
      });
    }
 
+   // send email to all users matching the selection pattern in recievers
+   function test19() {
+     $.post("http://idrott.bevemyr.com/idrott/mail_selected_users?sid="+sessionid,
+	    JSON.stringify({
+              subject: "Test email subject",
+              message: "A test message sent from test.html",
+              recievers: { events: [{eventid: 1}] }
+	    }),
+	    function(status) {
+	      if(status.status == "ok" &&  $.isArray(status.sent_to)) {
+                add_result("---- ok");
+                run_tests();
+              } else {
+		add_result("---- fail: "+status.reason);
+		run_tests();
+	      }
+	    },
+	    "json"
+     );
+   }
+
   </script>
 </head>
 <body>
