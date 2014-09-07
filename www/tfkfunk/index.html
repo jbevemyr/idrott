@@ -41,10 +41,14 @@
 
    $( document ).on("pagecontainerbeforeshow", function(e, ui) {
      var toPage = $.mobile.pageContainer.pagecontainer("getActivePage")[0].id;
-     // alert("adding content to admin-funclist-table:"+toPage);
+     alert("calling function before page :"+toPage);
      if(toPage == "admin-funclist") {
        get_all_users(sessionid, layout_all_users);
        $("#admin-funclist-table").table("rebuild");
+     };
+     if(toPage == "admin-eventlist") {
+       get_all_events(sessionid, layout_all_events);
+       $("#admin-eventlist-table").collapsibleset( "refresh" );
      };
    });
 	
@@ -52,11 +56,9 @@
 
   <script>
    $( document ).on( "pagecreate", function() {
-     var nextId = 1;
      $("#add").click(function() {
-       nextId++;
-       var content = "<div data-role='collapsible' id='set" + nextId + "'><h3>Section " + nextId + "</h3><p>I am the collapsible content in a set so this feels like an accordion. I am hidden by default because I have the 'collapsed' state; you need to expand the header to see me.</p></div>";
-       $( "#set" ).append( content ).collapsibleset( "refresh" );
+       
+       add_new_event(sessionid, {});
      });
      $( "#expand" ).click(function() {
        $("#set").children(":last").collapsible( "expand" );
@@ -89,15 +91,15 @@
 <!-- Klubbadministratör pages -->
 <!-- Klubbadministratörs startsida -->
 <div data-role="page" id="admin-startpage">
-  <p>Klubbadministratör</p>
   <div data-role="header" style="overflow:hidden;">
-    <h3>Evenemangsadministration</h3>
+    <h3>Klubbadminstratör</h3>
     <a href="#admin-es" data-icon="gear" class="ui-btn-right">Inställningar</a>
   </div>
 
   <div role="main" class="ui-content">
     <ul data-role="listview" data-inset="true">
-      <li><a href="#admin-eventlist">Events</a></li>
+      <li data-role="list-divider">Evenemangsadministration</li>
+      <li><a href="#admin-eventlist">Evenemang</a></li>
       <li><a href="#admin-funclist">Funktionärer</a></li>
       <li><a href="#admin-adminlist">Kontakt</a></li>
       <li><a href="#">Mallar</a></li>
@@ -165,11 +167,11 @@
       </thead>
       <tbody>
 	<tr>
-	  <td data-priority="1">Namnet</td>
-	  <td data-priority="persist">Gruppen</td>
-	  <td data-priority="persist">09090909</td>
-	  <td data-priority="persist">@@</td>
-	  <td data-priority="persist">kan svara på alla frågor</td>	  
+	  <td data-priority="1">Katrin Bevemyr</td>
+	  <td data-priority="persist">klubbadmin</td>
+	  <td data-priority="persist">070 12345678</td>
+	  <td data-priority="persist">k@bevemyr.com</td>
+	  <td data-priority="persist">IT-support</td>	  
 	  <td data-priority="persist"><a href="#" data-icon="gear" class="ui-btn-right">...</a></td>
 	</tr>
       </tbody>
@@ -185,52 +187,17 @@
   <div data-role="header" style="overflow:hidden;">
     <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
     <h1>Klubbadministratör</h1>
-    <a href="#" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
+    <a href="#admin-es" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
   </div><!-- /header -->
   <div role="main" class="ui-content">
 
-    <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" id="set">
-   
-      <div data-role="collapsible" id="set1">
-	<h4>Vildsvinet 2015</h4>
-	<p><strong>Tid</strong> (2014-04-16)</p>
-	<p><strong>Plats</strong> Väsjöbacken</p>
-	<p><strong>PM</strong></p>
-	<p><strong>Tidsprogram</strong></p>
-	<p><strong>Bemanning</strong></p>
-	<p><strong>Noteringar</strong></p>
-	<p>Lite korta noteringar kring status, max 2 rader.</p>
-      </div>
-
-      <div data-role="collapsible" id="set2">
-	<h4>SAYO 2015</h4>
-	<p>Norrorts bästa tävling.</p>
-	<p><strong>Tid</strong> (2014-06-06 - 2014-06-08)</p>
-	<p><strong>Plats</strong> Sollentunavallen</p>
-	<p><strong>PM</strong></p>
-	<p><strong>Tidsprogram</strong></p>
-	<p><strong>Bemanning</strong></p>
-	<p><strong>Noteringar</strong></p>
-	<p>Lite korta noteringar kring status, max 2 rader.</p>
-      </div>
+    <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" id="admin-eventlist-table">
+      <h1>Evenemang</h1>
     </div>
   </div>
 
   <div data-role="footer">Tureberg FK</div>
 </div>
-
-<!-- Event setting page -->
-<div data-role="page" id="mall">
-  <div data-role="header">
-    <a href="#" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
-    <h1>mall</h1>
-  </div>
-  
-  <div role="main" class="ui-content">
-  </div>
-  <div data-role="footer">Tureberg FK</div>
-</div>
-
 
 
 <!-- Klubbadministratörs Event uppdatering -->
@@ -238,22 +205,46 @@
   <div data-role="header">
     <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
     <h1>Evenemangsuppdatering</h1>
-    <button class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save</button>
+    <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="add">Save</button>
   </div>
   
   <div role="main" class="ui-content">
-    <label for="us_name">Namn</label>
-    <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
+    <form>
+      <ul data-role="listview" data-inset="true" data-mini="true">
+	<li class="ui-field-contain">
+	  <label for="es-name">Namn</label>
+	  <input type="text" data-clear-btn="true" name="es-name" id="es-name" placeholder="Namn på evenemanget" value="">
+	</li>
     
-    <label for="us_email">Datum</label>
-    <input type="text" data-clear-btn="true" name="us_email" id="us_email" placeholder="" value="">
+	<li class="ui-field-contain">
+	  <label for="es-date">Datum</label>
+	  <input type="text" data-clear-btn="true" name="es-date" id="es-date" placeholder="Datum för evenemanget" value="">
+	</li>
 
-    <label for="us_phone">Plats</label>
-    <input type="text" data-clear-btn="true" name="us_phone" id="us_phone" placeholder="Text input" value="">
+	<li class="ui-field-contain">
+	  <label for="es-loc">Plats</label>
+	  <input type="text" data-clear-btn="true" name="es-loc" id="es-loc" placeholder="Geografisk plats" value="">
+	</li>
 
-    <label for="us_group">PM</label>
-    <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
+	<li class="ui-field-contain">
+	  <label for="es-pm">PM</label>
+	  <input type="text" data-clear-btn="true" name="es-pm" id="es-pm" placeholder="Länk till PM" value="">
+	</li>
+
+	<li class="ui-field-contain">
+	  <label for="es-ts">Tidsprogram</label>
+	  <input type="text" data-clear-btn="true" name="es-ts" id="es-ts" placeholder="Länk till tidsprogram" value="">
+	</li>
+
+	<li class="ui-field-contain">
+	  <label for="es-not">Noteringar</label>
+	  <textarea cols="30" rows="4" name="es-not" id="es-not"></textarea>
+	</li>
+
+      </ul>
+    </form>
   </div>
+
   <div data-role="footer">Tureberg FK</div>
 </div>
 
@@ -261,14 +252,14 @@
 <!-- Funktionärssidor -->
 <!-- Funktionärs startsida -->
 <div data-role="page" id="func-startpage">
-  <p>Funktionär</p>
   <div data-role="header" style="overflow:hidden;">
-    <h1>Funktionsärsuppdrag</h1>
+    <h1>Funktionär</h1>
     <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
   </div>
 
   <div role="main" class="ui-content">
     <ul data-role="listview" data-inset="true">
+      <li data-role="list-divider">Funktionärsuppdrag</li>
       <li><a href="#func-requests">Förfrågningar</a></li>
       <li><a href="#func-myevents">Mina uppdrag</a></li>
       <li><a href="#">Klubb kontakt</a></li>
@@ -335,7 +326,14 @@
       </thead>
       <tbody>
 	<tr>
-	  <td>Ja</td>
+	  <td>
+	    <li class="ui-field-contain">
+              <select name="confirm-event" id="confirm-event-flip" data-role="slider">
+                <option value="yes">Ja</option>
+                <option value="no">Nej</option>
+              </select>
+            </li>
+	  </td>
 	  <td>SAYO (dag 1)</td>
 	  <td>2015-06-06</td>
 	</tr>
@@ -351,13 +349,14 @@
 <div data-role="page" id="func-us">
   <div data-role="header">
     <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
-    <h1>Användarinställningar</h1>
+    <h1>Funktionär</h1>
     <button class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check">Save</button>
   </div>
 
   <div role="main" class="ui-content">
     <form>
-      <ul data-role="listview" data-inset="true">
+      <ul data-role="listview" data-inset="true" data-mini="true">
+	<li data-role="list-divider">Användarinställningar</li>
 	<li class="ui-field-contain">
 	  <label for="us_name">Namn</label>
 	  <input type="text" data-clear-btn="true" name="us_name" id="us_name" placeholder="" value="">
@@ -378,6 +377,7 @@
 	  <input type="text" data-clear-btn="true" name="us_group" id="us_group" placeholder="Text input" value="">
 	</li>
       </ul>
+    </form>
   </div>
 
   <div data-role="footer">Tureberg FK</div>
