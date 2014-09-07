@@ -164,6 +164,10 @@ start() ->
 
 stop() ->
     gen_server:call(?SERVER, stop, infinity).
+
+reset() ->
+    gen_server:call(?SERVER, reset, infinity).
+
 %%%----------------------------------------------------------------------
 %%% Callback functions from gen_server
 %%%----------------------------------------------------------------------
@@ -193,6 +197,11 @@ init([]) ->
 %%----------------------------------------------------------------------
 handle_call(stop, _From, S) ->
     {stop, normal, S};
+
+handle_call(reset, _From, S) ->
+    Users = read_users(),
+    Events = read_events(),
+    {reply, ok, S#state{users=Users, events=Events}};
 
 handle_call({Cmd, L, Json}, _From, S) ->
     try
