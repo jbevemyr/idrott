@@ -21,7 +21,7 @@ function layout_all_users(sid, tablename, users) {
   var x;
 
   for (var i = 0; i < users.length;  i++) {
-      x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>";
+    x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>";
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
     }
@@ -48,7 +48,7 @@ function select_event(uid) {
 // Kanske r�cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
   var domObj = "#admin-add-user-to-event-event";
-  var item = ""; //$('<ledgend>').append("Arrangemang:").appendTo(domObj);
+  //var item = $('<ledgend>').append("Arrangemang:").appendTo(domObj);
   var eid;
   var ename;
   $(domObj).empty();
