@@ -59,6 +59,7 @@
             if(toPage == "admin-adminlist") {
                 get_admin_users(sessionid, "#admin-adminlist-table");
                 $("#admin-adminlist-table").table("rebuild");
+                alert("hit");
             };
             if(toPage == "admin-event-funclist") {
                 get_all_func_for_event(sessionid, eventid, '#admin-event-funclist-table');
