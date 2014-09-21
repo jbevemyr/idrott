@@ -21,11 +21,7 @@ function layout_all_users(sid, tablename, users) {
   var x;
 
   for (var i = 0; i < users.length;  i++) {
-    //  x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" data-position-to=\"window\"
-    // class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
-//x = "<button onclick=\"select_event('" + users[i].username + "')\" class=\"ui-btn ui-icon-bullets ui-btn-notext ui-corner-all\" data-transition=\"pop\" ></button>";
       x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>";
-    //x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
     }
@@ -44,6 +40,8 @@ function layout_all_users(sid, tablename, users) {
 
 function select_event(uid) {
     alert("testing: "+uid);
+    set_selected_user(uid);
+    $.mobile.changePage($("#admin-add-user-to-event"));
 }
 
 // G�r man s� h�r l�gger dem i sekvens eller ska de triggas med event, t ex att man trycker p� knappen.
@@ -62,8 +60,8 @@ function layout_select_event(events) {
   }
 }
 
-function connect_user_to_event(sid) {
-  alert("Connect");
+function connect_user_to_event(sid, uid) {
+  alert("Connect "+uid);
   
 }
 
