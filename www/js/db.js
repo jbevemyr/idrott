@@ -40,7 +40,7 @@ function layout_all_users(sid, tablename, users) {
     //row.append($('<td>'));
     //row.append($('<td>').append(x).trigger('create'));
 
-     // row.append($('<td>').append(x));
+    row.append($('<td>').append(x));
 
   }
 
