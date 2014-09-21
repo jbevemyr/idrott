@@ -1,135 +1,135 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
-  <title>Tureberg FK - funktionärer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://idrott.bevemyr.com/www/jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.css"/>
-  <link rel="stylesheet" href="http://idrott.bevemyr.com/www/jquery/jquery-mobile-theme-053329-0/themes/BevemyrMobileV1.min.css" />
-  <script src="http://idrott.bevemyr.com/www/jquery/jquery-2.1.1.js"></script>
-  <script src="http://idrott.bevemyr.com/www/jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.js"></script>
-  <script src="http://idrott.bevemyr.com/www/js/db.js"></script>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+    <title>Tureberg FK - funktionärer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://idrott.bevemyr.com/www/jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.css"/>
+    <link rel="stylesheet" href="http://idrott.bevemyr.com/www/jquery/jquery-mobile-theme-053329-0/themes/BevemyrMobileV1.min.css" />
+    <script src="http://idrott.bevemyr.com/www/jquery/jquery-2.1.1.js"></script>
+    <script src="http://idrott.bevemyr.com/www/jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.js"></script>
+    <script src="http://idrott.bevemyr.com/www/js/db.js"></script>
 
-  <script>
-// Här behöver man lägga till en hantering av användare som inte loggat in och försöker nå en specifik sida.
-   sessionid = "1234567890";
-   eventid = 0;
-   userid = 0;
+    <script>
+        // Här behöver man lägga till en hantering av användare som inte loggat in och försöker nå en specifik sida.
+        sessionid = "1234567890";
+        eventid = 0;
+        userid = 0;
 
-function set_current_event(eid) {
-   eventid = eid;
-}
+        function set_current_event(eid) {
+            eventid = eid;
+        }
 
-function set_selected_user(uid) {
-   userid = uid;
-}
+        function set_selected_user(uid) {
+            userid = uid;
+        }
 
-   $(document).on("pagecreate", "#login", function() {
-     $("#login_submit").on('click', function(e) {
-       $.ajax({
-         url: "http://idrott.bevemyr.com/idrott/login?user="+$("#login_name").val()+"&password="
-	 +$("#login_passwd").val(),
-	 dataType: "json",
-	 success: function(status) {
-	   if(status.status == "ok") { // string otherwise an object session/group
-             sessionid = status.sid;
-             aaagroup = status.group;
-	     $.mobile.changePage($("#admin-startpage"));
-           } else {
-	     sessionid = status.session;
-             aaagroup = status.group;
-	     $.mobile.changePage($("#func-eventlist"));
-	   }
-	 },
-	 error: function(status) {
-	   alert(status.status);
-	   $.mobile.changePage($("#login"));  // should be errorpage
-	 }
-       });
-     });
-   });
+        $(document).on("pagecreate", "#login", function() {
+            $("#login_submit").on('click', function(e) {
+                $.ajax({
+                    url: "http://idrott.bevemyr.com/idrott/login?user="+$("#login_name").val()+"&password="
+                            +$("#login_passwd").val(),
+                    dataType: "json",
+                    success: function(status) {
+                        if(status.status == "ok") { // string otherwise an object session/group
+                            sessionid = status.sid;
+                            aaagroup = status.group;
+                            $.mobile.changePage($("#admin-startpage"));
+                        } else {
+                            sessionid = status.session;
+                            aaagroup = status.group;
+                            $.mobile.changePage($("#func-eventlist"));
+                        }
+                    },
+                    error: function(status) {
+                        alert(status.status);
+                        $.mobile.changePage($("#login"));  // should be errorpage
+                    }
+                });
+            });
+        });
 
-   $( document ).on("pagecontainerbeforeshow", function(e, ui) {
-     var toPage = $.mobile.pageContainer.pagecontainer("getActivePage")[0].id;
+        $( document ).on("pagecontainerbeforeshow", function(e, ui) {
+            var toPage = $.mobile.pageContainer.pagecontainer("getActivePage")[0].id;
 //     alert("calling function before page :"+toPage);
-     if(toPage == "admin-funclist") {
-       get_all_users(sessionid, layout_all_users, "#admin-funclist-table" );
-       $("#admin-funclist-table").table("rebuild");
-     };
-     if(toPage == "admin-adminlist") {
-       get_admin_users(sessionid, "#admin-adminlist-table");
-       $("#admin-adminlist-table").table("rebuild");
-     };
-     if(toPage == "admin-event-funclist") {
-       get_all_func_for_event(sessionid, eventid, '#admin-event-funclist-table');
-       $("#admin-event-funclist-table").table("rebuild");
-     };
-     if(toPage == "admin-eventlist") {
-       get_all_events(sessionid, layout_all_events);
-       $("#admin-eventlist-table").collapsibleset( "refresh" );
-     };
-   });
-	
-  </script>
+            if(toPage == "admin-funclist") {
+                get_all_users(sessionid, layout_all_users, "#admin-funclist-table" );
+                $("#admin-funclist-table").table("rebuild");
+            };
+            if(toPage == "admin-adminlist") {
+                get_admin_users(sessionid, "#admin-adminlist-table");
+                $("#admin-adminlist-table").table("rebuild");
+            };
+            if(toPage == "admin-event-funclist") {
+                get_all_func_for_event(sessionid, eventid, '#admin-event-funclist-table');
+                $("#admin-event-funclist-table").table("rebuild");
+            };
+            if(toPage == "admin-eventlist") {
+                get_all_events(sessionid, layout_all_events);
+                $("#admin-eventlist-table").collapsibleset( "refresh" );
+            };
+        });
 
-  <script>
-   $( document ).on( "pagecreate", function() {
-     $("#es-add").click(function() {
-       add_new_event(sessionid);
-     });
-     $( "#es-update" ).click(function() {
-       update-event(sessionid);
-     });
-     $("#us-add").click(function() {
-       add_new_user(sessionid);
-     });
-     $( "#us-update" ).click(function() {
-       update-user(sessionid);
-     });
-     $( "#connect-user-to-event").click(function() {
-       connect-user-to-event(sessionid, userid);
-     });
-   });
-  </script>
+    </script>
+
+    <script>
+        $( document ).on( "pagecreate", function() {
+            $("#es-add").click(function() {
+                add_new_event(sessionid);
+            });
+            $( "#es-update" ).click(function() {
+                update-event(sessionid);
+            });
+            $("#us-add").click(function() {
+                add_new_user(sessionid);
+            });
+            $( "#us-update" ).click(function() {
+                update-user(sessionid);
+            });
+            $( "#connect-user-to-event").click(function() {
+                connect-user-to-event(sessionid, userid);
+            });
+        });
+    </script>
 </head>
 
 <body>
 <!-- Login page -->
 <div data-role="page" id="login">
-  <div data-role="header">
-    <h1>Logga in</h1>
-  </div>
-  <div data-role="main" class="ui-content">
-    <label for="login_name">Namn</label>
-    <input type="text" data-clear-btn="true" name="login_name" id="login_name" placeholder="E-post" value="">
-    <label for="login_passwd">Lösenord</label>
-    <input type="password" data-clear-btn="true" name="login_passwd" id="login_passwd" placeholder="Lösenord" value="">
-    <button class="ui-shadow ui-btn ui-corner-all" type="submit" id="login_submit">Logga in</button>  
-  </div>
+    <div data-role="header">
+        <h1>Logga in</h1>
+    </div>
+    <div data-role="main" class="ui-content">
+        <label for="login_name">Namn</label>
+        <input type="text" data-clear-btn="true" name="login_name" id="login_name" placeholder="E-post" value="">
+        <label for="login_passwd">Lösenord</label>
+        <input type="password" data-clear-btn="true" name="login_passwd" id="login_passwd" placeholder="Lösenord" value="">
+        <button class="ui-shadow ui-btn ui-corner-all" type="submit" id="login_submit">Logga in</button>
+    </div>
 
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 <!-- Klubbadministratör pages -->
 <!-- Klubbadministratörs startsida -->
 <div data-role="page" id="admin-startpage">
-  <div data-role="header" style="overflow:hidden;">
-    <h3>Klubbadminstratör</h3>
-    <a href="#" data-icon="gear" class="ui-btn-right">Inställningar</a>
-  </div>
+    <div data-role="header" style="overflow:hidden;">
+        <h3>Klubbadminstratör</h3>
+        <a href="#" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    </div>
 
-  <div role="main" class="ui-content">
-    <ul data-role="listview" data-inset="true">
-      <li data-role="list-divider">Arrangemangsadministration</li>
-      <li><a href="#admin-eventlist">Arrangemang</a></li>
-      <li><a href="#admin-funclist">Funktionärer</a></li>
-      <li><a href="#admin-adminlist">Kontakt</a></li>
-      <li><a href="#">Mallar</a></li>
-      <li><a href="#">Manual</a></li>
-    </ul>
-  </div>
+    <div role="main" class="ui-content">
+        <ul data-role="listview" data-inset="true">
+            <li data-role="list-divider">Arrangemangsadministration</li>
+            <li><a href="#admin-eventlist">Arrangemang</a></li>
+            <li><a href="#admin-funclist">Funktionärer</a></li>
+            <li><a href="#admin-adminlist">Kontakt</a></li>
+            <li><a href="#">Mallar</a></li>
+            <li><a href="#">Manual</a></li>
+        </ul>
+    </div>
 
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
@@ -140,6 +140,7 @@ function set_selected_user(uid) {
         <h1>Klubbadministratör</h1>
         <a href="#admin-us" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
     </div><!-- /header -->
+
     <div role="main" class="ui-content">
         <h1>Funktionärslista</h1>
         <p>En listning av funktionärer i systemet.</p>
@@ -187,103 +188,103 @@ function set_selected_user(uid) {
 
 <!-- Klubbadministratör Create new user -->
 <div data-role="page" id="admin-us">
-  <div data-role="header">
-    <a href="#admin-funclist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
-    <h1>Ny funktionär</h1>
-    <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="us-add">Save</button>
-  </div>
+    <div data-role="header">
+        <a href="#admin-funclist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+        <h1>Ny funktionär</h1>
+        <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="us-add">Save</button>
+    </div>
 
-  <div role="main" class="ui-content">
-    <form id="us-form">
-      <ul data-role="listview" data-inset="true" data-mini="true">
-	<li data-role="list-divider">Användarinställningar</li>
-	<li class="ui-field-contain">
-	  <label for="us-name">Namn</label>
-	  <input type="text" data-clear-btn="true" name="us-name" id="us-name" placeholder="" value="">
-	</li>
-      
-	<li class="ui-field-contain">
-	    <label for="us-email">E-post</label>
-	    <input type="text" data-clear-btn="true" name="us-email" id="us-email" placeholder="" value="">
-	</li>
+    <div role="main" class="ui-content">
+        <form id="us-form">
+            <ul data-role="listview" data-inset="true" data-mini="true">
+                <li data-role="list-divider">Användarinställningar</li>
+                <li class="ui-field-contain">
+                    <label for="us-name">Namn</label>
+                    <input type="text" data-clear-btn="true" name="us-name" id="us-name" placeholder="" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="us-phone">Telefon</label>
-	  <input type="tel" data-clear-btn="true" name="us-phone" id="us-phone" placeholder="Text input" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="us-email">E-post</label>
+                    <input type="text" data-clear-btn="true" name="us-email" id="us-email" placeholder="" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="us-group">Grupp</label>
-	  <input type="text" data-clear-btn="true" name="us-group" id="us-group" placeholder="Text input" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="us-phone">Telefon</label>
+                    <input type="tel" data-clear-btn="true" name="us-phone" id="us-phone" placeholder="Text input" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="us-role">Administratör</label>
-	  <select name="us-role" id="us-role" data-role="slider" data-mini="true">
-	    <option value="admin">Ja</option>
-	    <option value="user" selected="">Nej</option>
-	  </select>
-	</li>
+                <li class="ui-field-contain">
+                    <label for="us-group">Grupp</label>
+                    <input type="text" data-clear-btn="true" name="us-group" id="us-group" placeholder="Text input" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="us-not">Noteringar</label>
-	  <textarea cols="30" rows="4" name="us-not" id="us-not"></textarea>
-	</li>
-      </ul>
-    </form>
-  </div>
+                <li class="ui-field-contain">
+                    <label for="us-role">Administratör</label>
+                    <select name="us-role" id="us-role" data-role="slider" data-mini="true">
+                        <option value="admin">Ja</option>
+                        <option value="user" selected="">Nej</option>
+                    </select>
+                </li>
 
-  <div data-role="footer">Tureberg FK</div>
+                <li class="ui-field-contain">
+                    <label for="us-not">Noteringar</label>
+                    <textarea cols="30" rows="4" name="us-not" id="us-not"></textarea>
+                </li>
+            </ul>
+        </form>
+    </div>
+
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
 <!-- Klubbadministratörs Administratörslista -->
 <div data-role="page" id="admin-adminlist">
-  <div data-role="header" style="overflow:hidden;">
-    <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-    <h1>Klubbadministratör</h1>
-    <a href="#" data-icon="gear" class="ui-btn-right">Inställningar</a>
-  </div><!-- /header -->
-  <div role="main" class="ui-content">
-    <h1>Adminstratörslista</h1>
-    <p>De som listas nedan är klubbadministratörer.</p>
-    <form>
-      <input id="admin-adminlist-filter" data-type="search">
-    </form>
-    <table data-role="table" id="admin-adminlist-table" data-filter="true" data-input="#admin-adminlist-filter" data-mode="reflow" class="ui-responsive">
-      <thead>
-	<tr>
-	  <th data-priority="1">Namn</th>
-	  <th data-priority="persist">Tel</th>
-	  <th data-priority="persist">Email</th>
-	  <th data-priority="persist">Notering</th>	  
-	  <th data-priority="persist"></th>
-	</tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-  </div>
+    <div data-role="header" style="overflow:hidden;">
+        <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
+        <h1>Klubbadministratör</h1>
+        <a href="#" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    </div><!-- /header -->
+    <div role="main" class="ui-content">
+        <h1>Adminstratörslista</h1>
+        <p>De som listas nedan är klubbadministratörer.</p>
+        <form>
+            <input id="admin-adminlist-filter" data-type="search">
+        </form>
+        <table data-role="table" id="admin-adminlist-table" data-filter="true" data-input="#admin-adminlist-filter" data-mode="reflow" class="ui-responsive">
+            <thead>
+            <tr>
+                <th data-priority="1">Namn</th>
+                <th data-priority="persist">Tel</th>
+                <th data-priority="persist">Email</th>
+                <th data-priority="persist">Notering</th>
+                <th data-priority="persist"></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
 <!-- Klubbadministratörs Eventlista -->
 <div data-role="page" id="admin-eventlist">
-  <div data-role="header" style="overflow:hidden;">
-    <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-    <h1>Klubbadministratör</h1>
-    <a href="#admin-es" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
-  </div><!-- /header -->
+    <div data-role="header" style="overflow:hidden;">
+        <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
+        <h1>Klubbadministratör</h1>
+        <a href="#admin-es" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
+    </div><!-- /header -->
     <div role="main" class="ui-content">
-      <h1>Klubbens arrangemang</h1>
-    <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" data-filter="true" data-filter-placeholder="Arrangemangsnamn eller nåt" id="admin-eventlist-table">
-      <h1>Arrangemang</h1>
+        <h1>Klubbens arrangemang</h1>
+        <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" data-filter="true" data-filter-placeholder="Arrangemangsnamn eller nåt" id="admin-eventlist-table">
+            <h1>Arrangemang</h1>
+        </div>
     </div>
-  </div>
 
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 <!-- Klubbadministratörs EventFunktionärslista -->
@@ -341,231 +342,231 @@ function set_selected_user(uid) {
 
 <!-- Klubbadministratörs skapa nytt Event -->
 <div data-role="page" id="admin-es">
-  <div data-role="header">
-    <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
-    <h1>Nytt arrangemang</h1>
-    <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="es-add">Save</button>
-  </div>
-  
-  <div role="main" class="ui-content">
-    <form id="es-form">
-      <ul data-role="listview" data-inset="true" data-mini="true">
-	<li class="ui-field-contain">
-	  <label for="es-name">Namn</label>
-	  <input type="text" data-clear-btn="true" name="es-name" id="es-name" placeholder="Namn på arrangemanget" value="">
-	</li>
-    
-	<li class="ui-field-contain">
-	  <label for="es-date">Datum</label>
-	  <input type="date" data-clear-btn="true" name="es-date" id="es-date" placeholder="Datum för arrangemanget" value="">
-	</li>
+    <div data-role="header">
+        <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+        <h1>Nytt arrangemang</h1>
+        <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="es-add">Save</button>
+    </div>
 
-	<li class="ui-field-contain">
-	  <label for="es-loc">Plats</label>
-	  <input type="text" data-clear-btn="true" name="es-loc" id="es-loc" placeholder="Geografisk plats" value="">
-	</li>
+    <div role="main" class="ui-content">
+        <form id="es-form">
+            <ul data-role="listview" data-inset="true" data-mini="true">
+                <li class="ui-field-contain">
+                    <label for="es-name">Namn</label>
+                    <input type="text" data-clear-btn="true" name="es-name" id="es-name" placeholder="Namn på arrangemanget" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-pm">PM</label>
-	  <input type="text" data-clear-btn="true" name="es-pm" id="es-pm" placeholder="Länk till PM" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-date">Datum</label>
+                    <input type="date" data-clear-btn="true" name="es-date" id="es-date" placeholder="Datum för arrangemanget" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-ts">Tidsprogram</label>
-	  <input type="text" data-clear-btn="true" name="es-ts" id="es-ts" placeholder="Länk till tidsprogram" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-loc">Plats</label>
+                    <input type="text" data-clear-btn="true" name="es-loc" id="es-loc" placeholder="Geografisk plats" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-fi">Funktionärsinfo</label>
-	  <input type="text" data-clear-btn="true" name="es-fi" id="es-fi" placeholder="Länk till funktionärsinfo" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-pm">PM</label>
+                    <input type="text" data-clear-btn="true" name="es-pm" id="es-pm" placeholder="Länk till PM" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-fn">Antal funktionärer:</label>
-	  <input type="number" data-clear-btn="true" name="es-fn" id="es-fn" pattern="[0-9]*" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-ts">Tidsprogram</label>
+                    <input type="text" data-clear-btn="true" name="es-ts" id="es-ts" placeholder="Länk till tidsprogram" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-fcall">Funktionsärsanmälan:</label>
-	  <select name="es-fcall" id="es-fcall" data-role="slider" data-mini="true">
-	    <option value="open">Öppen</option>
-	    <option value="closed" selected="">Stängd</option>
-	  </select>
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-fi">Funktionärsinfo</label>
+                    <input type="text" data-clear-btn="true" name="es-fi" id="es-fi" placeholder="Länk till funktionärsinfo" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-not">Noteringar</label>
-	  <textarea cols="30" rows="4" name="es-not" id="es-not"></textarea>
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-fn">Antal funktionärer:</label>
+                    <input type="number" data-clear-btn="true" name="es-fn" id="es-fn" pattern="[0-9]*" value="">
+                </li>
 
-      </ul>
-    </form>
-  </div>
+                <li class="ui-field-contain">
+                    <label for="es-fcall">Funktionsärsanmälan:</label>
+                    <select name="es-fcall" id="es-fcall" data-role="slider" data-mini="true">
+                        <option value="open">Öppen</option>
+                        <option value="closed" selected="">Stängd</option>
+                    </select>
+                </li>
 
-  <div data-role="footer">Tureberg FK</div>
+                <li class="ui-field-contain">
+                    <label for="es-not">Noteringar</label>
+                    <textarea cols="30" rows="4" name="es-not" id="es-not"></textarea>
+                </li>
+
+            </ul>
+        </form>
+    </div>
+
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
 <!-- Klubbadministratörs uppdatera Event -->
 <div data-role="page" id="admin-es-update">
-  <div data-role="header">
-    <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
-    <h1>Arrangemangsuppdatering</h1>
-    <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="es-update">Save</button>
-  </div>
-  
-  <div role="main" class="ui-content">
-    <form id="es-update-form">
-      <ul data-role="listview" data-inset="true" data-mini="true">
-	<li class="ui-field-contain">
-	  <label for="es-update-name">Namn</label>
-	  <input type="text" data-clear-btn="true" name="es-update-name" id="es-update-name" placeholder="Namn på arrangemanget" value="">
-	</li>
-    
-	<li class="ui-field-contain">
-	  <label for="es-update-date">Datum</label>
-	  <input type="date" data-clear-btn="true" name="es-update-date" id="es-update-date" placeholder="Datum för arrangemanget" value="">
-	</li>
+    <div data-role="header">
+        <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+        <h1>Arrangemangsuppdatering</h1>
+        <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="es-update">Save</button>
+    </div>
 
-	<li class="ui-field-contain">
-	  <label for="es-update-loc">Plats</label>
-	  <input type="text" data-clear-btn="true" name="es-update-loc" id="es-update-loc" placeholder="Geografisk plats" value="">
-	</li>
+    <div role="main" class="ui-content">
+        <form id="es-update-form">
+            <ul data-role="listview" data-inset="true" data-mini="true">
+                <li class="ui-field-contain">
+                    <label for="es-update-name">Namn</label>
+                    <input type="text" data-clear-btn="true" name="es-update-name" id="es-update-name" placeholder="Namn på arrangemanget" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-update-pm">PM</label>
-	  <input type="text" data-clear-btn="true" name="es-update-pm" id="es-update-pm" placeholder="Länk till PM" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-update-date">Datum</label>
+                    <input type="date" data-clear-btn="true" name="es-update-date" id="es-update-date" placeholder="Datum för arrangemanget" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-update-ts">Tidsprogram</label>
-	  <input type="text" data-clear-btn="true" name="es-update-ts" id="es-update-ts" placeholder="Länk till tidsprogram" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-update-loc">Plats</label>
+                    <input type="text" data-clear-btn="true" name="es-update-loc" id="es-update-loc" placeholder="Geografisk plats" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-update-fi">Funktionärsinfo</label>
-	  <input type="text" data-clear-btn="true" name="es-update-fi" id="es-update-fi" placeholder="Länk till funktionärsinfo" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-update-pm">PM</label>
+                    <input type="text" data-clear-btn="true" name="es-update-pm" id="es-update-pm" placeholder="Länk till PM" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-update-fn">Antal funktionärer:</label>
-	  <input type="number" data-clear-btn="true" name="es-update-fn" id="es-update-fn" pattern="[0-9]*" value="">
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-update-ts">Tidsprogram</label>
+                    <input type="text" data-clear-btn="true" name="es-update-ts" id="es-update-ts" placeholder="Länk till tidsprogram" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-update-fcall">Funktionsärsanmälan:</label>
-	  <select name="es-update-fcall" id="es-update-fcall" data-role="slider">
-	    <option value="open">Öppen</option>
-	    <option value="closed" selected="">Stängd</option>
-	  </select>
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-update-fi">Funktionärsinfo</label>
+                    <input type="text" data-clear-btn="true" name="es-update-fi" id="es-update-fi" placeholder="Länk till funktionärsinfo" value="">
+                </li>
 
-	<li class="ui-field-contain">
-	  <label for="es-update-not">Noteringar</label>
-	  <textarea cols="30" rows="4" name="es-update-not" id="es-update-not"></textarea>
-	</li>
+                <li class="ui-field-contain">
+                    <label for="es-update-fn">Antal funktionärer:</label>
+                    <input type="number" data-clear-btn="true" name="es-update-fn" id="es-update-fn" pattern="[0-9]*" value="">
+                </li>
 
-      </ul>
-    </form>
-  </div>
+                <li class="ui-field-contain">
+                    <label for="es-update-fcall">Funktionsärsanmälan:</label>
+                    <select name="es-update-fcall" id="es-update-fcall" data-role="slider">
+                        <option value="open">Öppen</option>
+                        <option value="closed" selected="">Stängd</option>
+                    </select>
+                </li>
 
-  <div data-role="footer">Tureberg FK</div>
+                <li class="ui-field-contain">
+                    <label for="es-update-not">Noteringar</label>
+                    <textarea cols="30" rows="4" name="es-update-not" id="es-update-not"></textarea>
+                </li>
+
+            </ul>
+        </form>
+    </div>
+
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
 <!-- Funktionärssidor -->
 <!-- Funktionärs startsida -->
 <div data-role="page" id="func-startpage">
-  <div data-role="header" style="overflow:hidden;">
-    <h1>Funktionär</h1>
-    <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
-  </div>
+    <div data-role="header" style="overflow:hidden;">
+        <h1>Funktionär</h1>
+        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    </div>
 
-  <div role="main" class="ui-content">
-    <ul data-role="listview" data-inset="true">
-      <li data-role="list-divider">Funktionärsuppdrag</li>
-      <li><a href="#func-requests">Förfrågningar</a></li>
-      <li><a href="#func-myevents">Mina uppdrag</a></li>
-      <li><a href="#">Klubb kontakt</a></li>
-      <li><a href="#">Manual</a></li>
-    </ul>
-  </div>
+    <div role="main" class="ui-content">
+        <ul data-role="listview" data-inset="true">
+            <li data-role="list-divider">Funktionärsuppdrag</li>
+            <li><a href="#func-requests">Förfrågningar</a></li>
+            <li><a href="#func-myevents">Mina uppdrag</a></li>
+            <li><a href="#">Klubb kontakt</a></li>
+            <li><a href="#">Manual</a></li>
+        </ul>
+    </div>
 
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
 <!-- Funktionsärs alla event -->
 <div data-role="page" id="func-myevents">
-  <div data-role="header" style="overflow:hidden;">
-    <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-    <h1>Mina åtaganden</h1>
-    <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
-  </div><!-- /header -->
+    <div data-role="header" style="overflow:hidden;">
+        <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
+        <h1>Mina åtaganden</h1>
+        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    </div><!-- /header -->
 
-  <div role="main" class="ui-content">
-    <ul data-role="listview" data-inset="true">
-      <li data-role="list-divider">Friday, October 8, 2010 <span class="ui-li-count">2</span></li>
-      <li><a href="index.html">
-	<h2>Vildsvinet 2015</h2>
-	<p><strong>You've been invited to a meeting at Filament Group in Boston, MA</strong></p>
-	<p>Hey Stephen, if you're available at 10am tomorrow, we've got a meeting with the jQuery team.</p>
-        <p class="ui-li-aside"><strong>6:24</strong>PM</p>
-      </a></li>
-      <li><a href="#">
-	<h2>jQuery Team</h2>
-	<p><strong>Boston Conference Planning</strong></p>
-	<p>In preparation for the upcoming conference in Boston, we need to start gathering a list of sponsors and speakers.</p>
-        <p class="ui-li-aside"><strong>9:18</strong>AM</p>
-      </a></li>
-      <li data-role="list-divider">Thursday, October 7, 2010 <span class="ui-li-count">1</span></li>
-      <li><a href="#">
-	<h2>Avery Walker</h2>
-	<p><strong>Re: Dinner Tonight</strong></p>
-	<p>Sure, let's plan on meeting at Highland Kitchen at 8:00 tonight. Can't wait!</p>
-        <p class="ui-li-aside"><strong>4:48</strong>PM</p>
-      </a></li>
-    </ul>
-  </div>
+    <div role="main" class="ui-content">
+        <ul data-role="listview" data-inset="true">
+            <li data-role="list-divider">Friday, October 8, 2010 <span class="ui-li-count">2</span></li>
+            <li><a href="index.html">
+                <h2>Vildsvinet 2015</h2>
+                <p><strong>You've been invited to a meeting at Filament Group in Boston, MA</strong></p>
+                <p>Hey Stephen, if you're available at 10am tomorrow, we've got a meeting with the jQuery team.</p>
+                <p class="ui-li-aside"><strong>6:24</strong>PM</p>
+            </a></li>
+            <li><a href="#">
+                <h2>jQuery Team</h2>
+                <p><strong>Boston Conference Planning</strong></p>
+                <p>In preparation for the upcoming conference in Boston, we need to start gathering a list of sponsors and speakers.</p>
+                <p class="ui-li-aside"><strong>9:18</strong>AM</p>
+            </a></li>
+            <li data-role="list-divider">Thursday, October 7, 2010 <span class="ui-li-count">1</span></li>
+            <li><a href="#">
+                <h2>Avery Walker</h2>
+                <p><strong>Re: Dinner Tonight</strong></p>
+                <p>Sure, let's plan on meeting at Highland Kitchen at 8:00 tonight. Can't wait!</p>
+                <p class="ui-li-aside"><strong>4:48</strong>PM</p>
+            </a></li>
+        </ul>
+    </div>
 
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
 <!-- Funktionärs Önskningar -->
 <div data-role="page" id="func-requests">
-  <div data-role="header" style="overflow:hidden;">
-    <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-    <h1>Önskningar</h1>
-    <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
-  </div><!-- /header -->
-  <div role="main" class="ui-content">
-    <table data-role="table" id="func-reqs-table" data-mode="reflow" class="ui-responsive">
-      <thead>
-	<tr>
-	  <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
-	  <th data-priority="persist">Arrangemang</th>
-	  <th data-priority="persist">Datum</th>
-	</tr>
-      </thead>
-      <tbody>
-	<tr>
-	  <td>
-	    <li class="ui-field-contain">
-              <select name="confirm-event" id="confirm-event-flip" data-role="slider">
-                <option value="yes">Ja</option>
-                <option value="no">Nej</option>
-              </select>
-            </li>
-	  </td>
-	  <td>SAYO (dag 1)</td>
-	  <td>2015-06-06</td>
-	</tr>
-      </tbody>
-    </table>
-  </div>
+    <div data-role="header" style="overflow:hidden;">
+        <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
+        <h1>Önskningar</h1>
+        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+    </div><!-- /header -->
+    <div role="main" class="ui-content">
+        <table data-role="table" id="func-reqs-table" data-mode="reflow" class="ui-responsive">
+            <thead>
+            <tr>
+                <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
+                <th data-priority="persist">Arrangemang</th>
+                <th data-priority="persist">Datum</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <li class="ui-field-contain">
+                        <select name="confirm-event" id="confirm-event-flip" data-role="slider">
+                            <option value="yes">Ja</option>
+                            <option value="no">Nej</option>
+                        </select>
+                    </li>
+                </td>
+                <td>SAYO (dag 1)</td>
+                <td>2015-06-06</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
