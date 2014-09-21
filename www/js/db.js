@@ -38,7 +38,7 @@ function layout_all_users(sid, tablename, users) {
     row.append($('<td>').append(users[i].tel));
     row.append($('<td>').append(users[i].email));
     row.append($('<td>').append(users[i].comment));
-    row.append($('<td>').button());
+    row.append($('<td>'));
     //row.append($('<td>').append(x).trigger('create'));
     /*
       row.append($('<td>').append(x));
