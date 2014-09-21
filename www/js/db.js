@@ -21,7 +21,10 @@ function layout_all_users(sid, tablename, users) {
   var x;
 
   for (var i = 0; i < users.length;  i++) {
-      x = "<a href=\"#admin-add-user-to-event?uid=" + users[i].username + "\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
+    //  x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" data-position-to=\"window\"
+    // class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
+      x = "<button onclick=\"select_event(" + users[i].username + ")\" class=\"ui-btn ui-icon-bullets ui-btn-notext ui-corner-all\" data-transition=\"pop\"</button>";
+    x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
     }
@@ -173,10 +176,10 @@ function layout_eventrow(event, rowid) {
   row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
   row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
   row.append($('<p>').append("<strong>Tidsprogram: </strong>"+event.timeschedule));
-  row.append($('<p>').append("<strong>Funktions�rsinfo: </strong>"+event.funcinfo));
-  row.append($('<p>').append("<strong>Antal funktion�rer: </strong>"+event.funccount));
-  row.append($('<p>').append("<strong>Funktion�rsanm�lan: </strong>"+event.funccall));
-  row.append($('<p>').append("<strong>Funktion�rsinfo: </strong>"+event.funcinfo));
+  row.append($('<p>').append("<strong>Funktionsärsinfo: </strong>"+event.funcinfo));
+  row.append($('<p>').append("<strong>Antal funktionärer: </strong>"+event.funccount));
+  row.append($('<p>').append("<strong>Funktionärsanmälan: </strong>"+event.funccall));
+  row.append($('<p>').append("<strong>Funktionärsinfo: </strong>"+event.funcinfo));
 
   return row;
 }
