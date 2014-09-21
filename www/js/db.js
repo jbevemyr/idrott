@@ -39,7 +39,7 @@ function layout_all_users(sid, tablename, users) {
     row.append($('<td>').append(x));
   }
 
-  $("#admin-adminlist-table").table("rebuild");
+  $("#admin-adminlist-table").table("refresh");
   //alert("Groups: "+groups);
   //get_all_events(sid, layout_select_event);
 
