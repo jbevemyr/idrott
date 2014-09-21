@@ -44,10 +44,10 @@ function layout_all_users(sid, tablename, users) {
      // row.append($('<td>').append(x));
 
   }
-
+    */
   //alert("Groups: "+groups);
   get_all_events(sid, layout_select_event);
-    */
+
 }
 
 function select_event(uid) {
