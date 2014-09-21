@@ -135,48 +135,48 @@ function set_selected_user(uid) {
 
 <!-- Klubbadministratörs Funktionärslista -->
 <div data-role="page" id="admin-funclist">
-  <div data-role="header" style="overflow:hidden;">
-    <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-    <h1>Klubbadministratör</h1>
-    <a href="#admin-us" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
-  </div><!-- /header -->
-  <div role="main" class="ui-content">
-    <h1>Funktionärslista</h1>
-    <p>En listning av funktionärer i systemet.</p>
-    <form>
-      <input id="admin-funclist-filter" data-type="search">
-    </form>
-    <table data-role="table" id="admin-funclist-table" data-filter="true" data-input="#admin-funclist-filter" data-mode="reflow" class="ui-responsive">
-      <thead>
-	<tr>
-	  <th data-priority="1">Namn</th>
-	  <th data-priority="2">Grupp</th>
-	  <th data-priority="3">Tel</th>
-	  <th data-priority="4">Email</th>
-	  <th data-priority="5">Notering</th>	  
-	  <th data-priority="6">Arrangemang</th>
-	</tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-  </div>
+    <div data-role="header" style="overflow:hidden;">
+        <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
+        <h1>Klubbadministratör</h1>
+        <a href="#admin-us" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
+    </div><!-- /header -->
+    <div role="main" class="ui-content">
+        <h1>Funktionärslista</h1>
+        <p>En listning av funktionärer i systemet.</p>
+        <form>
+            <input id="admin-funclist-filter" data-type="search">
+        </form>
+        <table data-role="table" id="admin-funclist-table" data-filter="true" data-input="#admin-funclist-filter" data-mode="reflow" class="ui-responsive">
+            <thead>
+            <tr>
+                <th data-priority="1">Namn</th>
+                <th data-priority="2">Grupp</th>
+                <th data-priority="3">Tel</th>
+                <th data-priority="4">Email</th>
+                <th data-priority="5">Notering</th>
+                <th data-priority="6">Arrangemang</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 
-  <!-- Klubbadministratör (subpage) Add user to event -->
-  <div data-role="popup" id="admin-add-user-to-event" data-theme="a" class="ui-corner-all">
-    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
-    <form action="$" method="get">
-      <div style="padding:10px 20px;">
-        <h3>Add user to event</h3>
-	<fieldset data-role="controlgroup" id="admin-add-user-to-event-event">
-	</fieldset>
-	
-        <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left">Lägg till</button>
-      </div>
-    </form>
-  </div>
+    <!-- Klubbadministratör (subpage) Add user to event -->
+    <div data-role="popup" id="admin-add-user-to-event" data-theme="a" class="ui-corner-all">
+        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+        <form action="$" method="get">
+            <div style="padding:10px 20px;">
+                <h3>Add user to event</h3>
+                <fieldset data-role="controlgroup" id="admin-add-user-to-event-event">
+                </fieldset>
 
-  <div data-role="footer">Tureberg FK</div>
+                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left">Lägg till</button>
+            </div>
+        </form>
+    </div>
+
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
