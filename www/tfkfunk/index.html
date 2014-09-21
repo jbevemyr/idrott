@@ -161,19 +161,22 @@ function set_selected_user(uid) {
             </tbody>
         </table>
 
-    <!-- Klubbadministratör (subpage) Add user to event -->
-    <div data-role="popup" id="admin-add-user-to-event" data-theme="a" class="ui-corner-all">
-        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
-        <form action="$" method="get">
-            <div style="padding:10px 20px;">
-                <h3>Add user to event</h3>
-                <fieldset data-role="controlgroup" id="admin-add-user-to-event-event">
-                </fieldset>
 
-                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left">Lägg till</button>
-            </div>
-        </form>
-    </div>
+        <!-- Klubbadministratör (subpage) Add user to event -->
+        <!--
+        <div data-role="popup" id="admin-add-user-to-event" data-theme="a" class="ui-corner-all">
+            <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+            <form action="$" method="get">
+                <div style="padding:10px 20px;">
+                    <h3>Add user to event</h3>
+                    <fieldset data-role="controlgroup" id="admin-add-user-to-event-event">
+                    </fieldset>
+
+                    <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left">Lägg till</button>
+                </div>
+            </form>
+        </div>
+        -->
     </div>
 
     <div data-role="footer">Tureberg FK</div>
@@ -285,53 +288,54 @@ function set_selected_user(uid) {
 
 <!-- Klubbadministratörs EventFunktionärslista -->
 <div data-role="page" id="admin-event-funclist">
-  <div data-role="header" style="overflow:hidden;">
-    <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-    <h1>Klubbadministratör</h1>
-    <a href="#admin-event-func-print" data-icon="plus" data-mini="true" class="ui-btn-right" id=>Print</a>
-  </div><!-- /header -->
-  <div role="main" class="ui-content">
-    <h1>Funktionärslista för ARR</h1>
-    <p>En listning av funktionärer kallade till ett arrangemang.</p>
+    <div data-role="header" style="overflow:hidden;">
+        <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
+        <h1>Klubbadministratör</h1>
+        <a href="#admin-event-func-print" data-icon="plus" data-mini="true" class="ui-btn-right" id=>Print</a>
+    </div><!-- /header -->
 
-<!-- call dialog -->
-    <a href="#callDialog" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-a" data-transition="pop">Call</a>
-    <div data-role="popup" id="callDialog" data-theme="a" class="ui-corner-all">
-      <form>
-        <div style="padding:10px 20px;">
-          <h3>Skicka funktionsärskallelse</h3>
-          <label for="mailsubject" class="ui-hidden-accessible">Rubrik</label>
-          <input type="text" name="mailsubject" id="mailsubject" value="" placeholder="Brevets rubrik" data-theme="a">
-          <label for="mailtext" class="ui-hidden-accessible">Brevtext</label>
-          <input type="text" name="mailtext" id="mailtext" value="" placeholder="Brev ..." data-theme="a">
-          <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Skicka kallelse</button>
+    <div role="main" class="ui-content">
+        <h1>Funktionärslista för ARR</h1>
+        <p>En listning av funktionärer kallade till ett arrangemang.</p>
+
+        <!-- call dialog -->
+        <a href="#callDialog" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-a" data-transition="pop">Call</a>
+        <div data-role="popup" id="callDialog" data-theme="a" class="ui-corner-all">
+            <form>
+                <div style="padding:10px 20px;">
+                    <h3>Skicka funktionsärskallelse</h3>
+                    <label for="mailsubject" class="ui-hidden-accessible">Rubrik</label>
+                    <input type="text" name="mailsubject" id="mailsubject" value="" placeholder="Brevets rubrik" data-theme="a">
+                    <label for="mailtext" class="ui-hidden-accessible">Brevtext</label>
+                    <input type="text" name="mailtext" id="mailtext" value="" placeholder="Brev ..." data-theme="a">
+                    <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Skicka kallelse</button>
+                </div>
+            </form>
         </div>
-      </form>
+
+        <select multiple="multiple" data-native-menu="false" name="admin-event-funclist-groups" id="admin-event-funclist-groups">
+            <option value="">Grupp:</option>
+        </select>
+        <form>
+            <input id="admin-event-funclist-filter" data-type="search">
+        </form>
+        <table data-role="table" id="admin-event-funclist-table" data-filter="true" data-input="#admin-event-funclist-filter" data-mode="reflow" class="ui-responsive">
+            <thead>
+            <tr>
+                <th data-priority="persist">Kmd</th>
+                <th data-priority="1">Namn</th>
+                <th data-priority="persist">Grupp</th>
+                <th data-priority="persist">Tel</th>
+                <th data-priority="persist">Email</th>
+                <th data-priority="persist">Notering</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 
-    <select multiple="multiple" data-native-menu="false" name="admin-event-funclist-groups" id="admin-event-funclist-groups">
-      <option value="">Grupp:</option>
-    </select>
-    <form>      
-      <input id="admin-event-funclist-filter" data-type="search">
-    </form>
-    <table data-role="table" id="admin-event-funclist-table" data-filter="true" data-input="#admin-event-funclist-filter" data-mode="reflow" class="ui-responsive">
-      <thead>
-	<tr>
-	  <th data-priority="persist">Kmd</th>
-	  <th data-priority="1">Namn</th>
-	  <th data-priority="persist">Grupp</th>
-	  <th data-priority="persist">Tel</th>
-	  <th data-priority="persist">Email</th>
-	  <th data-priority="persist">Notering</th>	  
-	</tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-  </div>
-
-  <div data-role="footer">Tureberg FK</div>
+    <div data-role="footer">Tureberg FK</div>
 </div>
 
 
