@@ -18,7 +18,7 @@ function layout_all_users(sid, tablename, users) {
   $(tablename+" tbody").empty();
   var groups = [];
   var row = "";
-  var x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>"
+  var x = "<a href=\"#admin-add-user-to-event&uid=" + users[i].id + "\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>"
 //<input type="button" data-icon="delete" data-iconpos="notext" value="Icon only">
   for (var i = 0; i < users.length;  i++) {
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
@@ -37,8 +37,8 @@ function layout_all_users(sid, tablename, users) {
   get_all_events(sid, layout_select_event);
 }
 
-// Gör man så här lägger dem i sekvens eller ska de triggas med event, t ex att man trycker på knappen.
-// Kanske räcker det att man resettar valet i dialogen.
+// Gï¿½r man sï¿½ hï¿½r lï¿½gger dem i sekvens eller ska de triggas med event, t ex att man trycker pï¿½ knappen.
+// Kanske rï¿½cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
   var domObj = "#admin-add-user-to-event-event";
   var item = ""; //$('<ledgend>').append("Arrangemang:").appendTo(domObj);
@@ -172,10 +172,10 @@ function layout_eventrow(event, rowid) {
   row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
   row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
   row.append($('<p>').append("<strong>Tidsprogram: </strong>"+event.timeschedule));
-  row.append($('<p>').append("<strong>Funktionsärsinfo: </strong>"+event.funcinfo));
-  row.append($('<p>').append("<strong>Antal funktionärer: </strong>"+event.funccount));
-  row.append($('<p>').append("<strong>Funktionärsanmälan: </strong>"+event.funccall));
-  row.append($('<p>').append("<strong>Funktionärsinfo: </strong>"+event.funcinfo));
+  row.append($('<p>').append("<strong>Funktionsï¿½rsinfo: </strong>"+event.funcinfo));
+  row.append($('<p>').append("<strong>Antal funktionï¿½rer: </strong>"+event.funccount));
+  row.append($('<p>').append("<strong>Funktionï¿½rsanmï¿½lan: </strong>"+event.funccall));
+  row.append($('<p>').append("<strong>Funktionï¿½rsinfo: </strong>"+event.funcinfo));
 
   return row;
 }
@@ -287,6 +287,6 @@ function layout_all_reqs(reqs) {
                 <option value="on">On</option>
             </select>
         </li>
-   Tanken är att använda detta för bekräftelse av event.
+   Tanken ï¿½r att anvï¿½nda detta fï¿½r bekrï¿½ftelse av event.
 */
 }
