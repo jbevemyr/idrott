@@ -53,7 +53,7 @@ function set_selected_user(uid) {
      var toPage = $.mobile.pageContainer.pagecontainer("getActivePage")[0].id;
 //     alert("calling function before page :"+toPage);
      if(toPage == "admin-funclist") {
-       get_all_users(sessionid, layout_all_users, "#admin-funclist-table" );
+       //get_all_users(sessionid, layout_all_users, "#admin-funclist-table" );
        $("#admin-funclist-table").table("rebuild");
      };
      if(toPage == "admin-adminlist") {
