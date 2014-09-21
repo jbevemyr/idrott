@@ -1,15 +1,11 @@
-function event(user) {
-    return {status: "ja", evenemang: "SAYO (dag 2)", date: "2014/06/06"};
-}
 
-function get_all_users(sid, cont) {
-    alert("in function get_all_users");
-//return [{user: "johan", email: "jb@bevemyr.com", tel: "070123"}];
+
+function get_all_users(sid, cont, tablename) {
     $.ajax({
         url: "http://idrott.bevemyr.com/idrott/get_all_users?sid="+sid,
 	dataType: "json",
 	success: function(data) {
-	       cont(data.users);
+	       cont(sid, tablename, data.users);
 	},
 	error: function(data) {
 	    alert(data.status);
@@ -18,36 +14,133 @@ function get_all_users(sid, cont) {
     });
 }
 
-function layout_all_users(users) {
+function layout_all_users(sid, tablename, users) {
+  $(tablename+" tbody").empty();
+  var groups = [];
+  var row = "";
+  var x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>"
+//<input type="button" data-icon="delete" data-iconpos="notext" value="Icon only">
   for (var i = 0; i < users.length;  i++) {
-    var row = $('<tr>');
-    row.appendTo("#admin-funclist-table");
+    if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
+      groups.push(users[i].group);
+    }
+    row = $('<tr>');
+    row.appendTo(tablename);
     row.append($('<td>').append(users[i].name));
     row.append($('<td>').append(users[i].group));
+    row.append($('<td>').append(users[i].tel));
+    row.append($('<td>').append(users[i].email));
+    row.append($('<td>').append(users[i].comment));
+    row.append($('<td>').append(x));
+  }
+  //alert("Groups: "+groups);
+  get_all_events(sid, layout_select_event);
+}
+
+// Gör man så här lägger dem i sekvens eller ska de triggas med event, t ex att man trycker på knappen.
+// Kanske räcker det att man resettar valet i dialogen.
+function layout_select_event(events) {
+  var domObj = "#admin-add-user-to-event-event";
+  var item = ""; //$('<ledgend>').append("Arrangemang:").appendTo(domObj);
+  var eid;
+  var ename;
+  $(domObj).empty();
+  for (var i = 0; i < events.length; i++) {
+    eid = events[i].id;
+    ename = events[i].name;
+    $('<input type="radio" name="' + eid + '" id="event' + eid +'"><label for="event' + eid + '">' + ename + '</label>').appendTo(domObj);
+    $('div').trigger("create");
+  }
+}
+
+function connect_user_to_event(sid) {
+  alert("Connect");
+  
+}
+
+function get_admin_users(sid, tablename) {
+  $(tablename+" tbody").empty();
+  $.post("http://idrott.bevemyr.com/idrott/get_selected_users?sid="+sid,
+	    JSON.stringify({
+	      role: "admin",
+	      confirmed: false
+	    }),
+	    function(data) {
+	      if(data.status == "ok") {
+		layout_admin_users(data.users);
+              } else {
+		alert(data.status);
+		$.mobile.changePage($("#login"));  // should be errorpage
+	      }
+	    },
+	 "json"
+  );
+}
+
+function layout_admin_users(users) {
+  for (var i = 0; i < users.length;  i++) {
+    var row = $('<tr>');
+    row.appendTo("#admin-adminlist-table");
+    row.append($('<td>').append(users[i].name));
     row.append($('<td>').append(users[i].tel));
     row.append($('<td>').append(users[i].email));
     row.append($('<td>').append(users[i].comment));
   }
 }
 
-/*
-http://idrott/idrott/get_all_events?sid=1234567890
+function add_new_user(sid) {
+  $.post("http://idrott.bevemyr.com/idrott/add_user?sid="+sid,
+	 JSON.stringify({
+           name: $('#us-name').val(),
+           username: $('#us-email').val(),
+	   password: "test",
+           email: $('#us-email').val(),
+           tel: $('#us-phone').val(),
+	   group: $('#us-group').val(),
+           role: $('#us-role').val(),
+           events: [],
+	   confirmed: false,
+	   comment: $('#us-not').val()
+	 }),
+	 function(status) {
+	   if(status.status == "ok") { // string otherwise an object session/group
+	     $('#us-form')[0].reset();
+	     $.mobile.changePage($("#admin-funclist"));
+           } else {
+	     alert(status.status);
+	     $.mobile.changePage($("#login"));
+	   }
+	 },
+	 "json"
+  );
+}
 
-        {status: "ok", events: [ <event> ]}
-        {status: "error", reason: <reason>}
+function update_user(sid) {
+  $.post("http://idrott.bevemyr.com/idrott/add_user?sid="+sid,
+	 JSON.stringify({
+           name: $('#us-update-name').val(),
+           email: $('#us-update-email').val(),
+           phone: $('#us-update-phone').val(),
+	   group: $('#es-update-group').val(),
+           role: $('#es-update-role').val(),
+           events: [],  //TBD
+	   not: $('#es-not').val()
+	 }),
+	 function(status) {
+	   if(status.status == "ok") { // string otherwise an object session/group
+	     $('#us-update-form')[0].reset();
+	     $.mobile.changePage($("#admin-eventlist"));
+           } else {
+	     alert(status.status);
+	     $.mobile.changePage($("#login"));
+	   }
+	 },
+	 "json"
+  );
+}
 
-http://idrott/idrott/create_event?sid=1234567890
-POST json object for event, ie POST:ing the json object
-{ "name": <name>, "date": <date>}
-will create an event with those attributes
-
-        {status: "ok", event: <event>}
-        {status: "error", reason: <reason>}
-
-*/
 
 function get_all_events(sid, cont) {
-    //alert("in function get_all_events");
     $.ajax({
         url: "http://idrott.bevemyr.com/idrott/get_all_events?sid="+sid,
 	dataType: "json",
@@ -72,37 +165,108 @@ function layout_all_events(events) {
 }
 
 function layout_eventrow(event, rowid) {
-  var eventheading = $('<h4>').append(event.name);
-  var bemanning = "Bemanning";
-  var eventbody = $('<p>').append(bemanning);
-  eventbody.append($('<p>').append("<strong>Datum: </strong>"+event.date));
-  eventbody.append($('<p>').append("<strong>Plats: </strong>"+event.location));
-  eventbody.append($('<p>').append("<strong>Funktionärsanmälan: </strong>"+event.funccall));
-  eventbody.append($('<p>').append("<strong>Antal funktionärer: </strong>"+event.funccount));
-  eventbody.append($('<p>').append("<strong>Funktionärsinfo: </strong>"+event.funcinfo));
-  var x = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
-  x.append(eventheading);
-  x.append(eventbody);
-  return x;
+  var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
+  row.append($('<h4>').append(event.name));
+  row.append($('<p>').append("<a href='#admin-event-funclist'>Bemanning</a>"));
+  row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
+  row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
+  row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
+  row.append($('<p>').append("<strong>Tidsprogram: </strong>"+event.timeschedule));
+  row.append($('<p>').append("<strong>Funktionsärsinfo: </strong>"+event.funcinfo));
+  row.append($('<p>').append("<strong>Antal funktionärer: </strong>"+event.funccount));
+  row.append($('<p>').append("<strong>Funktionärsanmälan: </strong>"+event.funccall));
+  row.append($('<p>').append("<strong>Funktionärsinfo: </strong>"+event.funcinfo));
+
+  return row;
 }
 
 
-function add_new_event(sid, event) {
-  $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sessionid,
+function add_new_event(sid) {
+  $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sid,
 	 JSON.stringify({
-           name: $('#es-name').value,
-           date: $('#es-date').value,
-           location: $('#es-location').value,
-           funccount: $('#es-funccount').value,
-           funccall: $('#es-funccall').value
+           name: $('#es-name').val(),
+           date: $('#es-date').val(),
+           location: $('#es-loc').val(),
+	   pm: $('#es-pm').val(),
+	   timeschedule: $('#es-ts').val(),
+	   funcinfo: $('#es-fi').val(),
+           funccount: $('#es-fn').val(),
+           funccall: $('#es-fcall').val(),
+	   not: $('#es-not').val()
 	 }),
 	 function(status) {
 	   if(status.status == "ok") { // string otherwise an object session/group
-             //add_result("  "+JSON.stringify(status.event));
-             //test_event_id = status.event.id;
-             //add_result("---- ok");
-             //run_tests();
-		
+	     $('#es-form')[0].reset();
+	     $.mobile.changePage($("#admin-eventlist"));
+           } else {
+	     //add_result("---- fail: "+status.reason);
+	     //run_tests();
+	   }
+	 },
+	 "json"
+  );
+}
+
+function get_all_func_for_event(sid, eid, tablename) {
+  $.post("http://idrott.bevemyr.com/idrott/get_selected_users?sid="+sid,
+	 JSON.stringify({
+           events: [{eventid: eid}]
+	 }),
+	 function(data) {
+	   if(data.status == "ok") { // string otherwise an object session/group
+	     layout_event_funclist(tablename, data.users);
+           } else {
+	     alert(data.status);
+	     $.mobile.changePage($("#login"));	     
+	   }
+	 },
+	 "json"
+  );
+}
+
+function layout_event_funclist(tablename, users) {
+  // You want to be able to print the list and export to csv.
+  var groups = [];
+  var groupoptions = "";
+  var row = "";
+  $(tablename+" tbody").empty();
+  groupoptions.appendTo("#admin-event-funclist-groups");
+  for (var i = 0; i < users.length;  i++) {
+    row = $('<tr id=funclistID='+i+'>');
+    row.appendTo(tablename);
+    row.append($('<td>').append(users[i].group));
+    row.append($('<td>').append(users[i].name));
+    row.append($('<td>').append(users[i].tel));
+    row.append($('<td>').append(users[i].email));
+    row.append($('<td>').append(users[i].comment));
+    row.append($('<td>').append());
+
+    // <option value="small">One</option>
+    groupoptions.append($('<option>').append(users[i].group));
+    groups.push(users[i].group);
+  }
+  alert(groups);
+}
+
+
+
+function update_event(sid) {
+  $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sid,
+	 JSON.stringify({
+           name: $('#es-update-name').val(),
+           date: $('#es-update-date').val(),
+           location: $('#es-update-location').val(),
+	   pm: $('#es-update-pm').val(),
+	   timeschedule: $('#es-update-ts').val(),
+	   funcinfo: $('#es-update-fi').val(),
+           funccount: $('#es-update-funccount').val(),
+           funccall: $('#es-update-funccall').val(),
+	   not: $('#es-update-not').val()
+	 }),
+	 function(status) {
+	   if(status.status == "ok") { // string otherwise an object session/group
+	     $('#es-update-form')[0].reset();
+	     $.mobile.changePage($("#admin-eventlist"));
            } else {
 	     //add_result("---- fail: "+status.reason);
 	     //run_tests();
@@ -114,6 +278,7 @@ function add_new_event(sid, event) {
 
 
 function layout_all_reqs(reqs) {
+
 /*
           <li class="ui-field-contain">
             <label for="flip2">Flip switch:</label>
