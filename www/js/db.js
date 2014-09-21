@@ -20,25 +20,28 @@ function layout_all_users(sid, tablename, users) {
   var row = "";
   var x;
 
-    /*
+
   for (var i = 0; i < users.length;  i++) {
     x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>";
 
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
     }
+
     row = $('<tr>');
     row.appendTo(tablename);
+      /*
     row.append($('<td>').append(users[i].name));
     row.append($('<td>').append(users[i].group));
     row.append($('<td>').append(users[i].tel));
     row.append($('<td>').append(users[i].email));
     row.append($('<td>').append(users[i].comment));
     row.append($('<td>').append(x));
+    */
   }
   //alert("Groups: "+groups);
   get_all_events(sid, layout_select_event);
-  */
+
 }
 
 function select_event(uid) {
