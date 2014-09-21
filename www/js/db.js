@@ -16,7 +16,6 @@ function get_all_users(sid, cont, tablename) {
 
 function layout_all_users(sid, tablename, users) {
   $(tablename+" tbody").empty();
-  //$(tablename).empty();
   var groups = [];
   var row = "";
   var x = "";
@@ -38,13 +37,10 @@ function layout_all_users(sid, tablename, users) {
     row.append($('<td>').append(users[i].email));
     row.append($('<td>').append(users[i].comment));
     row.append($('<td>').append(x));
-
-    //row.append($('<td>').append(x));
-
   }
 
   //alert("Groups: "+groups);
-  //get_all_events(sid, layout_select_event);
+  get_all_events(sid, layout_select_event);
 
 }
 
