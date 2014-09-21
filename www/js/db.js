@@ -41,6 +41,10 @@ function layout_all_users(sid, tablename, users) {
   get_all_events(sid, layout_select_event);
 }
 
+function select_event(uid) {
+    alert("testing");
+}
+
 // G�r man s� h�r l�gger dem i sekvens eller ska de triggas med event, t ex att man trycker p� knappen.
 // Kanske r�cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
