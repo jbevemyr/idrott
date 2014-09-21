@@ -15,8 +15,8 @@ function get_all_users(sid, cont, tablename) {
 }
 
 function layout_all_users(sid, tablename, users) {
-  //$(tablename+" tbody").empty();
-  $(tablename).empty();
+  $(tablename+" tbody").empty();
+  //$(tablename).empty();
   var groups = [];
   var row = "";
   var x = "";
