@@ -18,9 +18,10 @@ function layout_all_users(sid, tablename, users) {
   $(tablename+" tbody").empty();
   var groups = [];
   var row = "";
-  var x = "<a href=\"#admin-add-user-to-event&uid=" + users[i].id + "\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>"
-//<input type="button" data-icon="delete" data-iconpos="notext" value="Icon only">
+  var x;
+
   for (var i = 0; i < users.length;  i++) {
+      x = "<a href=\"#admin-add-user-to-event&uid=" + users[i].id + "\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
     }
