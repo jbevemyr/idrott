@@ -21,7 +21,7 @@ function layout_all_users(sid, tablename, users) {
   var x;
 
   for (var i = 0; i < users.length;  i++) {
-      x = "<a href=\"#admin-add-user-to-event&uid=" + users[i].id + "\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
+      x = "<a href=\"#admin-add-user-to-event?uid=" + users[i].name + "\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
     }
