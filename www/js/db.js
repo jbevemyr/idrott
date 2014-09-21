@@ -22,7 +22,7 @@ function layout_all_users(sid, tablename, users) {
   var x = "";
 
   for (var i = 0; i < users.length;  i++) {
-  x = $("<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>");
+  x = $("<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>").trigger('refresh');
  //   x = $('<div>');
  //      x = $('<button data-icon="bullets" data-iconpos="notext" data-transition="pop">').button().button('refresh');
 
@@ -38,7 +38,7 @@ function layout_all_users(sid, tablename, users) {
     row.append($('<td>').append(users[i].email));
     row.append($('<td>').append(users[i].comment));
     //row.append($('<td>'));
-    row.append($('<td>').append(x).trigger('create'));
+    row.append($('<td>').append(x).trigger('refresh'));
 
     //row.append($('<td>').append(x));
 
