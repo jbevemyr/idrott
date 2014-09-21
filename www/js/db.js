@@ -24,7 +24,7 @@ function layout_all_users(sid, tablename, users) {
 
   for (var i = 0; i < users.length;  i++) {
  //   x = $("<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>").button();
-    x = $('<div>').button();
+    x = $('<div>');
  //      x = $('<button data-icon="bullets" data-iconpos="notext" data-transition="pop">').button().button('refresh');
 
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
