@@ -23,8 +23,8 @@ function layout_all_users(sid, tablename, users) {
 
 
   for (var i = 0; i < users.length;  i++) {
-//    x = $("<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>");
-      x = $('<button>').button();
+    x = $("<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos='notext' data-icon='bullets' data-transition='pop' ></button>").button();
+ //     x = $('<button>').button();
 
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
