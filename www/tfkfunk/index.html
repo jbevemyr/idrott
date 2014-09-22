@@ -18,10 +18,12 @@
 
         function set_current_event(eid) {
             eventid = eid;
+            return true;
         }
 
         function set_selected_user(uid) {
             userid = uid;
+            return true;
         }
 
         $(document).on("pagecreate", "#login", function() {
