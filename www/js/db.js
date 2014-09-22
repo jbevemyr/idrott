@@ -21,10 +21,7 @@ function layout_all_users(sid, tablename, users) {
   var x = "";
 
   for (var i = 0; i < users.length;  i++) {
-    //x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos=\"notext\" data-icon=\"bullets\" data-transition=\"pop\"></button>";
-    x = "<a href=\"#admin-add-user-to-event\” class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\"></a>";
- //   x = $('<div>');
-       //x = $('<button data-icon="bullets" data-iconpos="notext" data-transition="pop">').button().trigger('create');
+    x = "<a href=\"#admin-add-user-to-event\” data-rel=\"popup\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\" data-transition=\"pop\"></a>";
 
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
@@ -40,19 +37,11 @@ function layout_all_users(sid, tablename, users) {
     row.append($('<td>').append(x));
   }
 
-  //$(".button").enhancedWithin().trigger("create");
   $("#admin-adminlist-table").table("rebuild");
   //alert("Groups: "+groups);
   get_all_events(sid, layout_select_event);
-
-
 }
 
-function select_event(uid) {
-    alert("testing: "+uid);
-    set_selected_user(uid);
-    $.mobile.changePage($("#admin-add-user-to-event"));
-}
 
 // G�r man s� h�r l�gger dem i sekvens eller ska de triggas med event, t ex att man trycker p� knappen.
 // Kanske r�cker det att man resettar valet i dialogen.
