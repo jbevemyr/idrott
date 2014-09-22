@@ -21,9 +21,9 @@ function layout_all_users(sid, tablename, users) {
   var x = "";
 
   for (var i = 0; i < users.length;  i++) {
-  //x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos=\"notext\" data-icon=\"bullets\" data-transition=\"pop\"></button>";
+    x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos=\"notext\" data-icon=\"bullets\" data-transition=\"pop\"></button>";
  //   x = $('<div>');
-       x = $('<button data-icon="bullets" data-iconpos="notext" data-transition="pop">').button().trigger('create');
+       //x = $('<button data-icon="bullets" data-iconpos="notext" data-transition="pop">').button().trigger('create');
 
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
@@ -39,8 +39,11 @@ function layout_all_users(sid, tablename, users) {
     row.append($('<td>').append(x));
   }
 
+  $(".button").button("refresh");
+  $("#admin-adminlist-table").table("rebuild");
   //alert("Groups: "+groups);
   //get_all_events(sid, layout_select_event);
+
 
 }
 
