@@ -55,6 +55,7 @@ function layout_select_event(events) {
     eid = events[i].id;
     ename = events[i].name;
     $('<input type="radio" name="' + eid + '" id="event' + eid +'"><label for="event' + eid + '">' + ename + '</label>').appendTo(domObj);
+    $('div').trigger('create');
   }
   //$('[type="radio"]').trigger("create");
 }
