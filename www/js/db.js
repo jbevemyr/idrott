@@ -21,7 +21,8 @@ function layout_all_users(sid, tablename, users) {
   var x = "";
 
   for (var i = 0; i < users.length;  i++) {
-    x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos=\"notext\" data-icon=\"bullets\" data-transition=\"pop\"></button>";
+    //x = "<button onclick=\"select_event('" + users[i].username + "')\" data-iconpos=\"notext\" data-icon=\"bullets\" data-transition=\"pop\"></button>";
+    x = "<a href=\"#admin-add-user-to-event\” class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all\"></a>";
  //   x = $('<div>');
        //x = $('<button data-icon="bullets" data-iconpos="notext" data-transition="pop">').button().trigger('create');
 
