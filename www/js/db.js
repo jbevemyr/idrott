@@ -56,7 +56,7 @@ function layout_select_event(events) {
     ename = events[i].name;
     $('<input type="radio" name="' + eid + '" id="event' + eid +'"><label for="event' + eid + '">' + ename + '</label>').appendTo(domObj);
   }
-  $('[type="radio"]').trigger("create");
+  //$('[type="radio"]').trigger("create");
 }
 
 function connect_user_to_event(sid, uid) {
