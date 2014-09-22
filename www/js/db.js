@@ -21,7 +21,7 @@ function layout_all_users(sid, tablename, users) {
   var x = "";
 
   for (var i = 0; i < users.length;  i++) {
-    x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all ui-mini\" data-transition=\"flip\"></a>";
+    x = "<a href=\"#admin-add-user-to-event\" data-rel=\"popup\" class=\"ui-btn ui-icon-bullets ui-btn-icon-notext ui-corner-all ui-mini\" data-transition=\"flip\" onclick=\"return true;\"></a>";
 
     if (groups.indexOf((users[i].group) < 0) || (users[i].group != "")) {
       groups.push(users[i].group);
@@ -39,7 +39,7 @@ function layout_all_users(sid, tablename, users) {
 
   //$("#admin-adminlist-table").table("rebuild");
   //alert("Groups: "+groups);
-  //get_all_events(sid, layout_select_event);
+  get_all_events(sid, layout_select_event);
 }
 
 
@@ -55,7 +55,7 @@ function layout_select_event(events) {
     eid = events[i].id;
     ename = events[i].name;
     $('<input type="radio" name="' + eid + '" id="event' + eid +'"><label for="event' + eid + '">' + ename + '</label>').appendTo(domObj);
-    $('div').trigger("create");
+    //$('div').trigger("create");
   }
 }
 
