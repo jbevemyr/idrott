@@ -42,7 +42,7 @@ function layout_all_users(sid, tablename, users) {
   $(".button").enhancedWithin().trigger("create");
   $("#admin-adminlist-table").table("rebuild");
   //alert("Groups: "+groups);
-  //get_all_events(sid, layout_select_event);
+  get_all_events(sid, layout_select_event);
 
 
 }
