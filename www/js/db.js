@@ -3,14 +3,14 @@
 function get_all_users(sid, cont, tablename) {
     $.ajax({
         url: "http://idrott.bevemyr.com/idrott/get_all_users?sid="+sid,
-	dataType: "json",
-	success: function(data) {
-	       cont(sid, tablename, data.users);
-	},
-	error: function(data) {
-	    alert(data.status);
-	    $.mobile.changePage($("#login"));  // should be errorpage
-	}
+        dataType: "json",
+        success: function(data) {
+            cont(sid, tablename, data.users);
+        },
+        error: function(data) {
+            alert(data.status);
+            $.mobile.changePage($("#login"));  // should be errorpage
+        }
     });
 }
 
@@ -61,10 +61,33 @@ function layout_select_event(events) {
   $(domObj).trigger("create");
 }
 
-function connect_user_to_event(sid, uid) {
-    alert($('input[name=admin-add-user-to-event-event]:checked').val());
-    alert("Connect "+uid);
+function connect_user_to_event(sid, username) {
+    var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
 
+    get_named_user(sid, username, eid, function(data) {
+            var newEventList = data.user.events.push({eventid: eid, confirmed: "no", comment: ""});
+            set_named_user(sid, username, {events: newEventList});
+    });
+
+}
+
+function get_named_user(sid, username, event, cont) {
+    $.ajax({
+        url: "http://idrott.bevemyr.com/idrott/get_named_user?username=" + username + "&sid=" + sid,
+        dataType: "json",
+        success: cont,
+        error: function(data) {
+            $.mobile.changePage($("#login"));
+        }
+    });
+}
+
+
+function set_named_user(sid, username, attribute, cont) {
+    $.post("http://idrott.bevemyr.com/idrott/set_named_user?username="+username+"&sid="+sid,
+        JSON.stringify(attribute),
+        cont, "json"
+    );
 }
 
 function get_admin_users(sid, tablename) {
