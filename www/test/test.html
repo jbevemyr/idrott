@@ -489,7 +489,9 @@
               recievers: { events: [{eventid: 1}] }
 	    }),
 	    function(status) {
-	      if(status.status == "ok" &&  $.isArray(status.sent_to)) {
+	      if(status.status == "ok" && 
+                 $.isArray(status.sent_to) &&
+                 $.isArray(status.rejected)) {
                 add_result("---- ok");
                 run_tests();
               } else {

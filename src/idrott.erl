@@ -35,6 +35,13 @@
 -define(a2l(X), atom_to_list(X)).
 -define(l2a(X), list_to_atom(X)).
 
+-define(stack(), try throw(1) catch _:_ -> erlang:get_stacktrace() end).
+-define(liof(Fmt, Args), io:format(user, "~w:~w " ++ Fmt,[?MODULE,?LINE|Args])).
+-define(liof_bt(Fmt, Args), io:format(user, "~w:~w ~s ~p\n",
+                             [?MODULE, ?LINE,
+                              io_lib:format(Fmt, Args), ?stack()])).
+
+
 -define(EMAIL_SENDER, "info@idrott.se").
 -define(MAILSERVER, "mail.bevemyr.com").
 
@@ -436,12 +443,13 @@ do_cmd("mail_selected_users", L, {struct, JsonL}, S) ->
             Subject = get_val("subject", JsonL, []),
             Message = get_val("message", JsonL, []),
             Users = get_user_by_select(Selection, S),
-            Recipients = [get_user_opt("email", SU, "no-address") || SU <- Users],
-            smtp:send(?MAILSERVER, ?EMAIL_SENDER, Recipients, Subject, Message),
+            {SentTo, Rejected} = mail_users(Users, Subject, Message),
             NewS = S,
+            SentToU = {array, [user2object(SU) || SU <- SentTo]},
+            RejectedU = {array, [user2object(SU) || SU <- Rejected]},
             Res = {struct, [{status, "ok"},
-                            {sent_to, {array, [user2object(SU) ||
-                                                SU <- Users]}}]};
+                            {sent_to, SentToU},
+                            {rejected, RejectedU}]};
         #user{} ->
             NewS = S,
             Res = {struct, [{status, "error"},
@@ -847,7 +855,7 @@ store_events(Events) ->
 
 event2object(E) ->
     {struct,
-     [{"id", ?i2l(E#event.id)},
+     [{"id", E#event.id},
       {"name", E#event.name},
       {"date", E#event.date}|
       E#event.data]}.
@@ -1183,3 +1191,21 @@ new_event_id(S) ->
     end.
 
     
+mail_users(Users, Subject, Message) ->
+    mail_users(Users, Subject, Message, [], []).
+
+mail_users([], _Subject, _Message, SentTo, Rejected) ->
+    ?liof("done ~p\n", [{SentTo, Rejected}]),
+    {SentTo, Rejected};
+mail_users([U|Us], Subject, Message, SentTo, Rejected) ->
+    ?liof("Sending to user ~p\n", [get_user_opt("email", U, "no-address")]),
+    case catch smtp:send(?MAILSERVER, ?EMAIL_SENDER,
+                         [get_user_opt("email", U, "no-address")],
+                         Subject, Message, _Attatchment=[]) of
+        ok ->
+            ?liof("success\n", []),
+            mail_users(Us, Subject, Message, [U|SentTo], Rejected);
+        _Error ->
+            ?liof("failed ~p\n", [_Error]),
+            mail_users(Us, Subject, Message, SentTo, [U|Rejected])
+    end.
