@@ -50,17 +50,21 @@ function layout_select_event(events) {
   //var item = $('<ledgend>').append("Arrangemang:").appendTo(domObj);
   var eid;
   var ename;
+    var label;
   $(domObj).empty();
   for (var i = 0; i < events.length; i++) {
     eid = events[i].id;
     ename = events[i].name;
-    $('<input type="radio" name="' + eid + '" id="event' + eid +'"><label for="event' + eid + '">' + ename + '</label>').appendTo(domObj);
+    label = "event"+eid;
+    $('<input type="radio" name="event" id="' + label +'" value="' + label +'"><label for="' + label + '">' + ename + '</label>').appendTo(domObj);
   }
   $('#admin-add-user-to-event-event').trigger("create");
 }
 
 function connect_user_to_event(sid, uid) {
-  alert("Connect "+uid);
+    alert($("#admin-add-user-to-event-event").val());
+    alert($('input[name=event]:checked').val());
+    alert("Connect "+uid);
   
 }
 
