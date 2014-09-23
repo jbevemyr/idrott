@@ -46,7 +46,7 @@ function layout_all_users(sid, tablename, users) {
 // G�r man s� h�r l�gger dem i sekvens eller ska de triggas med event, t ex att man trycker p� knappen.
 // Kanske r�cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
-  var domObj = "#admin-add-user-to-event-event";
+  var domObj = "#admin-add-user-to-event-form";
   //var item = $('<ledgend>').append("Arrangemang:").appendTo(domObj);
   var eid;
   var ename;
