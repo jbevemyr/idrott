@@ -91,6 +91,9 @@
             $( "#connect-user-to-event").click(function() {
                 connect_user_to_event(sessionid, userid);
             });
+            $( "#send-info").click(function() {
+                alert("send_info");
+            });
         });
     </script>
 </head>
@@ -310,7 +313,7 @@
                     <input type="text" name="mailsubject" id="mailsubject" value="" placeholder="Brevets rubrik" data-theme="a">
                     <label for="mailtext" class="ui-hidden-accessible">Brevtext</label>
                     <input type="text" name="mailtext" id="mailtext" value="" placeholder="Brev ..." data-theme="a">
-                    <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Skicka kallelse</button>
+                    <button type="button" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check" id="send-info">Skicka kallelse</button>
                 </div>
             </form>
         </div>
