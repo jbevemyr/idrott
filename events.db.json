@@ -1,7 +1,7 @@
 [
     {
         "id": 3,
-        "name": "my first event",
+        "name": "My first event",
         "date": "2014-12-22",
         "location": "Vallen",
 	"pm": "",
@@ -14,7 +14,7 @@
         "id": 4,
         "name": "Vildsvinet 2015",
         "date": "2015-04-04",
-        "location": "Väsjöbacken",
+        "location": "VÃ¤sjÃ¶backen",
 	"pm": "",
 	"timeschedule": "",
         "funcinfo": "http://www.turebergsfk.com",
@@ -25,7 +25,7 @@
         "id": 5,
         "name": "Kastkollen",
         "date": "2015-05-10",
-        "location": "Sportfältet",
+        "location": "SportfÃ¤ltet",
 	"pm": "",
 	"timeschedule": "",
         "funcinfo": "http://www.turebergsfk.com",
