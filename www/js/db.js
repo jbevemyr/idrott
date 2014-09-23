@@ -56,16 +56,15 @@ function layout_select_event(events) {
     eid = events[i].id;
     ename = events[i].name;
     label = "event"+eid;
-    $('<input type="radio" name="event" id="' + label +'" value="' + label +'"><label for="' + label + '">' + ename + '</label>').appendTo(domObj);
+    $('<input type="radio" name="admin-add-user-to-event-event" id="' + label +'" value="' + eid +'"><label for="' + label + '">' + ename + '</label>').appendTo(domObj);
   }
   $('#admin-add-user-to-event-event').trigger("create");
 }
 
 function connect_user_to_event(sid, uid) {
-    alert($("#admin-add-user-to-event-event").val());
-    alert($('input[name=event]:checked').val());
+    alert($('input[name=admin-add-user-to-event-event]:checked').val());
     alert("Connect "+uid);
-  
+
 }
 
 function get_admin_users(sid, tablename) {
