@@ -200,7 +200,7 @@ function layout_all_events(events) {
 function layout_eventrow(event, rowid) {
   var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
   row.append($('<h4>').append(event.name));
-  row.append($('<p>').append("<a href='#admin-event-funclist'>Bemanning</a>"));
+  row.append($('<p>').append("<a href='#admin-event-funclist' onclick=\"return set_current_event('"+event+"');\">Bemanning</a>"));
   row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
   row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
   row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
