@@ -65,7 +65,8 @@ function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
 
     get_named_user(sid, username, eid, function(data) {
-            var newEventList = data.user.events.push({eventid: eid, confirmed: "no", comment: ""});
+            var newEventList = data.user.events;
+            newEventList.push({eventid: eid, confirmed: "no", comment: ""});
             set_named_user(sid, username, {events: newEventList});
     });
 
