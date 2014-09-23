@@ -66,7 +66,7 @@ function connect_user_to_event(sid, username) {
 
     get_named_user(sid, username, eid, function(data) {
             var newEventList = data.user.events;
-            newEventList.push({eventid: eid, confirmed: "no", comment: ""});
+            newEventList.push({eventid: eid*1, confirmed: "no", comment: ""});
             set_named_user(sid, username, {events: newEventList});
     });
 
