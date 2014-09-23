@@ -58,7 +58,7 @@ function layout_select_event(events) {
     label = "event"+eid;
     $('<input type="radio" name="admin-add-user-to-event-event" id="' + label +'" value="' + eid +'"><label for="' + label + '">' + ename + '</label>').appendTo(domObj);
   }
-  $('#admin-add-user-to-event-event').trigger("create");
+  $(domObj).trigger("create");
 }
 
 function connect_user_to_event(sid, uid) {
