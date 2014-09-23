@@ -15,11 +15,11 @@
             {
              "eventid":1,
              "confirmed":"yes",
-             "comment":"blå tröja"
+             "comment":"blÃ¥ trÃ¶ja"
             }
            ],
   "group":"",
-  "address":"Gosta Tamms vag 16",
+  "address":"Gosta Tamms vÃ¤g 16",
   "name":"Johan Bevemyr"
  },
  {
@@ -30,17 +30,17 @@
   "role":"admin",
   "passwd_reset_id":"",
   "passwd_reset_send_time":"",
-  "comment":"mäter bra",
+  "comment":"mï¿½ter bra",
   "email":"kati@bevemyr.com",
   "tel":"0708989800",
   "events":[
             {
              "eventid":1,
              "confirmed":"no",
-             "comment":"blå tröja"
+             "comment":"rÃ¶d trÃ¶ja"
             }
            ],
-  "address":"Gosta Tamms vag 16",
+  "address":"Gosta Tamms vÃ¤g 16",
   "name":"Katrin Bevemyr"
  },
  {
@@ -51,17 +51,17 @@
   "role":"user",
   "passwd_reset_id":"",
   "passwd_reset_send_time":"",
-  "comment":"mäter bra",
+  "comment":"mï¿½ter bra",
   "email":"test@bevemyr.com",
   "tel":"0708989800",
   "events":[
             {
              "eventid":1,
              "confirmed":"no",
-             "comment":"blå tröja"
+             "comment":"blÃ¥ trÃ¶ja"
             }
            ],
-  "address":"Gosta Tamms vag 16",
+  "address":"Gosta Tamms vÃ¤g 16",
   "name":"Test user"
  }
 ]
