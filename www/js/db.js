@@ -243,7 +243,7 @@ function add_new_event(sid) {
 function get_all_func_for_event(sid, eid, tablename) {
   $.post("http://idrott.bevemyr.com/idrott/get_selected_users?sid="+sid,
 	 JSON.stringify({
-           events: [{eventid: eid}]
+           events: [{eventid: eid*1}]
 	 }),
 	 function(data) {
 	   if(data.status == "ok") { // string otherwise an object session/group
