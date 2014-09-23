@@ -259,11 +259,8 @@ function get_all_func_for_event(sid, eid, tablename) {
 
 function layout_event_funclist(tablename, users) {
   // You want to be able to print the list and export to csv.
-  var groups = [];
-  var groupoptions = "";
   var row = "";
   $(tablename+" tbody").empty();
-  groupoptions.appendTo("#admin-event-funclist-groups");
   for (var i = 0; i < users.length;  i++) {
     row = $('<tr id=funclistID='+i+'>');
     row.appendTo(tablename);
@@ -273,12 +270,7 @@ function layout_event_funclist(tablename, users) {
     row.append($('<td>').append(users[i].email));
     row.append($('<td>').append(users[i].comment));
     row.append($('<td>').append());
-
-    // <option value="small">One</option>
-    groupoptions.append($('<option>').append(users[i].group));
-    groups.push(users[i].group);
   }
-  alert(groups);
 }
 
 
