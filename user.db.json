@@ -30,7 +30,7 @@
   "role":"admin",
   "passwd_reset_id":"",
   "passwd_reset_send_time":"",
-  "comment":"m�ter bra",
+  "comment":"mäter bra",
   "email":"kati@bevemyr.com",
   "tel":"0708989800",
   "events":[
@@ -51,7 +51,7 @@
   "role":"user",
   "passwd_reset_id":"",
   "passwd_reset_send_time":"",
-  "comment":"m�ter bra",
+  "comment":"mäter bra",
   "email":"test@bevemyr.com",
   "tel":"0708989800",
   "events":[

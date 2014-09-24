@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
-    <title>Tureberg FK - funktionärer</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Tureberg FK - funktionÃ¤rer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://idrott.bevemyr.com/www/jquery/jquery.mobile-1.4.3/jquery.mobile-1.4.3.min.css"/>
     <link rel="stylesheet" href="http://idrott.bevemyr.com/www/jquery/jquery-mobile-theme-053329-0/themes/BevemyrMobileV1.min.css" />
@@ -11,7 +11,7 @@
     <script src="http://idrott.bevemyr.com/www/js/db.js"></script>
 
     <script>
-        // Här behöver man lägga till en hantering av användare som inte loggat in och försöker nå en specifik sida.
+        // HÃ¤r behÃ¶ver man lÃ¤gga till en hantering av anvÃ¤ndare som inte loggat in och fÃ¶rsÃ¶ker nÃ¥ en specifik sida.
         sessionid = "1234567890";
         eventid = 0;
         userid = 0;
@@ -107,27 +107,27 @@
     <div data-role="main" class="ui-content">
         <label for="login_name">Namn</label>
         <input type="text" data-clear-btn="true" name="login_name" id="login_name" placeholder="E-post" value="">
-        <label for="login_passwd">Lösenord</label>
-        <input type="password" data-clear-btn="true" name="login_passwd" id="login_passwd" placeholder="Lösenord" value="">
+        <label for="login_passwd">LÃ¶senord</label>
+        <input type="password" data-clear-btn="true" name="login_passwd" id="login_passwd" placeholder="LÃ¶senord" value="">
         <button class="ui-shadow ui-btn ui-corner-all" type="submit" id="login_submit">Logga in</button>
     </div>
 
     <div data-role="footer">Tureberg FK</div>
 </div>
 
-<!-- Klubbadministratör pages -->
-<!-- Klubbadministratörs startsida -->
+<!-- KlubbadministratÃ¶r pages -->
+<!-- KlubbadministratÃ¶rs startsida -->
 <div data-role="page" id="admin-startpage">
     <div data-role="header" style="overflow:hidden;">
-        <h3>Klubbadminstratör</h3>
-        <a href="#" data-icon="gear" class="ui-btn-right">Inställningar</a>
+        <h3>KlubbadminstratÃ¶r</h3>
+        <a href="#" data-icon="gear" class="ui-btn-right">InstÃ¤llningar</a>
     </div>
 
     <div role="main" class="ui-content">
         <ul data-role="listview" data-inset="true">
             <li data-role="list-divider">Arrangemangsadministration</li>
             <li><a href="#admin-eventlist">Arrangemang</a></li>
-            <li><a href="#admin-funclist">Funktionärer</a></li>
+            <li><a href="#admin-funclist">FunktionÃ¤rer</a></li>
             <li><a href="#admin-adminlist">Kontakt</a></li>
             <li><a href="#">Mallar</a></li>
             <li><a href="#">Manual</a></li>
@@ -138,17 +138,17 @@
 </div>
 
 
-<!-- Klubbadministratörs Funktionärslista -->
+<!-- KlubbadministratÃ¶rs FunktionÃ¤rslista -->
 <div data-role="page" id="admin-funclist">
     <div data-role="header" style="overflow:hidden;">
         <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Klubbadministratör</h1>
+        <h1>KlubbadministratÃ¶r</h1>
         <a href="#admin-us" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
     </div><!-- /header -->
 
     <div role="main" class="ui-content">
-        <h1>Funktionärslista</h1>
-        <p>En listning av funktionärer i systemet.</p>
+        <h1>FunktionÃ¤rslista</h1>
+        <p>En listning av funktionÃ¤rer i systemet.</p>
         <form>
             <input id="admin-funclist-filter" data-type="search">
         </form>
@@ -169,7 +169,7 @@
     </div>
 
 
-    <!-- Klubbadministratör (subpage) Add user to event -->
+    <!-- KlubbadministratÃ¶r (subpage) Add user to event -->
     <div data-role="popup" id="admin-add-user-to-event" data-theme="a" class="ui-corner-all">
         <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
         <form>
@@ -178,7 +178,7 @@
                 <fieldset data-role="controlgroup" id="admin-add-user-to-event-form">
                 </fieldset>
 
-                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left" id="connect-user-to-event">Lägg till</button>
+                <button type="button" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left" id="connect-user-to-event">LÃ¤gg till</button>
             </div>
         </form>
     </div>
@@ -190,18 +190,18 @@
 
 
 
-<!-- Klubbadministratör Create new user -->
+<!-- KlubbadministratÃ¶r Create new user -->
 <div data-role="page" id="admin-us">
     <div data-role="header">
         <a href="#admin-funclist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
-        <h1>Ny funktionär</h1>
+        <h1>Ny funktionÃ¤r</h1>
         <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="us-add">Save</button>
     </div>
 
     <div role="main" class="ui-content">
         <form id="us-form">
             <ul data-role="listview" data-inset="true" data-mini="true">
-                <li data-role="list-divider">Användarinställningar</li>
+                <li data-role="list-divider">AnvÃ¤ndarinstÃ¤llningar</li>
                 <li class="ui-field-contain">
                     <label for="us-name">Namn</label>
                     <input type="text" data-clear-btn="true" name="us-name" id="us-name" placeholder="" value="">
@@ -223,7 +223,7 @@
                 </li>
 
                 <li class="ui-field-contain">
-                    <label for="us-role">Administratör</label>
+                    <label for="us-role">AdministratÃ¶r</label>
                     <select name="us-role" id="us-role" data-role="slider" data-mini="true">
                         <option value="admin">Ja</option>
                         <option value="user" selected="">Nej</option>
@@ -242,16 +242,16 @@
 </div>
 
 
-<!-- Klubbadministratörs Administratörslista -->
+<!-- KlubbadministratÃ¶rs AdministratÃ¶rslista -->
 <div data-role="page" id="admin-adminlist">
     <div data-role="header" style="overflow:hidden;">
         <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Klubbadministratör</h1>
-        <a href="#" data-icon="gear" class="ui-btn-right">Inställningar</a>
+        <h1>KlubbadministratÃ¶r</h1>
+        <a href="#" data-icon="gear" class="ui-btn-right">InstÃ¤llningar</a>
     </div><!-- /header -->
     <div role="main" class="ui-content">
-        <h1>Adminstratörslista</h1>
-        <p>De som listas nedan är klubbadministratörer.</p>
+        <h1>AdminstratÃ¶rslista</h1>
+        <p>De som listas nedan Ã¤r klubbadministratÃ¶rer.</p>
         <form>
             <input id="admin-adminlist-filter" data-type="search">
         </form>
@@ -274,16 +274,16 @@
 </div>
 
 
-<!-- Klubbadministratörs Eventlista -->
+<!-- KlubbadministratÃ¶rs Eventlista -->
 <div data-role="page" id="admin-eventlist">
     <div data-role="header" style="overflow:hidden;">
         <a href="#admin-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Klubbadministratör</h1>
+        <h1>KlubbadministratÃ¶r</h1>
         <a href="#admin-es" data-icon="plus" data-mini="true" class="ui-btn-right" id=>New</a>
     </div><!-- /header -->
     <div role="main" class="ui-content">
         <h1>Klubbens arrangemang</h1>
-        <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" data-filter="true" data-filter-placeholder="Arrangemangsnamn eller nåt" id="admin-eventlist-table">
+        <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" data-filter="true" data-filter-placeholder="Arrangemangsnamn eller nÃ¥t" id="admin-eventlist-table">
             <h1>Arrangemang</h1>
         </div>
     </div>
@@ -291,24 +291,24 @@
     <div data-role="footer">Tureberg FK</div>
 </div>
 
-<!-- Klubbadministratörs EventFunktionärslista -->
+<!-- KlubbadministratÃ¶rs EventFunktionÃ¤rslista -->
 <div data-role="page" id="admin-event-funclist">
     <div data-role="header" style="overflow:hidden;">
         <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Klubbadministratör</h1>
+        <h1>KlubbadministratÃ¶r</h1>
         <a href="#admin-event-func-print" data-icon="plus" data-mini="true" class="ui-btn-right" id=>Print</a>
     </div><!-- /header -->
 
     <div role="main" class="ui-content">
-        <h1>Funktionärslista <div id="eventname"></div></h1>
-        <p>En listning av funktionärer kallade till ett arrangemang.</p>
+        <h1>FunktionÃ¤rslista <div id="eventname"></div></h1>
+        <p>En listning av funktionÃ¤rer kallade till ett arrangemang.</p>
 
         <!-- call dialog -->
         <a href="#callDialog" data-rel="popup" data-position-to="window" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-check ui-btn-icon-left ui-btn-a" data-transition="pop">Call</a>
         <div data-role="popup" id="callDialog" data-theme="a" class="ui-corner-all">
             <form>
                 <div style="padding:10px 20px;">
-                    <h3>Skicka funktionsärskallelse</h3>
+                    <h3>Skicka funktionsÃ¤rskallelse</h3>
                     <label for="mailsubject" class="ui-hidden-accessible">Rubrik</label>
                     <input type="text" name="mailsubject" id="mailsubject" value="" placeholder="Brevets rubrik" data-theme="a">
                     <label for="mailtext" class="ui-hidden-accessible">Brevtext</label>
@@ -341,7 +341,7 @@
 </div>
 
 
-<!-- Klubbadministratörs skapa nytt Event -->
+<!-- KlubbadministratÃ¶rs skapa nytt Event -->
 <div data-role="page" id="admin-es">
     <div data-role="header">
         <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
@@ -354,12 +354,12 @@
             <ul data-role="listview" data-inset="true" data-mini="true">
                 <li class="ui-field-contain">
                     <label for="es-name">Namn</label>
-                    <input type="text" data-clear-btn="true" name="es-name" id="es-name" placeholder="Namn på arrangemanget" value="">
+                    <input type="text" data-clear-btn="true" name="es-name" id="es-name" placeholder="Namn pÃ¥ arrangemanget" value="">
                 </li>
 
                 <li class="ui-field-contain">
                     <label for="es-date">Datum</label>
-                    <input type="date" data-clear-btn="true" name="es-date" id="es-date" placeholder="Datum för arrangemanget" value="">
+                    <input type="date" data-clear-btn="true" name="es-date" id="es-date" placeholder="Datum fÃ¶r arrangemanget" value="">
                 </li>
 
                 <li class="ui-field-contain">
@@ -369,29 +369,29 @@
 
                 <li class="ui-field-contain">
                     <label for="es-pm">PM</label>
-                    <input type="text" data-clear-btn="true" name="es-pm" id="es-pm" placeholder="Länk till PM" value="">
+                    <input type="text" data-clear-btn="true" name="es-pm" id="es-pm" placeholder="LÃ¤nk till PM" value="">
                 </li>
 
                 <li class="ui-field-contain">
                     <label for="es-ts">Tidsprogram</label>
-                    <input type="text" data-clear-btn="true" name="es-ts" id="es-ts" placeholder="Länk till tidsprogram" value="">
+                    <input type="text" data-clear-btn="true" name="es-ts" id="es-ts" placeholder="LÃ¤nk till tidsprogram" value="">
                 </li>
 
                 <li class="ui-field-contain">
-                    <label for="es-fi">Funktionärsinfo</label>
-                    <input type="text" data-clear-btn="true" name="es-fi" id="es-fi" placeholder="Länk till funktionärsinfo" value="">
+                    <label for="es-fi">FunktionÃ¤rsinfo</label>
+                    <input type="text" data-clear-btn="true" name="es-fi" id="es-fi" placeholder="LÃ¤nk till funktionÃ¤rsinfo" value="">
                 </li>
 
                 <li class="ui-field-contain">
-                    <label for="es-fn">Antal funktionärer:</label>
+                    <label for="es-fn">Antal funktionÃ¤rer:</label>
                     <input type="number" data-clear-btn="true" name="es-fn" id="es-fn" pattern="[0-9]*" value="">
                 </li>
 
                 <li class="ui-field-contain">
-                    <label for="es-fcall">Funktionsärsanmälan:</label>
+                    <label for="es-fcall">FunktionsÃ¤rsanmÃ¤lan:</label>
                     <select name="es-fcall" id="es-fcall" data-role="slider" data-mini="true">
-                        <option value="open">Öppen</option>
-                        <option value="closed" selected="">Stängd</option>
+                        <option value="open">Ã–ppen</option>
+                        <option value="closed" selected="">StÃ¤ngd</option>
                     </select>
                 </li>
 
@@ -408,7 +408,7 @@
 </div>
 
 
-<!-- Klubbadministratörs uppdatera Event -->
+<!-- KlubbadministratÃ¶rs uppdatera Event -->
 <div data-role="page" id="admin-es-update">
     <div data-role="header">
         <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
@@ -421,12 +421,12 @@
             <ul data-role="listview" data-inset="true" data-mini="true">
                 <li class="ui-field-contain">
                     <label for="es-update-name">Namn</label>
-                    <input type="text" data-clear-btn="true" name="es-update-name" id="es-update-name" placeholder="Namn på arrangemanget" value="">
+                    <input type="text" data-clear-btn="true" name="es-update-name" id="es-update-name" placeholder="Namn pÃ¥ arrangemanget" value="">
                 </li>
 
                 <li class="ui-field-contain">
                     <label for="es-update-date">Datum</label>
-                    <input type="date" data-clear-btn="true" name="es-update-date" id="es-update-date" placeholder="Datum för arrangemanget" value="">
+                    <input type="date" data-clear-btn="true" name="es-update-date" id="es-update-date" placeholder="Datum fÃ¶r arrangemanget" value="">
                 </li>
 
                 <li class="ui-field-contain">
@@ -436,29 +436,29 @@
 
                 <li class="ui-field-contain">
                     <label for="es-update-pm">PM</label>
-                    <input type="text" data-clear-btn="true" name="es-update-pm" id="es-update-pm" placeholder="Länk till PM" value="">
+                    <input type="text" data-clear-btn="true" name="es-update-pm" id="es-update-pm" placeholder="LÃ¤nk till PM" value="">
                 </li>
 
                 <li class="ui-field-contain">
                     <label for="es-update-ts">Tidsprogram</label>
-                    <input type="text" data-clear-btn="true" name="es-update-ts" id="es-update-ts" placeholder="Länk till tidsprogram" value="">
+                    <input type="text" data-clear-btn="true" name="es-update-ts" id="es-update-ts" placeholder="LÃ¤nk till tidsprogram" value="">
                 </li>
 
                 <li class="ui-field-contain">
-                    <label for="es-update-fi">Funktionärsinfo</label>
-                    <input type="text" data-clear-btn="true" name="es-update-fi" id="es-update-fi" placeholder="Länk till funktionärsinfo" value="">
+                    <label for="es-update-fi">FunktionÃ¤rsinfo</label>
+                    <input type="text" data-clear-btn="true" name="es-update-fi" id="es-update-fi" placeholder="LÃ¤nk till funktionÃ¤rsinfo" value="">
                 </li>
 
                 <li class="ui-field-contain">
-                    <label for="es-update-fn">Antal funktionärer:</label>
+                    <label for="es-update-fn">Antal funktionÃ¤rer:</label>
                     <input type="number" data-clear-btn="true" name="es-update-fn" id="es-update-fn" pattern="[0-9]*" value="">
                 </li>
 
                 <li class="ui-field-contain">
-                    <label for="es-update-fcall">Funktionsärsanmälan:</label>
+                    <label for="es-update-fcall">FunktionsÃ¤rsanmÃ¤lan:</label>
                     <select name="es-update-fcall" id="es-update-fcall" data-role="slider">
-                        <option value="open">Öppen</option>
-                        <option value="closed" selected="">Stängd</option>
+                        <option value="open">Ã–ppen</option>
+                        <option value="closed" selected="">StÃ¤ngd</option>
                     </select>
                 </li>
 
@@ -475,18 +475,18 @@
 </div>
 
 
-<!-- Funktionärssidor -->
-<!-- Funktionärs startsida -->
+<!-- FunktionÃ¤rssidor -->
+<!-- FunktionÃ¤rs startsida -->
 <div data-role="page" id="func-startpage">
     <div data-role="header" style="overflow:hidden;">
-        <h1>Funktionär</h1>
-        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+        <h1>FunktionÃ¤r</h1>
+        <a href="#func-us" data-icon="gear" class="ui-btn-right">InstÃ¤llningar</a>
     </div>
 
     <div role="main" class="ui-content">
         <ul data-role="listview" data-inset="true">
-            <li data-role="list-divider">Funktionärsuppdrag</li>
-            <li><a href="#func-requests">Förfrågningar</a></li>
+            <li data-role="list-divider">FunktionÃ¤rsuppdrag</li>
+            <li><a href="#func-requests">FÃ¶rfrÃ¥gningar</a></li>
             <li><a href="#func-myevents">Mina uppdrag</a></li>
             <li><a href="#">Klubb kontakt</a></li>
             <li><a href="#">Manual</a></li>
@@ -497,12 +497,12 @@
 </div>
 
 
-<!-- Funktionsärs alla event -->
+<!-- FunktionsÃ¤rs alla event -->
 <div data-role="page" id="func-myevents">
     <div data-role="header" style="overflow:hidden;">
         <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Mina åtaganden</h1>
-        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+        <h1>Mina Ã¥taganden</h1>
+        <a href="#func-us" data-icon="gear" class="ui-btn-right">InstÃ¤llningar</a>
     </div><!-- /header -->
 
     <div role="main" class="ui-content">
@@ -534,18 +534,18 @@
 </div>
 
 
-<!-- Funktionärs Önskningar -->
+<!-- FunktionÃ¤rs Ã–nskningar -->
 <div data-role="page" id="func-requests">
     <div data-role="header" style="overflow:hidden;">
         <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Önskningar</h1>
-        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+        <h1>Ã–nskningar</h1>
+        <a href="#func-us" data-icon="gear" class="ui-btn-right">InstÃ¤llningar</a>
     </div><!-- /header -->
     <div role="main" class="ui-content">
         <table data-role="table" id="func-reqs-table" data-mode="reflow" class="ui-responsive">
             <thead>
             <tr>
-                <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
+                <th data-priority="1"><abbr title="Jag har bekrÃ¤ftat mitt deltagande">BekrÃ¤ftat</abbr></th>
                 <th data-priority="persist">Arrangemang</th>
                 <th data-priority="persist">Datum</th>
             </tr>
