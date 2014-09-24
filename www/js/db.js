@@ -66,10 +66,19 @@ function connect_user_to_event(sid, username) {
 
     get_named_user(sid, username, eid, function(data) {
             var newEventList = data.user.events;
+        var found = false;
+        for(var i=0; i < newEventList.length; i++) {
+            if(newEventList[i].id == eid) {
+                found = true;
+            }
+        }
+        if (!found) {
             newEventList.push({eventid: eid*1, confirmed: "no", comment: ""});
             set_named_user(sid, username, {events: newEventList});
+        }
     });
 
+    $("#admin-add-user-to-event-event").trigger("reset");
 }
 
 function get_named_user(sid, username, event, cont) {
@@ -149,27 +158,27 @@ function add_new_user(sid) {
 }
 
 function update_user(sid) {
-  $.post("http://idrott.bevemyr.com/idrott/add_user?sid="+sid,
-	 JSON.stringify({
-           name: $('#us-update-name').val(),
-           email: $('#us-update-email').val(),
-           phone: $('#us-update-phone').val(),
-	   group: $('#es-update-group').val(),
-           role: $('#es-update-role').val(),
-           events: [],  //TBD
-	   not: $('#es-not').val()
-	 }),
-	 function(status) {
-	   if(status.status == "ok") { // string otherwise an object session/group
-	     $('#us-update-form')[0].reset();
-	     $.mobile.changePage($("#admin-eventlist"));
-           } else {
-	     alert(status.status);
-	     $.mobile.changePage($("#login"));
-	   }
-	 },
-	 "json"
-  );
+    $.post("http://idrott.bevemyr.com/idrott/add_user?sid="+sid,
+        JSON.stringify({
+            name: $('#us-update-name').val(),
+            email: $('#us-update-email').val(),
+            phone: $('#us-update-phone').val(),
+            group: $('#es-update-group').val(),
+            role: $('#es-update-role').val(),
+            events: [],  //TBD
+            not: $('#es-not').val()
+        }),
+        function(status) {
+            if(status.status == "ok") { // string otherwise an object session/group
+                $('#us-update-form')[0].reset();
+                $.mobile.changePage($("#admin-eventlist"));
+            } else {
+                alert(status.status);
+                $.mobile.changePage($("#login"));
+            }
+        },
+        "json"
+    );
 }
 
 
