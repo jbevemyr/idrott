@@ -26,6 +26,11 @@
             return true;
         }
 
+        function esReset() {
+            $('#es-form')[0].reset();
+            return true;
+        }
+
         $(document).on("pagecreate", "#login", function() {
             $("#login_submit").on('click', function(e) {
                 $.ajax({
@@ -350,7 +355,7 @@
 <!-- Klubbadministratörs skapa nytt Event -->
 <div data-role="page" id="admin-es">
     <div data-role="header">
-        <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete">Cancel</a>
+        <a href="#admin-eventlist" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-delete" onclick="return esReset();">Cancel</a>
         <h1>Nytt arrangemang</h1>
         <button type="button" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-check" id="es-add">Save</button>
     </div>
