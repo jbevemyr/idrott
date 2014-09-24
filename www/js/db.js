@@ -47,7 +47,9 @@ function layout_all_users(sid, tablename, users) {
 // Kanske r�cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
   var domObj = "#admin-add-user-to-event-form";
-  var item = $('<ledgend>').append("Koppla användare till:").appendTo(domObj);
+  var item = $('<ledgend>');
+  item.appendTo(domObj);
+    item.append("Koppla användare till:").appendTo(domObj);
   var eid;
   var ename;
   var label;
