@@ -256,7 +256,6 @@ function add_new_event(sid) {
         },
         "json"
     );
-    return false;
 }
 
 function get_all_func_for_event(sid, eid, tablename) {
@@ -317,7 +316,6 @@ function update_event(sid, eid) {
         },
         "json"
     );
-    return false;
 }
 
 

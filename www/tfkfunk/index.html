@@ -77,22 +77,28 @@
         $( document ).on( "pagecreate", function() {
             $("#es-add").click(function() {
                 add_new_event(sessionid);
+                return false;
             });
             $( "#es-update" ).click(function() {
-                update-event(sessionid);
+                update-event(sessionid,eventid);
+                return false;
             });
             $("#us-add").click(function() {
                 add_new_user(sessionid);
+                return false;
             });
             $( "#us-update" ).click(function() {
                 update-user(sessionid);
+                return false;
             });
             $( "#connect-user-to-event").click(function() {
                 connect_user_to_event(sessionid, userid);
                 $.mobile.changePage($("#admin-funclist"));
+                return false;
             });
             $( "#send-info").click(function() {
                 alert("send_info");
+                return false;
             });
         });
     </script>
