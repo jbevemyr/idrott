@@ -318,6 +318,9 @@ function update_event(sid, eid) {
     );
 }
 
+function get_user_events(sid, uid) {
+    alert("here");
+}
 
 function layout_all_reqs(reqs) {
 
