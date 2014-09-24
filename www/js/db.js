@@ -79,9 +79,10 @@ function re_layout_select_event() {
 
 function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
-    alert("eid="+ eid);
     re_layout_select_event();
     //$('input[name=admin-add-user-to-event-event]:checked').attr("checked", false);
+    if (eid == undefined)
+        return;
 
     get_named_user(sid, username, eid, function(data) {
         var newEventList = data.user.events;
