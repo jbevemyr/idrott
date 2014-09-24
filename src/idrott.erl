@@ -609,6 +609,7 @@ do_cmd("create_event", L, Json, S) ->
             {S2, Id} = new_event_id(S),
             Event = apply_event_json(#event{id=Id}, Json),
             NewS = S2#state{events=[Event|S2#state.events]},
+            store_events(NewS#state.events),
             Res = {struct, [{status, "ok"},
                             {event, event2object(Event)}]};
         #user{} ->
