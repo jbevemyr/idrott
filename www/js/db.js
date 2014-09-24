@@ -69,7 +69,7 @@ function connect_user_to_event(sid, username) {
     get_named_user(sid, username, eid, function(data) {
         var newEventList = data.user.events;
         var found = false;
-        alert("eid: "+eid+" events: "+events.toString());
+        alert("eid: "+eid+" events: "+newEventList.toString());
         for(var i=0; i < newEventList.length; i++) {
             if(newEventList[i].eventid == eid) {
                 found = true;
