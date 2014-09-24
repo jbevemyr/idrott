@@ -65,9 +65,8 @@ function layout_select_event(events) {
 
 function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
-    $('input[name=admin-add-user-to-event-event]').removeAttr('checked');
-    alert("here");
-
+    $('input[name=admin-add-user-to-event-event]').prop("checked", false);
+    $('#event5').prop("checked", false);
 
     get_named_user(sid, username, eid, function(data) {
         var newEventList = data.user.events;
