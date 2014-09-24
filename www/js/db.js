@@ -50,18 +50,8 @@ function layout_select_event(events) {
   var domObj = "#admin-add-user-to-event-form";
   var item = $('<ledgend>');
   item.appendTo(domObj);
-    item.append("Koppla användare till:").appendTo(domObj);
-  var eid;
-  var ename;
-  var label;
-  $(domObj).empty();
-  for (var i = 0; i < events.length; i++) {
-    eid = events[i].id;
-    ename = events[i].name;
-    label = "event"+eid;
-    $('<input type="radio" name="admin-add-user-to-event-event" id="' + label +'" value="' + eid +'"><label for="' + label + '">' + ename + '</label>').appendTo(domObj);
-  }
-  $(domObj).trigger("create");
+  item.append("Koppla användare till:").appendTo(domObj);
+  re_layout_select_event();
 }
 
 function re_layout_select_event() {
@@ -69,9 +59,9 @@ function re_layout_select_event() {
     var domObj = "#admin-add-user-to-event-form";
     $(domObj).empty();
     for (var i = 0; i < events.length; i++) {
-        eid = events[i].id;
-        ename = events[i].name;
-        label = "event"+eid;
+        var eid = events[i].id;
+        var ename = events[i].name;
+        var label = "event"+eid;
         $('<input type="radio" name="admin-add-user-to-event-event" id="' + label +'" value="' + eid +'"><label for="' + label + '">' + ename + '</label>').appendTo(domObj);
     }
     $(domObj).trigger("create");
@@ -80,9 +70,10 @@ function re_layout_select_event() {
 function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
     re_layout_select_event();
-    //$('input[name=admin-add-user-to-event-event]:checked').attr("checked", false);
-    if (eid == undefined)
-        return;
+    if (eid == undefined) {
+        alert("here");
+        return false;
+    }
 
     get_named_user(sid, username, eid, function(data) {
         var newEventList = data.user.events;
@@ -97,6 +88,7 @@ function connect_user_to_event(sid, username) {
             set_named_user(sid, username, {events: newEventList});
         }
     });
+    return false;
 }
 
 function get_named_user(sid, username, event, cont) {
