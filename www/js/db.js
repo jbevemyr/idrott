@@ -65,11 +65,11 @@ function layout_select_event(events) {
 
 function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
+    $('input[name=admin-add-user-to-event-event]:checked').attr('checked', false);
 
     get_named_user(sid, username, eid, function(data) {
         var newEventList = data.user.events;
         var found = false;
-        alert("eid: "+eid+" events: "+newEventList.length);
         for(var i=0; i < newEventList.length; i++) {
             if(newEventList[i].eventid == eid) {
                 found = true;
@@ -78,12 +78,8 @@ function connect_user_to_event(sid, username) {
         if (!found) {
             newEventList.push({eventid: eid*1, confirmed: "no", comment: ""});
             set_named_user(sid, username, {events: newEventList});
-                alert("added");
         }
-        alert("Found: "+found);
     });
-
-    $("#admin-add-user-to-event-form").trigger("reset");
 }
 
 function get_named_user(sid, username, event, cont) {
