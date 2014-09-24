@@ -46,6 +46,7 @@ function layout_all_users(sid, tablename, users) {
 // G�r man s� h�r l�gger dem i sekvens eller ska de triggas med event, t ex att man trycker p� knappen.
 // Kanske r�cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
+  last_events=events;
   var domObj = "#admin-add-user-to-event-form";
   var item = $('<ledgend>');
   item.appendTo(domObj);
@@ -63,10 +64,24 @@ function layout_select_event(events) {
   $(domObj).trigger("create");
 }
 
+function re_layout_select_event() {
+    var events = last_events;
+    var domObj = "#admin-add-user-to-event-form";
+    $(domObj).empty();
+    for (var i = 0; i < events.length; i++) {
+        eid = events[i].id;
+        ename = events[i].name;
+        label = "event"+eid;
+        $('<input type="radio" name="admin-add-user-to-event-event" id="' + label +'" value="' + eid +'"><label for="' + label + '">' + ename + '</label>').appendTo(domObj);
+    }
+    $(domObj).trigger("create");
+}
+
 function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
     alert("eid="+ eid);
-    $('input[name=admin-add-user-to-event-event]:checked').attr("checked", false);
+    re_layout_select_event();
+    //$('input[name=admin-add-user-to-event-event]:checked').attr("checked", false);
 
     get_named_user(sid, username, eid, function(data) {
         var newEventList = data.user.events;
