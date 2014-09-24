@@ -69,8 +69,9 @@ function connect_user_to_event(sid, username) {
     get_named_user(sid, username, eid, function(data) {
         var newEventList = data.user.events;
         var found = false;
+        alert("eid: "+eid+" events: "+events.toString());
         for(var i=0; i < newEventList.length; i++) {
-            if(newEventList[i].id == eid) {
+            if(newEventList[i].eventid == eid) {
                 found = true;
             }
         }
@@ -78,6 +79,7 @@ function connect_user_to_event(sid, username) {
             newEventList.push({eventid: eid*1, confirmed: "no", comment: ""});
             set_named_user(sid, username, {events: newEventList});
         }
+        alert("Found: "+found);
     });
 
     $("#admin-add-user-to-event-form").trigger("reset");
