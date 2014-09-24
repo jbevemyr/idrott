@@ -55,11 +55,6 @@
   "email":"test@bevemyr.com",
   "tel":"0708989800",
   "events":[
-            {
-             "eventid":1,
-             "confirmed":"no",
-             "comment":"blå tröja"
-            }
            ],
   "address":"Gosta Tamms väg 16",
   "name":"Test user"
