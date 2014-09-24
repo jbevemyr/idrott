@@ -71,7 +71,6 @@ function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
     re_layout_select_event();
     if (eid == undefined) {
-        alert("here");
         return false;
     }
 
@@ -81,6 +80,7 @@ function connect_user_to_event(sid, username) {
         for(var i=0; i < newEventList.length; i++) {
             if(newEventList[i].eventid == eid) {
                 found = true;
+                break;
             }
         }
         if (!found) {
