@@ -47,10 +47,10 @@ function layout_all_users(sid, tablename, users) {
 // Kanske r�cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
   var domObj = "#admin-add-user-to-event-form";
-  //var item = $('<ledgend>').append("Arrangemang:").appendTo(domObj);
+  var item = $('<ledgend>').append("Koppla användare till:").appendTo(domObj);
   var eid;
   var ename;
-    var label;
+  var label;
   $(domObj).empty();
   for (var i = 0; i < events.length; i++) {
     eid = events[i].id;
@@ -65,7 +65,7 @@ function connect_user_to_event(sid, username) {
     var eid = $('input[name=admin-add-user-to-event-event]:checked').val();
 
     get_named_user(sid, username, eid, function(data) {
-            var newEventList = data.user.events;
+        var newEventList = data.user.events;
         var found = false;
         for(var i=0; i < newEventList.length; i++) {
             if(newEventList[i].id == eid) {
@@ -78,7 +78,7 @@ function connect_user_to_event(sid, username) {
         }
     });
 
-    $("#admin-add-user-to-event-event").trigger("reset");
+    $("#admin-add-user-to-event-form").trigger("reset");
 }
 
 function get_named_user(sid, username, event, cont) {
