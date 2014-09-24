@@ -90,6 +90,7 @@
             });
             $( "#connect-user-to-event").click(function() {
                 connect_user_to_event(sessionid, userid);
+                $.mobile.changePage($("#admin-funclist"));
             });
             $( "#send-info").click(function() {
                 alert("send_info");
@@ -178,7 +179,7 @@
                 <fieldset data-role="controlgroup" id="admin-add-user-to-event-form">
                 </fieldset>
 
-                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left" id="connect-user-to-event">Lägg till</button>
+                <button type="button" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left" id="connect-user-to-event">Lägg till</button>
             </div>
         </form>
     </div>
