@@ -216,7 +216,7 @@ function layout_events(events, eventtable) {
     for (var i = 0; i < events.length; i++) {
         var rowid = eventtable+"-row"+i;
         var row = layout_eventrow(events[i], rowid);
-        $.(eventtable).append(row).trigger("create").collapsibleset("refresh");
+        $(eventtable).append(row).trigger("create").collapsibleset("refresh");
     }
 }
 
