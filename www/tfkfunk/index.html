@@ -75,7 +75,7 @@
                 $("#admin-eventlist-table").collapsibleset( "refresh" );
             };
             if(toPage == "func-myevents") {
-                get_user_events(sessionid, layout_all_events);
+                get_user_events(sessionid, userid, layout_events, "#func-myevents-table");
                 $("#func-myevents-table").collapsibleset( "refresh" );
             };
         });

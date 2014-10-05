@@ -322,7 +322,7 @@ function update_event(sid, eid) {
     );
 }
 
-function get_user_events(sid, uid) {
+function get_user_events(sid, uid, cont, table) {
     alert("here");
 
     $.post("http://idrott.bevemyr.com/idrott/get_selected_events?sid="+sid,
@@ -331,14 +331,13 @@ function get_user_events(sid, uid) {
         }),
         function(data) {
             if(data.status == "ok" &&  $.isArray(data.events)) {
-                layout_events(data.events, "")
+                cont(data.events, table);
             } else {
                 $.mobile.changePage($("#login"));
             }
         },
         "json"
     );
-
 }
 
 function get_user_req(sid, uid) {
