@@ -323,7 +323,7 @@ function update_event(sid, eid) {
 }
 
 function get_user_events(sid, user, cont, table) {
-    alert("here uid="+uid);
+    alert("here uid="+user);
 
     $.post("http://idrott.bevemyr.com/idrott/get_selected_events?sid="+sid,
         JSON.stringify({
