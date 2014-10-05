@@ -207,13 +207,17 @@ function get_all_events(sid, cont) {
 }
 
 function layout_all_events(events) {
-  // Ta bort de gamla raderna
-  $('#admin-eventlist-table').empty();
-  for (var i = 0; i < events.length;  i++) {
-    var rowid = "admin-eventlist-table-row"+i;
-    var row = layout_eventrow(events[i], rowid);
-    $('#admin-eventlist-table').append(row).trigger("create").collapsibleset("refresh");
-  }
+    layout_events(events, '#admin-eventlist-table');
+}
+
+function layout_events(events, eventtable) {
+    // Ta bort de gamla raderna.
+    $(eventtable).empty();
+    for (var i = 0; i < events.length; i++) {
+        var rowid = eventtable+"-row"+i;
+        var row = layout_eventrow(events[i], rowid);
+        $.(eventtable).append(row).trigger("create").collapsibleset("refresh");
+    }
 }
 
 function layout_eventrow(event, rowid) {
@@ -293,7 +297,7 @@ function layout_event_funclist(tablename, users) {
 
 
 function update_event(sid, eid) {
-    $.post("http://idrott.bevemyr.com/idrott/change_event?sid="+sessionid,
+    $.post("http://idrott.bevemyr.com/idrott/change_event?sid="+sid,
         JSON.stringify({
             id: eid,
             name: $('#es-update-name').val(),
@@ -320,6 +324,27 @@ function update_event(sid, eid) {
 
 function get_user_events(sid, uid) {
     alert("here");
+
+    $.post("http://idrott.bevemyr.com/idrott/get_selected_events?sid="+sid,
+        JSON.stringify({
+            uid: uid,
+        }),
+        function(data) {
+            if(data.status == "ok" &&  $.isArray(data.events)) {
+                add_result("---- ok");
+                run_tests();
+            } else {
+                alert("---- fail: "+data.reason);
+                $.mobile.changePage($("#login"));
+            }
+        },
+        "json"
+    );
+
+}
+
+function get_user_req(sid, uid) {
+    alert("here we are")
 }
 
 function layout_all_reqs(reqs) {
