@@ -322,12 +322,12 @@ function update_event(sid, eid) {
     );
 }
 
-function get_user_events(sid, uid, cont, table) {
+function get_user_events(sid, user, cont, table) {
     alert("here uid="+uid);
 
     $.post("http://idrott.bevemyr.com/idrott/get_selected_events?sid="+sid,
         JSON.stringify({
-            uid: uid,
+            username: user,
         }),
         function(data) {
             if(data.status == "ok" &&  $.isArray(data.events)) {
