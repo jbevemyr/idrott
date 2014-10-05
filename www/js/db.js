@@ -331,10 +331,8 @@ function get_user_events(sid, uid) {
         }),
         function(data) {
             if(data.status == "ok" &&  $.isArray(data.events)) {
-                add_result("---- ok");
-                run_tests();
+                layout_events(data.events, "")
             } else {
-                alert("---- fail: "+data.reason);
                 $.mobile.changePage($("#login"));
             }
         },
