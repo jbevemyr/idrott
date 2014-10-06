@@ -329,7 +329,7 @@ function get_user_events(sid, user, cont, table) {
         success: function (data) {
             if (data.status == "ok") {
                 alert("---- ok ");
-                alert(JSON.Stringify(data.user.events));
+                alert(JSON.stringify(data.user.events));
                 for (var j = 0; j < data.user.events.lenght; j++) {
                     $.ajax({
                         url: "http://idrott.bevemyr.com/idrott/get_event?id=" + data.user.events[j].eventid +
