@@ -1,0 +1,36 @@
+[
+    {
+        "id": 3,
+        "name": "My first event",
+        "date": "2014-12-22",
+        "location": "Vallen",
+	"pm": "",
+	"timeschedule": "",
+        "funcinfo": "http://www.turebergsfk.com",
+        "funccount": 2,
+        "funccall": "open"
+    },
+    {
+        "id": 4,
+        "name": "Vildsvinet 2015",
+        "date": "2015-04-04",
+        "location": "Väsjöbacken",
+	"pm": "",
+	"timeschedule": "",
+        "funcinfo": "http://www.turebergsfk.com",
+        "funccount": 30,
+        "funccall": "open"
+    },    
+    {
+        "id": 5,
+        "name": "Kastkollen",
+        "date": "2015-05-10",
+        "location": "Sportfältet",
+	"pm": "",
+	"timeschedule": "",
+        "funcinfo": "http://www.turebergsfk.com",
+        "funccount": 12,
+        "funccall": "open"
+    }
+
+]
