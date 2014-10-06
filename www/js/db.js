@@ -328,7 +328,7 @@ function get_user_events(sid, user, cont, table) {
         dataType: "json",
         success: function (data) {
             if (data.status == "ok") {
-                alert("---- ok ");
+                alert("---- ok " + data.user.events);
                 for (var j = 0; j < data.user.events.lenght; j++) {
                     alert(data.user.events);
                     $.ajax({
