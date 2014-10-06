@@ -337,7 +337,7 @@ function get_user_events(sid, user, cont, table) {
                             if(data2.status == "ok" && data2.event.id == data.events[j].eventid) {
                                 alert(data.event.id);
                             } else {
-                                alert(”fail”);
+                                alert("fail");
                             }
                         },
                         error: function(status) {
