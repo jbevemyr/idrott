@@ -324,7 +324,7 @@ function get_user_events(sid, user, cont, table) {
     var myevents = {};
 
     $.ajax({
-        url: "http://idrott.bevemyr.com/idrott/get_named_user?username=katrin&sid=" + sid,
+        url: "http://idrott.bevemyr.com/idrott/get_named_user?username=" + user + "&sid=" + sid,
         dataType: "json",
         success: function (data) {
             if (data.status == "ok") {
@@ -346,8 +346,7 @@ function get_user_events(sid, user, cont, table) {
                             alert("---- fail: " + status);
                         }
                     })
-                }
-
+                };
                 cont(myevents, table);
             } else {
                 alert("---- fail: " + data.reason);
