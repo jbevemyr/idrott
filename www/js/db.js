@@ -318,52 +318,46 @@ function update_event(sid, eid) {
     );
 }
 
-    function get_user_events(sid, user, cont, table) {
-        alert("here uid="+user);
-        // todo: hamta de event som finns for anvandaren
+function get_user_events(sid, user, cont, table) {
+    alert("here uid="+user);
+    // todo: hamta de event som finns for anvandaren
+    var myevents = {};
 
-        $.ajax({
-            url: "http://idrott.bevemyr.com/idrott/get_named_user?username=test&sid=" + sid,
-            dataType: "json",
-            success: function (status) {
-                if (status.status == "ok") {
-                    if (status.user.testattribute == test11_timestamp) {
-                        alert("---- ok ");
-                        for (var j = 0; j < data.events.lenght; j++) {
-                            $.ajax({
-                                url: "http://idrott.bevemyr.com/idrott/get_event?id=" + data.events[j].eventid +
-                                    "&sid=" + sid,
-                                dataType: "json",
-                                success: function (data2) {
-                                    if (data2.status == "ok" && data2.event.id == data.events[j].eventid) {
-                                        alert(data.event.id);
-                                    } else {
-                                        alert("fail");
-                                    }
-                                },
-                                error: function (status) {
-                                    alert("---- fail: " + status);
-                                }
-                            })
+    $.ajax({
+        url: "http://idrott.bevemyr.com/idrott/get_named_user?username=test&sid=" + sid,
+        dataType: "json",
+        success: function (data) {
+            if (data.status == "ok") {
+                alert("---- ok ");
+                for (var j = 0; j < data.events.lenght; j++) {
+                    $.ajax({
+                        url: "http://idrott.bevemyr.com/idrott/get_event?id=" + data.events[j].eventid +
+                            "&sid=" + sid,
+                        dataType: "json",
+                        success: function (data2) {
+                            if (data2.status == "ok" && data2.event.id == data.events[j].eventid) {
+                                alert(data.event.id);
+                                myevents.push(data.event.id);
+                            } else {
+                                alert("fail");
+                            }
+                        },
+                        error: function (status) {
+                            alert("---- fail: " + status);
                         }
-
-                        cont(data.events, table);
-
-                    }
-                    else {
-                        alert("---- fail: bad timestamp returned");
-                    }
-                    run_tests();
-                } else {
-                    alert("---- fail: " + status.reason);
-
+                    })
                 }
-            },
-            error: function (status) {
-                alert("---- fail: " + status);
+
+                cont(myevents, table);
+            } else {
+                alert("---- fail: " + data.reason);
             }
-        });
-    }
+        },
+        error: function (status) {
+            alert("---- fail: " + status);
+        }
+    });
+}
 
 function get_user_req(sid, uid) {
     alert("here we are")
