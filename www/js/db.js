@@ -328,15 +328,15 @@ function get_user_events(sid, user, cont, table) {
         dataType: "json",
         success: function (data) {
             if (data.status == "ok") {
-                alert("---- ok " + data.user.events);
+                alert("---- ok ");
+                alert(JSON.Stringify(data.user.events));
                 for (var j = 0; j < data.user.events.lenght; j++) {
-                    alert(data.user.events);
                     $.ajax({
-                        url: "http://idrott.bevemyr.com/idrott/get_event?id=" + data.events[j].eventid +
+                        url: "http://idrott.bevemyr.com/idrott/get_event?id=" + data.user.events[j].eventid +
                             "&sid=" + sid,
                         dataType: "json",
                         success: function (data2) {
-                            if (data2.status == "ok" && data2.event.id == data.events[j].eventid) {
+                            if (data2.status == "ok" && data2.event.id == data.user.events[j].eventid) {
                                 alert(data2.event.id);
                                 myevents.push(data.event.id);
                             } else {
