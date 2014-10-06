@@ -324,12 +324,12 @@ function get_user_events(sid, user, cont, table) {
     var myevents = {};
 
     $.ajax({
-        url: "http://idrott.bevemyr.com/idrott/get_named_user?username=test&sid=" + sid,
+        url: "http://idrott.bevemyr.com/idrott/get_named_user?username=katrin&sid=" + sid,
         dataType: "json",
         success: function (data) {
             if (data.status == "ok") {
                 alert("---- ok ");
-                for (var j = 0; j < data.events.lenght; j++) {
+                for (var j = 0; j < data.user.events.lenght; j++) {
                     $.ajax({
                         url: "http://idrott.bevemyr.com/idrott/get_event?id=" + data.events[j].eventid +
                             "&sid=" + sid,
