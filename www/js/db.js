@@ -192,22 +192,18 @@ function update_user(sid) {
 }
 
 
-function get_all_events(sid, cont) {
+function get_all_events(sid, cont, table) {
     $.ajax({
         url: "http://idrott.bevemyr.com/idrott/get_all_events?sid="+sid,
 	dataType: "json",
 	success: function(data) {
-	       cont(data.events);
+	       cont(data.events, table);
 	},
 	error: function(data) {
 	    alert(data.status);
 	    $.mobile.changePage($("#login"));  // should be errorpage
 	}
     });
-}
-
-function layout_all_events(events) {
-    layout_events(events, '#admin-eventlist-table');
 }
 
 function layout_events(events, eventtable) {
@@ -324,6 +320,7 @@ function update_event(sid, eid) {
 
 function get_user_events(sid, user, cont, table) {
     alert("here uid="+user);
+    // todo: hamta de event som finns for anvandaren
 
     $.post("http://idrott.bevemyr.com/idrott/get_selected_events?sid="+sid,
         JSON.stringify({
@@ -331,6 +328,23 @@ function get_user_events(sid, user, cont, table) {
         }),
         function(data) {
             if(data.status == "ok" &&  $.isArray(data.events)) {
+                for (var j = 0; j < data.events.lenght; j++) {
+                    $.ajax({
+                        url: "http://idrott.bevemyr.com/idrott/get_event?id="+data.events[j].eventid+
+                            "&sid="+sid,
+                        dataType: "json",
+                        success: function(data2) {
+                            if(data2.status == "ok" && data2.event.id == data.events[j].eventid) {
+                                alert(data.event.id);
+                            } else {
+                                alert(”fail”);
+                            }
+                        },
+                        error: function(status) {
+                            alert("---- fail: "+status);
+                        }
+                    })
+                };
                 cont(data.events, table);
             } else {
                 $.mobile.changePage($("#login"));
