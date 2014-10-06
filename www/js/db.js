@@ -234,29 +234,28 @@ function layout_eventrow(event, rowid) {
 
 
 function add_new_event(sid) {
-  $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sid,
-	 JSON.stringify({
-           name: $('#es-name').val(),
-           date: $('#es-date').val(),
-           location: $('#es-loc').val(),
-	   pm: $('#es-pm').val(),
-	   timeschedule: $('#es-ts').val(),
-	   funcinfo: $('#es-fi').val(),
-           funccount: $('#es-fn').val(),
-           funccall: $('#es-fcall').val(),
-	   not: $('#es-not').val()
-	 }),
-	 function(status) {
-	   if(status.status == "ok") { // string otherwise an object session/group
-	     $('#es-form')[0].reset();
-	     $.mobile.changePage($("#admin-eventlist"));
-           } else {
-	     //add_result("---- fail: "+status.reason);
-	     //run_tests();
-	   }
-	 },
-	 "json"
-  );
+    $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sid,
+        JSON.stringify({
+            name: $('#es-name').val(),
+            date: $('#es-date').val(),
+            location: $('#es-loc').val(),
+            pm: $('#es-pm').val(),
+            timeschedule: $('#es-ts').val(),
+            funcinfo: $('#es-fi').val(),
+            funccount: $('#es-fn').val(),
+            funccall: $('#es-fcall').val(),
+            not: $('#es-not').val()
+        }),
+        function(status) {
+            if(status.status == "ok") { // string otherwise an object session/group
+                $('#es-form')[0].reset();
+                $.mobile.changePage($("#admin-eventlist"));
+            } else {
+                $.mobile.changePage($("#login"));
+            }
+        },
+        "json"
+    );
 }
 
 function get_all_func_for_event(sid, eid, tablename) {
@@ -293,31 +292,30 @@ function layout_event_funclist(tablename, users) {
 }
 
 
-
-function update_event(sid) {
-  $.post("http://idrott.bevemyr.com/idrott/create_event?sid="+sid,
-	 JSON.stringify({
-           name: $('#es-update-name').val(),
-           date: $('#es-update-date').val(),
-           location: $('#es-update-location').val(),
-	   pm: $('#es-update-pm').val(),
-	   timeschedule: $('#es-update-ts').val(),
-	   funcinfo: $('#es-update-fi').val(),
-           funccount: $('#es-update-funccount').val(),
-           funccall: $('#es-update-funccall').val(),
-	   not: $('#es-update-not').val()
-	 }),
-	 function(status) {
-	   if(status.status == "ok") { // string otherwise an object session/group
-	     $('#es-update-form')[0].reset();
-	     $.mobile.changePage($("#admin-eventlist"));
-           } else {
-	     //add_result("---- fail: "+status.reason);
-	     //run_tests();
-	   }
-	 },
-	 "json"
-  );
+function update_event(sid, eid) {
+    $.post("http://idrott.bevemyr.com/idrott/change_event?sid="+sessionid,
+        JSON.stringify({
+            id: eid,
+            name: $('#es-update-name').val(),
+            date: $('#es-update-date').val(),
+            location: $('#es-update-location').val(),
+            pm: $('#es-update-pm').val(),
+            timeschedule: $('#es-update-ts').val(),
+            funcinfo: $('#es-update-fi').val(),
+            funccount: $('#es-update-funccount').val(),
+            funccall: $('#es-update-funccall').val(),
+            not: $('#es-update-not').val()
+        }),
+        function(data) {
+            if(data.status == "ok") { // string otherwise an object session/group
+                $('#es-update-form')[0].reset();
+                $.mobile.changePage($("#admin-eventlist"));
+            } else {
+                $.mobile.changePage($("#login"));
+            }
+        },
+        "json"
+    );
 }
 
 
