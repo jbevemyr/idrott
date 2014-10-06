@@ -1,6 +1,6 @@
 [
     {
-        "id": 3,
+        "id": 1,
         "name": "My first event",
         "date": "2014-12-22",
         "location": "Vallen",
@@ -11,7 +11,7 @@
         "funccall": "open"
     },
     {
-        "id": 4,
+        "id": 2,
         "name": "Vildsvinet 2015",
         "date": "2015-04-04",
         "location": "Väsjöbacken",
@@ -22,7 +22,7 @@
         "funccall": "open"
     },    
     {
-        "id": 5,
+        "id": 3,
         "name": "Kastkollen",
         "date": "2015-05-10",
         "location": "Sportfältet",
