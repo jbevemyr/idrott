@@ -15,7 +15,7 @@
 -behaviour(gen_server).
 
 %% External exports
--export([start/0, stop/0]).
+-export([start/0, stop/0, reset/0, hard_reset/0]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
@@ -175,6 +175,9 @@ stop() ->
 reset() ->
     gen_server:call(?SERVER, reset, infinity).
 
+hard_reset() ->
+    gen_server:call(?SERVER, hard_reset, infinity).
+
 %%%----------------------------------------------------------------------
 %%% Callback functions from gen_server
 %%%----------------------------------------------------------------------
@@ -206,6 +209,13 @@ handle_call(stop, _From, S) ->
     {stop, normal, S};
 
 handle_call(reset, _From, S) ->
+    Users = read_users(),
+    Events = read_events(),
+    {reply, ok, S#state{users=Users, events=Events}};
+
+handle_call(hard_reset, _From, S) ->
+    file:copy(?USER_DB++".start", ?USER_DB),
+    file:copy(?EVENTS_DB++".start", ?EVENTS_DB),
     Users = read_users(),
     Events = read_events(),
     {reply, ok, S#state{users=Users, events=Events}};
