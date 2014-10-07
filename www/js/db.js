@@ -328,7 +328,7 @@ function get_user_events(sid, user, cont, table) {
         success: function (data) {
             if (data.status == "ok") {
                 var es = data.user.events;
-                alert(JSON.stringify(es));
+                //alert(JSON.stringify(es));
                 get_events(0, es, myevents, sid, cont, table);
             } else {
                 alert("---- fail: " + data.reason);
@@ -347,7 +347,7 @@ function get_events(i, es, myevents, sid, cont, table) {
             dataType: "json",
             success: function (data2) {
                 if (data2.status == "ok") {
-                    alert(JSON.stringify(data2.event));
+                    //alert(JSON.stringify(data2.event));
                     myevents.push(data2.event);
                     get_events(i+1, es, myevents, sid, cont, table);
                 } else {
@@ -377,7 +377,7 @@ function layout_myevents(events, eventtable) {
 function layout_myeventrow(event, rowid) {
     var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
     row.append($('<h4>').append(event.name));
-    row.append($('<p>').append("<a href='#admin-event-funclist' onclick=\"return set_current_event('"+event.id+"');\">Bemanning</a>"));
+    //row.append($('<p>').append("<a href='#admin-event-funclist' onclick=\"return set_current_event('"+event.id+"');\">Bemanning</a>"));
     row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
     row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
     row.append($('<p>').append("<strong>PM: </strong>"+event.pm));

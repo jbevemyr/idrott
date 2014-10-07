@@ -14,7 +14,7 @@
         // Här behöver man lägga till en hantering av användare som inte loggat in och försöker nå en specifik sida.
         sessionid = "1234567890";
         eventid = 0;
-        userid = 0;
+        userid = "test";
 
         function set_current_event(eid) {
             eventid = eid;
@@ -76,7 +76,7 @@
             };
             if(toPage == "func-myevents") {
                 // Todo: user hanteringen och layouten av tabellen bemanning bort.
-                get_user_events(sessionid, "katrin", layout_myevents, "#func-myevents-table");
+                get_user_events(sessionid, userid, layout_myevents, "#func-myevents-table");
                 $("#func-myevents-table").collapsibleset( "refresh" );
             };
         });
@@ -502,8 +502,8 @@
     <div role="main" class="ui-content">
         <ul data-role="listview" data-inset="true">
             <li data-role="list-divider">Funktionärsuppdrag</li>
-            <li><a href="#func-requests">Förfrågningar</a></li>
             <li><a href="#func-myevents">Mina uppdrag</a></li>
+            <li><a href="#func-eventlist">Klubbens arrangemang</a></li>
             <li><a href="#">Klubb kontakt</a></li>
             <li><a href="#">Manual</a></li>
         </ul>
@@ -512,56 +512,33 @@
     <div data-role="footer">Tureberg FK</div>
 </div>
 
-
-<!-- Funktionsärs alla event -->
-<div data-role="page" id="func-myevents">
+<!-- Funktionärs - Klubbeventlista -->
+<div data-role="page" id="func-eventlist">
     <div data-role="header" style="overflow:hidden;">
         <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Mina åtaganden</h1>
-        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+        <h1>Funktionär</h1>
+        <a href="#func-move-event" data-icon="plus" data-mini="true" class="ui-btn-right" id=></a>
     </div><!-- /header -->
-
     <div role="main" class="ui-content">
-        <h1>Mina arrangemang</h1>
-        <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" data-filter="true" data-filter-placeholder="Arrangemangsnamn t ex" id="func-myevents-table">
+        <h1>Klubbens arrangemang</h1>
+        <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" data-filter="true" data-filter-placeholder="Arrangemangsnamn t ex" id="func-eventlist-table">
         </div>
     </div>
 
     <div data-role="footer">Tureberg FK</div>
 </div>
 
-
-<!-- Funktionärs Önskningar -->
-<div data-role="page" id="func-requests">
+<!-- Funktionsärs - mina event -->
+<div data-role="page" id="func-myevents">
     <div data-role="header" style="overflow:hidden;">
         <a href="#func-startpage" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Back</a>
-        <h1>Önskningar</h1>
-        <a href="#func-us" data-icon="gear" class="ui-btn-right">Inställningar</a>
+        <h1>Klubbens arrangemang</h1>
     </div><!-- /header -->
+
     <div role="main" class="ui-content">
-        <table data-role="table" id="func-reqs-table" data-mode="reflow" class="ui-responsive">
-            <thead>
-            <tr>
-                <th data-priority="1"><abbr title="Jag har bekräftat mitt deltagande">Bekräftat</abbr></th>
-                <th data-priority="persist">Arrangemang</th>
-                <th data-priority="persist">Datum</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    <li class="ui-field-contain">
-                        <select name="confirm-event" id="confirm-event-flip" data-role="slider">
-                            <option value="yes">Ja</option>
-                            <option value="no">Nej</option>
-                        </select>
-                    </li>
-                </td>
-                <td>SAYO (dag 1)</td>
-                <td>2015-06-06</td>
-            </tr>
-            </tbody>
-        </table>
+        <h1>Mina arrangemang</h1>
+        <div data-role="collapsibleset" data-theme="a" data-content-theme="a" data-mini="true" data-filter="true" data-filter-placeholder="Arrangemangsnamn t ex" id="func-myevents-table">
+        </div>
     </div>
 
     <div data-role="footer">Tureberg FK</div>
