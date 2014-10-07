@@ -392,16 +392,9 @@ function layout_myeventrow(event, userstatus, rowid) {
 }
 
 function layout_confirmstatus(c) {
-/*
-          <li class="ui-field-contain">
-            <label for="flip2">Flip switch:</label>
-            <select name="flip2" id="flip2" data-role="slider">
-                <option value="off">Off</option>
-                <option value="on">On</option>
-            </select>
-        </li>
-   Tanken är att användaren kan får bekräftelse av event.
-*/
- return "<i>"+c+"</i>";
+
+    var control = "<li class='ui-field-contain'><label for='flip2'>Flip switch:</label><select name='flip2' id='flip2' data-role='slider'><option value='off'>Off</option><option value='on'>On</option></select></li>";
+
+    return "<b>Bekräftat:</b><i>"+c+"</i>";
 }
 
