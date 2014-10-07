@@ -321,7 +321,7 @@ function update_event(sid, eid) {
 function get_user_events(sid, user, cont, table) {
     // alert("here uid="+user);
     // todo: hamta de event som finns for anvandaren
-    var myevents = {};
+    var myevents = [];
 
     $.ajax({
         url: "http://idrott.bevemyr.com/idrott/get_named_user?username=" + user + "&sid=" + sid,
