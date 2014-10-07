@@ -45,11 +45,11 @@
 -define(EMAIL_SENDER, "info@idrott.se").
 -define(MAILSERVER, "mail.bevemyr.com").
 
--define(USER_DB, "/home/share/jb/work/idrott/user.db.json").
--define(USER_DB_TMP, "/home/share/jb/work/idrott/user.db.json.tmp").
+-define(USER_DB, "/home/share/katrin/www/idrott/user.db.json").
+-define(USER_DB_TMP, "/home/share/katrin/www/idrott/user.db.json.tmp").
 
--define(EVENTS_DB, "/home/share/jb/work/idrott/events.db.json").
--define(EVENTS_DB_TMP, "/home/share/jb/work/idrott/events.db.json.tmp").
+-define(EVENTS_DB, "/home/share/katrin/www/idrott/events.db.json").
+-define(EVENTS_DB_TMP, "/home/share/katrin/www/idrott/events.db.json.tmp").
 
 %%
 
