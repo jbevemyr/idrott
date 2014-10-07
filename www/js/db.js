@@ -323,6 +323,53 @@ function get_user_events(sid, user, cont, table) {
     var myevents = [];
 
     $.ajax({
+        url: "http://idrott.bevemyr.com/idrott/get_named_user?username="+user+"&sid="+sid,
+        dataType: "json",
+        success: function (data) {
+            if (data.status == "ok") {
+                var es = data.user.events;
+                //alert(JSON.stringify(es));
+                get_events(0, es, myevents, table, cont);)
+            } else {
+                alert("---- fail: " + data.reason);
+            }
+            error: function (status) {
+                alert("---- fail: " + status);
+            }
+        });
+}
+
+function get_events(i, es, myevents, table, cont) {
+    if (i > es.length)
+        cont(myevents, table);
+    else {
+        $.ajax({
+            url: "http://idrott.bevemyr.com/idrott/get_event?id=" + es[i].eventid +
+                "&sid=" + sid,
+            dataType: "json",
+            success: function (data2) {
+                if (data2.status == "ok") {
+                    //alert(JSON.stringify(data2.event));
+                    myevents.push(data2.event);
+                    get_events(i+1, es, myevents, table, cont);
+                } else {
+                    //alert("fail");
+                }
+            },
+            error: function (status) {
+                alert("---- fail: " + status);
+            }
+        });
+    }
+}
+
+
+/*
+function get_user_events(sid, user, cont, table) {
+    // alert("here uid="+user);
+    var myevents = [];
+
+    $.ajax({
         url: "http://idrott.bevemyr.com/idrott/get_named_user?username=" + user + "&sid=" + sid,
         dataType: "json",
         success: function (data) {
@@ -358,6 +405,7 @@ function get_user_events(sid, user, cont, table) {
         }
     });
 }
+*/
 
 function get_user_req(sid, uid) {
     alert("here we are")
