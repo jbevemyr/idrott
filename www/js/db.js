@@ -347,8 +347,8 @@ function get_events(i, es, myevents, sid, cont, table) {
             dataType: "json",
             success: function (data2) {
                 if (data2.status == "ok") {
-                    //alert(JSON.stringify(data2.event));
-                    myevents.push(data2.event);
+                    alert(JSON.stringify(es[i].confirmed));
+                    myevents.push({userstatus: data.es[i], eventdata: data2.event});
                     get_events(i+1, es, myevents, sid, cont, table);
                 } else {
                     alert("fail");
@@ -368,16 +368,18 @@ function layout_myevents(events, eventtable) {
     // Ta bort de gamla raderna.
     $(eventtable).empty();
     for (var i = 0; i < events.length; i++) {
+        var userstatus = myevents[i].userstatus;
+        var event = myevents[i].eventdata;
         var rowid = eventtable+"-row"+i;
-        var row = layout_myeventrow(events[i], rowid, events[i].confirmed);
+        var row = layout_myeventrow(event, userstatus, rowid);
         $(eventtable).append(row).trigger("create").collapsibleset("refresh");
     }
 }
 
-function layout_myeventrow(event, rowid, confirmstatus) {
+function layout_myeventrow(event, userstatus, rowid) {
     var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
     row.append($('<h4>').append(event.name));
-    row.append($('<p>').append(layout_confirmstatus(confirmstatus)));
+    row.append($('<p>').append(layout_confirmstatus(userstatus.confirmed)));
     row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
     row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
     row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
