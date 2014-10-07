@@ -43,8 +43,6 @@ function layout_all_users(sid, tablename, users) {
 }
 
 
-// G�r man s� h�r l�gger dem i sekvens eller ska de triggas med event, t ex att man trycker p� knappen.
-// Kanske r�cker det att man resettar valet i dialogen.
 function layout_select_event(events) {
   last_events=events;
   var domObj = "#admin-add-user-to-event-form";
@@ -192,12 +190,12 @@ function update_user(sid) {
 }
 
 
-function get_all_events(sid, cont, table) {
+function get_all_events(sid, cont, table, role) {
     $.ajax({
         url: "http://idrott.bevemyr.com/idrott/get_all_events?sid="+sid,
 	dataType: "json",
 	success: function(data) {
-	       cont(data.events, table);
+	       cont(data.events, table, role);
 	},
 	error: function(data) {
 	    alert(data.status);
@@ -206,20 +204,22 @@ function get_all_events(sid, cont, table) {
     });
 }
 
-function layout_events(events, eventtable) {
+function layout_events(events, eventtable, role) {
     // Ta bort de gamla raderna.
     $(eventtable).empty();
     for (var i = 0; i < events.length; i++) {
         var rowid = eventtable+"-row"+i;
-        var row = layout_eventrow(events[i], rowid);
+        var row = layout_eventrow(events[i], rowid, role);
         $(eventtable).append(row).trigger("create").collapsibleset("refresh");
     }
 }
 
-function layout_eventrow(event, rowid) {
+function layout_eventrow(event, rowid, role) {
   var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
   row.append($('<h4>').append(event.name));
-  row.append($('<p>').append("<a href='#admin-event-funclist' onclick=\"return set_current_event('"+event.id+"');\">Bemanning</a>"));
+    if (role == "admin") {
+        row.append($('<p>').append("<a href='#admin-event-funclist' onclick=\"return set_current_event('"+event.id+"');\">Bemanning</a>"));
+    }
   row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
   row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
   row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
