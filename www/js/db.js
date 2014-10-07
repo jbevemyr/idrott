@@ -341,7 +341,6 @@ function get_user_events(sid, user, cont, table) {
 }
 
 function get_events(i, es, myevents, sid, cont, table) {
-    // alert(i+" : "+es.length);
     if (i < es.length) {
         $.ajax({
             url: "http://idrott.bevemyr.com/idrott/get_event?id="+es[i].eventid+"&sid="+sid,
@@ -365,54 +364,31 @@ function get_events(i, es, myevents, sid, cont, table) {
 }
 
 
-/*
-function get_user_events(sid, user, cont, table) {
-    // alert("here uid="+user);
-    var myevents = [];
-
-    $.ajax({
-        url: "http://idrott.bevemyr.com/idrott/get_named_user?username=" + user + "&sid=" + sid,
-        dataType: "json",
-        success: function (data) {
-            if (data.status == "ok") {
-                var es = data.user.events;
-                //alert(JSON.stringify(es));
-                for (var j = 0; j < es.length; j++) {
-                    $.ajax({
-                        url: "http://idrott.bevemyr.com/idrott/get_event?id=" + es[j].eventid +
-                            "&sid=" + sid,
-                        dataType: "json",
-                        success: function (data2) {
-                            if (data2.status == "ok") {
-                                //alert(JSON.stringify(data2.event));
-                                myevents.push(data2.event);
-                            } else {
-                                //alert("fail");
-                            }
-                        },
-                        error: function (status) {
-                            alert("---- fail: " + status);
-                        }
-                    })
-                }
-                alert("hopp");
-                cont(myevents, table);
-            } else {
-                alert("---- fail: " + data.reason);
-            }
-        },
-        error: function (status) {
-            alert("---- fail: " + status);
-        }
-    });
-}
-*/
-
-function get_user_req(sid, uid) {
-    alert("here we are")
+function layout_myevents(events, eventtable) {
+    // Ta bort de gamla raderna.
+    $(eventtable).empty();
+    for (var i = 0; i < events.length; i++) {
+        var rowid = eventtable+"-row"+i;
+        var row = layout_myeventrow(events[i], rowid);
+        $(eventtable).append(row).trigger("create").collapsibleset("refresh");
+    }
 }
 
-function layout_all_reqs(reqs) {
+function layout_myeventrow(event, rowid) {
+    var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
+    row.append($('<h4>').append(event.name));
+    row.append($('<p>').append("<a href='#admin-event-funclist' onclick=\"return set_current_event('"+event.id+"');\">Bemanning</a>"));
+    row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
+    row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
+    row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
+    row.append($('<p>').append("<strong>Tidsprogram: </strong>"+event.timeschedule));
+    row.append($('<p>').append("<strong>Funktionsärsinfo: </strong>"+event.funcinfo));
+    row.append($('<p>').append("<strong>Antal funktionärer: </strong>"+event.funccount));
+    row.append($('<p>').append("<strong>Funktionärsanmälan: </strong>"+event.funccall));
+    row.append($('<p>').append("<strong>Funktionärsinfo: </strong>"+event.funcinfo));
+
+    return row;
+}
 
 /*
           <li class="ui-field-contain">
@@ -422,6 +398,6 @@ function layout_all_reqs(reqs) {
                 <option value="on">On</option>
             </select>
         </li>
-   Tanken �r att anv�nda detta f�r bekr�ftelse av event.
+   Tanken är att användaren kan får bekräftelse av event.
 */
 }
