@@ -367,8 +367,8 @@ function layout_myevents(events, eventtable) {
     // Ta bort de gamla raderna.
     $(eventtable).empty();
     for (var i = 0; i < events.length; i++) {
-        var userstatus = myevents[i].userstatus;
-        var event = myevents[i].eventdata;
+        var userstatus = events[i].userstatus;
+        var event = events[i].eventdata;
         var rowid = eventtable+"-row"+i;
         var row = layout_myeventrow(event, userstatus, rowid);
         $(eventtable).append(row).trigger("create").collapsibleset("refresh");
