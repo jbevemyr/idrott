@@ -377,7 +377,7 @@ function layout_myevents(events, eventtable) {
 function layout_myeventrow(event, rowid, confirmstatus) {
     var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
     row.append($('<h4>').append(event.name));
-    row.append($('<p>').append(layout_confirmstatus(confirmstatus));
+    row.append($('<p>').append(layout_confirmstatus(confirmstatus)));
     row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
     row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
     row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
