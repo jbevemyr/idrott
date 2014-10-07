@@ -329,7 +329,7 @@ function get_user_events(sid, user, cont, table) {
             if (data.status == "ok") {
                 var es = data.user.events;
                 //alert(JSON.stringify(es));
-                get_events(0, es, myevents, table, cont);)
+                get_events(0, es, myevents, table, cont);
             } else {
                 alert("---- fail: " + data.reason);
             }
