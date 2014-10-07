@@ -333,10 +333,11 @@ function get_user_events(sid, user, cont, table) {
             } else {
                 alert("---- fail: " + data.reason);
             }
-            error: function (status) {
-                alert("---- fail: " + status);
-            }
-        });
+        }
+        error: function (status) {
+            alert("---- fail: " + status);
+        }
+    });
 }
 
 function get_events(i, es, myevents, table, cont) {
