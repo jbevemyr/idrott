@@ -319,7 +319,7 @@ function update_event(sid, eid) {
 }
 
 function get_user_events(sid, user, cont, table) {
-    alert("here uid="+user);
+    // alert("here uid="+user);
     // todo: hamta de event som finns for anvandaren
     var myevents = {};
 
@@ -336,8 +336,8 @@ function get_user_events(sid, user, cont, table) {
                             "&sid=" + sid,
                         dataType: "json",
                         success: function (data2) {
-                            if (data2.status == "ok" && data2.event.id == es[j].eventid) {
-                                alert(data2.event.id);
+                            if (data2.status == "ok") {
+                                alert(JSON.stringify(data2.event));
                                 myevents.push(data2.event);
                             } else {
                                 alert("fail");
