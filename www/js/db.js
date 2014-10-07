@@ -369,15 +369,15 @@ function layout_myevents(events, eventtable) {
     $(eventtable).empty();
     for (var i = 0; i < events.length; i++) {
         var rowid = eventtable+"-row"+i;
-        var row = layout_myeventrow(events[i], rowid);
+        var row = layout_myeventrow(events[i], rowid, events[i].confirmed);
         $(eventtable).append(row).trigger("create").collapsibleset("refresh");
     }
 }
 
-function layout_myeventrow(event, rowid) {
+function layout_myeventrow(event, rowid, confirmstatus) {
     var row = $('<div>').attr({ 'data-role': 'collapsible', 'id' : rowid });
     row.append($('<h4>').append(event.name));
-    //row.append($('<p>').append("<a href='#admin-event-funclist' onclick=\"return set_current_event('"+event.id+"');\">Bemanning</a>"));
+    row.append($('<p>').append(layout_confirmstatus(confirmstatus));
     row.append($('<p>').append("<strong>Datum: </strong>"+event.date));
     row.append($('<p>').append("<strong>Plats: </strong>"+event.location));
     row.append($('<p>').append("<strong>PM: </strong>"+event.pm));
@@ -390,6 +390,7 @@ function layout_myeventrow(event, rowid) {
     return row;
 }
 
+function layout_confirmstatus(c) {
 /*
           <li class="ui-field-contain">
             <label for="flip2">Flip switch:</label>
@@ -400,4 +401,6 @@ function layout_myeventrow(event, rowid) {
         </li>
    Tanken är att användaren kan får bekräftelse av event.
 */
+ return "<i>"+c+"</i>";
+}
 
