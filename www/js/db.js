@@ -320,7 +320,6 @@ function update_event(sid, eid) {
 
 function get_user_events(sid, user, cont, table) {
     // alert("here uid="+user);
-    // todo: hamta de event som finns for anvandaren
     var myevents = [];
 
     $.ajax({
@@ -329,7 +328,7 @@ function get_user_events(sid, user, cont, table) {
         success: function (data) {
             if (data.status == "ok") {
                 var es = data.user.events;
-                alert(JSON.stringify(es));
+                //alert(JSON.stringify(es));
                 for (var j = 0; j < es.length; j++) {
                     $.ajax({
                         url: "http://idrott.bevemyr.com/idrott/get_event?id=" + es[j].eventid +
@@ -337,10 +336,10 @@ function get_user_events(sid, user, cont, table) {
                         dataType: "json",
                         success: function (data2) {
                             if (data2.status == "ok") {
-                                alert(JSON.stringify(data2.event));
+                                //alert(JSON.stringify(data2.event));
                                 myevents.push(data2.event);
                             } else {
-                                alert("fail");
+                                //alert("fail");
                             }
                         },
                         error: function (status) {
@@ -348,7 +347,7 @@ function get_user_events(sid, user, cont, table) {
                         }
                     })
                 };
-                alert("hopp");
+                //alert("hopp");
                 cont(myevents, table);
             } else {
                 alert("---- fail: " + data.reason);
