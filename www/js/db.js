@@ -328,10 +328,11 @@ function get_user_events(sid, user, cont, table) {
         dataType: "json",
         success: function (data) {
             if (data.status == "ok") {
-                alert(JSON.stringify(data.user.events));
-                for (var j = 0; j < data.user.events.length; j++) {
+                var es = data.user.events;
+                alert(JSON.stringify(es));
+                for (var j = 0; j < es.length; j++) {
                     $.ajax({
-                        url: "http://idrott.bevemyr.com/idrott/get_event?id=" + data.user.events[j].eventid +
+                        url: "http://idrott.bevemyr.com/idrott/get_event?id=" + es[j].eventid +
                             "&sid=" + sid,
                         dataType: "json",
                         success: function (data2) {
