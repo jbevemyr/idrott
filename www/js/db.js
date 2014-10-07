@@ -336,9 +336,9 @@ function get_user_events(sid, user, cont, table) {
                             "&sid=" + sid,
                         dataType: "json",
                         success: function (data2) {
-                            if (data2.status == "ok" && data2.event.id == data.user.events[j].eventid) {
+                            if (data2.status == "ok" && data2.event.id == es[j].eventid) {
                                 alert(data2.event.id);
-                                myevents.push(data.event.id);
+                                myevents.push(data2.event);
                             } else {
                                 alert("fail");
                             }
