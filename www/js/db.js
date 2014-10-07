@@ -341,6 +341,7 @@ function get_user_events(sid, user, cont, table) {
 }
 
 function get_events(i, es, myevents, sid, cont, table) {
+    alert(i);
     if (i > es.length)
         cont(myevents, table);
     else {
