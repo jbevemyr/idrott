@@ -14,7 +14,8 @@
         // Här behöver man lägga till en hantering av användare som inte loggat in och försöker nå en specifik sida.
         sessionid = "1234567890";
         eventid = 0;
-        userid = "test";
+        userid = "";
+        aaagroup = "";
 
         function set_current_event(eid) {
             eventid = eid;
@@ -38,14 +39,18 @@
                             +$("#login_passwd").val(),
                     dataType: "json",
                     success: function(status) {
-                        if(status.status == "ok") { // string otherwise an object session/group
+                        if(status.status == "ok") {
                             sessionid = status.sid;
                             aaagroup = status.group;
-                            $.mobile.changePage($("#admin-startpage"));
+                            if (aaagroup == "admin") {
+                                $.mobile.changePage($("#admin-startpage"));
+                            } else {
+                                $.mobile.changePage($("#func-startpage"));
+                            }
                         } else {
-                            sessionid = status.session;
-                            aaagroup = status.group;
-                            $.mobile.changePage($("#func-eventlist"));
+                            sessionid = "";
+                            aaagroup = "";
+                            $.mobile.changePage($("#login"));
                         }
                     },
                     error: function(status) {
