@@ -341,10 +341,8 @@ function get_user_events(sid, user, cont, table) {
 }
 
 function get_events(i, es, myevents, sid, cont, table) {
-    alert(i+" : "+es.length);
-    if (i > es.length)
-        cont(myevents, table);
-    else {
+    // alert(i+" : "+es.length);
+    if (i < es.length) {
         $.ajax({
             url: "http://idrott.bevemyr.com/idrott/get_event?id="+es[i].eventid+"&sid="+sid,
             dataType: "json",
@@ -361,6 +359,8 @@ function get_events(i, es, myevents, sid, cont, table) {
                 alert("---- fail: " + status);
             }
         });
+    } else {
+        cont(myevents, table);
     }
 }
 
