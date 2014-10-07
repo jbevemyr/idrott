@@ -346,7 +346,7 @@ function get_user_events(sid, user, cont, table) {
                             alert("---- fail: " + status);
                         }
                     })
-                };
+                }
                 alert("hopp");
                 cont(myevents, table);
             } else {
