@@ -400,4 +400,4 @@ function layout_myeventrow(event, rowid) {
         </li>
    Tanken är att användaren kan får bekräftelse av event.
 */
-}
+
