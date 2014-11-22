@@ -1,0 +1,14 @@
+[
+  {"group": "Flickor", "subgroup": "02", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "höjd"}, {"event": "kula"}]},
+  {"group": "Pojkar", "subgroup": "02", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "höjd"}, {"event": "kula"}]},
+  {"group": "Flickor", "subgroup": "03", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "längd"}, {"event": "kula"}]},
+  {"group": "Pojkar", "subgroup": "03", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "längd"}, {"event": "kula"}]},
+  {"group": "Flickor", "subgroup": "04", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "höjd"}, {"event": "kula"}]},
+  {"group": "Pojkar", "subgroup": "04", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "höjd"}, {"event": "kula"}]},
+  {"group": "Flickor", "subgroup": "05", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "längd"}]},
+  {"group": "Pojkar", "subgroup": "05", "events": [{"event": "60m"}, {"event": "600m"}, {"event": "längd"}]},
+  {"group": "Flickor", "subgroup": "06", "events": [{"event": "60m"}, {"event": "400m"}, {"event": "längd"}]},
+  {"group": "Pojkar", "subgroup": "06", "events": [{"event": "60m"}, {"event": "400m"}, {"event": "längd"}]},
+  {"group": "Flickor", "subgroup": "07", "events": [{"event": "60m"}, {"event": "längd"}]},
+  {"group": "Pojkar", "subgroup": "07", "events": [{"event": "60m"}, {"event": "längd"}]}
+]

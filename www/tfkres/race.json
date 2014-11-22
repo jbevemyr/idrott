@@ -1,0 +1,17 @@
+{
+   id: "8",
+   name: "M22 Tresteg",
+   resultlist: "
+   <tr><td>1</td><td>Simon Karlén</td><td>94</td><td>IF Göta Karlstad</td><td>15.21</td><td></td><td></td></tr>
+   <tr><td>2</td><td>Jonas Arbinge</td><td>93</td><td>Hellas FK</td><td>14.02</td><td></td><td></td></tr>
+   <tr><td>3</td><td>Erik Grundberg</td><td>94</td><td>Hammarby IF</td><td>13.41</td><td></td><td></td></tr>
+   <tr><td>4</td><td>Björn Bamane</td><td>93</td><td>Spårvägens FK</td><td>13.02</td><td></td><td></td></tr>
+   <tr><td>5</td><td>Oscar Wahlqvist</td><td>93</td><td>Örgryte IS</td><td>12.93</td><td></td><td></td></tr>
+   ",
+   resultvalues: "
+   <tr><td>Björn Bamane</td><td>12.85</td><td>13.02</td><td>-</td><td>12.67</td><td>12.93</td><td>X</td></tr>
+   <tr><td>Oscar Wahlqvist</td><td>12.77</td><td>12.93</td><td>12.90</td><td>X</td><td>X</td><td>X</td></tr>
+   <tr><td>Jonas Arbinge</td><td>X</td><td>X</td><td>X</td><td>13.77</td><td>X</td><td>14.02</td></tr>
+   <tr><td>Erik Grundberg</td><td>X</td><td>X</td><td>13.41</td><td>X</td><td>-</td><td>X</td></tr>
+   <tr><td>Simon Karlén</td><td>X</td><td>15.10</td><td>15.21</td><td>-</td><td>X</td><td>13.56</td></tr>"
+}

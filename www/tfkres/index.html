@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/json2/20140204/json2.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+    <script src="backbone.js"></script>
+    <script src="competition.js"></script>
+    <script src="competitionx.css"></script>
+
+    <meta charset="UTF-8">
+    <title>SAYO 2015</title>
+</head>
+<body>
+
+<div id="res-app">
+
+    <div data-role="page" id="arr-start">
+        <div data-role="header">
+            <img src="SAYOindoor_loggo.png">
+
+            <h1>SAYO 2015</h1>
+        </div>
+
+        <div data-role="main" class="ui-content">
+            <ul data-role="listview" data-inset="true">
+                <li data-role="list-divider">Arrangemangsinformation</li>
+                <li><a href="#arr-nav-start">Resultat</a></li>
+                <li><a href="#gren8">Resultattest Gren8</a></li>
+                <li><a href="#arr-startlistor-test">Startlistor</a></li>
+                <li><a href="#arr-pm">PM</a></li>
+                <li><a href="#arr-tidsschema">Tidsschema</a></li>
+                <li><a href="#arr-kontakt">Kontakt</a></li>
+            </ul>
+        </div>
+
+        <div data-role="footer">
+            <h1>Arrangörsklubb Tureberg FK</h1>
+        </div>
+    </div>
+
+
+    <div data-role="page" id="arr-nav-start">
+        <div data-role="header">
+            <img src="SAYOindoor_loggo.png">
+            <a href="#arr-start" data-icon="back" class="ui-btn-right">Back</a>
+        </div>
+
+        <div data-role="main" class="ui-content">
+            <h1>Resultat</h1>
+            <form>
+                    <input data-type="search" id="searchForClass">
+            </form>
+            <div data-role="collapsibleset" id="nav" data-filter="true" data-children="> div, > div div ul li" data-inset="true" id="res-class" data-input="#searchForClass">
+                <!-- nav-list-template !-->
+            </div>
+        </div>
+
+        <div data-role="footer">
+            <h1>Arrangörsklubb Tureberg FK</h1>
+        </div>
+    </div>
+
+    <!--
+    <form>
+    <input data-type="search" id="searchForCollapsibleSetChildren">
+</form>
+    <div data-role="collapsibleset" data-filter="true" data-children="> div, > div div ul li" data-inset="true" id="collapsiblesetForFilterChildren" data-input="#searchForCollapsibleSetChildren">
+        <div data-role="collapsible" data-filtertext="Flickor 02 03 04 05">
+            <h3>Grupp1, t ex Flickor</h3>
+            <ul data-role="listview" data-inset="false">
+                <li data-filtertext="Flickor 02">02</li>
+                <li data-filtertext="Flickor 03">03</li>
+                <li data-filtertext="Flickor 05">04</li>
+                <li data-filtertext="Flickor 05">05</li>
+            </ul>
+        </div>
+        <div data-role="collapsible" data-filtertext="Pojkar 02 03 04 05">
+            <h3>Grupp 2, Pojkar</h3>
+            <ul data-role="listview" data-inset="false">
+                <li data-filtertext="Pojkar 02">02</li>
+                <li data-filtertext="Pojkar 03">03</li>
+                <li data-filtertext="Pojkar 04">04</li>
+                <li data-filtertext="Pojkar 05">05</li>
+            </ul>
+        </div>
+        <div data-role="collapsible" data-filtertext="Seniorer Kvinnor Män">
+            <h3>Grupp 3, t ex Seniorer</h3>
+            <ul data-role="listview" data-inset="false">
+                <li data-filtertext="Kvinnor">Kvinnor</li>
+                <li data-filtertext="Män">Män</li>
+            </ul>
+        </div>
+    </div>
+    -->
+
+
+    <div data-role="page" id="gren8">
+        <div data-role="header">
+            <img src="SAYOindoor_loggo.png">
+            <a href="#arr-start" data-icon="back" class="ui-btn-right">Back</a>
+            <h1>M22 Tresteg</h1>
+        </div>
+        <div data-role="content">
+            <form>
+                    <input id="filterTable-input" data-type="search">
+            </form>
+            <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-gren8-a">
+                <thead>
+                <tr>
+                    <th>Place</th>
+                    <th>Namn</th>
+                    <th>År</th>
+                    <th>Klubb</th>
+                    <th>Tid</th>
+                    <th>Q</th>
+                    <th>C</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td>1</td><td>Simon Karlén</td><td>94</td><td>IF Göta Karlstad</td><td>15.21</td><td></td><td></td></tr>
+                <tr><td>2</td><td>Jonas Arbinge</td><td>93</td><td>Hellas FK</td><td>14.02</td><td></td><td></td></tr>
+                <tr><td>3</td><td>Erik Grundberg</td><td>94</td><td>Hammarby IF</td><td>13.41</td><td></td><td></td></tr>
+                <tr><td>4</td><td>Björn Bamane</td><td>93</td><td>Spårvägens FK</td><td>13.02</td><td></td><td></td></tr>
+                <tr><td>5</td><td>Oscar Wahlqvist</td><td>93</td><td>Örgryte IS</td><td>12.93</td><td></td><td></td></tr>
+                </tbody>
+            </table>
+            <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-gren8-b">
+                <thead>
+                <th>Namn</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td>Björn Bamane</td><td>12.85</td><td>13.02</td><td>-</td><td>12.67</td><td>12.93</td><td>X</td></tr>
+                <tr><td>Oscar Wahlqvist</td><td>12.77</td><td>12.93</td><td>12.90</td><td>X</td><td>X</td><td>X</td></tr>
+                <tr><td>Jonas Arbinge</td><td>X</td><td>X</td><td>X</td><td>13.77</td><td>X</td><td>14.02</td></tr>
+                <tr><td>Erik Grundberg</td><td>X</td><td>X</td><td>13.41</td><td>X</td><td>-</td><td>X</td></tr>
+                <tr><td>Simon Karlén</td><td>X</td><td>15.10</td><td>15.21</td><td>-</td><td>X</td><td>13.56</td></tr>
+                <!--- RADER FÖR NAMN OCH DETALJER SLUT --->
+                </tbody>
+            </table>
+        </div>
+
+        <div data-role="footer">
+            <h1>Arrangörsklubb Tureberg FK</h1>
+        </div>
+    </div>
+
+</div>
+
+<!-- Templates -->
+
+<script type="text/template" id="res-page-template">
+    <div data-role="page" id="grenid">
+        <div data-role="header">
+            <img src="SAYOindoor_loggo.png">
+            <a href="#arr-start" data-icon="back" class="ui-btn-right">Back</a>
+            <h1>KlassX GrenY</h1>
+        </div>
+
+        <div data-role="main" class="ui-content" id="res-page-content1">
+            <form>
+                    <input id="filterTable-input" data-type="search">
+            </form>
+            <div data-role="content">
+                <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-raceid">
+                    <thead>
+                    <tr>
+                        <th>Place</th>
+                        <th>Namn</th>
+                        <th>År</th>
+                        <th>Klubb</th>
+                        <th>Tid</th>
+                        <th>Q</th>
+                        <th>C</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        race.resultlist
+                    </tbody>
+                </table>
+                <table data-role="table" data-mode="columntoggle" >
+                    <thead>
+                    <th>Namn</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        race.resultvalues
+                    </tbody>
+                </table>
+        </div>
+
+        <div data-role="footer">
+            <h1>Arrangörsklubb Tureberg FK</h1>
+        </div>
+    </div>
+</script>
+
+
+<script type="text/template" id="nav-list-template">
+    <% for(var i=0; i<groups.length; i++) { %>
+    <div data-role="collapsible" data-filtertext="<%=groups[i].groupfilter%>">
+        <h3><%=groups[i].group%></h3>
+        <ul data-role="listview" data-inset="false" id="nav-list-<%=groups[i].group%>">
+            <% for(var j=0; j<groups[i].subgroups.length; j++) { %>
+            <li data-filtertext="<%=groups[i].group%> <%=groups[i].subgroups[j]%>"><a href="#grenid"><%=groups[i].subgroups[j]%></a></li>
+            <% } %>
+        </ul>
+    </div>
+    <% } %>
+</script>
+
+
+</body>
+</html>
