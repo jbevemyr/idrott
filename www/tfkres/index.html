@@ -22,15 +22,15 @@
     <div data-role="page" id="arr-start">
         <div data-role="header">
             <img src="SAYOindoor_loggo.png">
-
-            <h1>SAYO 2015</h1>
         </div>
 
         <div data-role="main" class="ui-content">
             <ul data-role="listview" data-inset="true">
-                <li data-role="list-divider">Arrangemangsinformation</li>
-                <li><a href="#arr-nav-start">Resultat</a></li>
+                <li data-role="list-divider">SAYO Indoor 2014</li>
+                <li><a href="#arr-nav-start1">Resultat</a></li>
                 <li><a href="#gren8">Resultattest Gren8</a></li>
+                <li><a href="#raceslist1">Resultattest racelist1</a></li>
+                <li><a href="#raceslist21">Resultattest racelist2</a></li>
                 <li><a href="#arr-startlistor-test">Startlistor</a></li>
                 <li><a href="#arr-pm">PM</a></li>
                 <li><a href="#arr-tidsschema">Tidsschema</a></li>
@@ -44,10 +44,10 @@
     </div>
 
 
-    <div data-role="page" id="arr-nav-start">
+    <div data-role="page" id="arr-nav-start1">
         <div data-role="header">
-            <img src="SAYOindoor_loggo.png">
-            <a href="#arr-start" data-icon="back" class="ui-btn-right">Back</a>
+            <a href="#arr-start" data-icon="back" class="ui-btn-left">Back</a>
+            <h1>SAYO Indoor 2014</h1>
         </div>
 
         <div data-role="main" class="ui-content">
@@ -65,51 +65,128 @@
         </div>
     </div>
 
-    <!--
-    <form>
-    <input data-type="search" id="searchForCollapsibleSetChildren">
-</form>
-    <div data-role="collapsibleset" data-filter="true" data-children="> div, > div div ul li" data-inset="true" id="collapsiblesetForFilterChildren" data-input="#searchForCollapsibleSetChildren">
-        <div data-role="collapsible" data-filtertext="Flickor 02 03 04 05">
-            <h3>Grupp1, t ex Flickor</h3>
-            <ul data-role="listview" data-inset="false">
-                <li data-filtertext="Flickor 02">02</li>
-                <li data-filtertext="Flickor 03">03</li>
-                <li data-filtertext="Flickor 05">04</li>
-                <li data-filtertext="Flickor 05">05</li>
-            </ul>
-        </div>
-        <div data-role="collapsible" data-filtertext="Pojkar 02 03 04 05">
-            <h3>Grupp 2, Pojkar</h3>
-            <ul data-role="listview" data-inset="false">
-                <li data-filtertext="Pojkar 02">02</li>
-                <li data-filtertext="Pojkar 03">03</li>
-                <li data-filtertext="Pojkar 04">04</li>
-                <li data-filtertext="Pojkar 05">05</li>
-            </ul>
-        </div>
-        <div data-role="collapsible" data-filtertext="Seniorer Kvinnor Män">
-            <h3>Grupp 3, t ex Seniorer</h3>
-            <ul data-role="listview" data-inset="false">
-                <li data-filtertext="Kvinnor">Kvinnor</li>
-                <li data-filtertext="Män">Män</li>
-            </ul>
-        </div>
-    </div>
-    -->
-
-
-    <div data-role="page" id="gren8">
+    <div data-role="page" id="raceslist1">
         <div data-role="header">
-            <img src="SAYOindoor_loggo.png">
-            <a href="#arr-start" data-icon="back" class="ui-btn-right">Back</a>
-            <h1>M22 Tresteg</h1>
+            <a href="#arr-start" data-icon="back" class="ui-btn-left">Back</a>
+            <h1>SAYO Indoor 2014</h1>
+
         </div>
         <div data-role="content">
+            <h1>Män 22</h1>
             <form>
-                    <input id="filterTable-input" data-type="search">
+                    <input id="filterTable-raceinput" data-type="search">
             </form>
-            <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-gren8-a">
+            <div data-role="collapsible" data-filtertext="gruppfilter">
+                <h4>60 m</h4>
+                <table data-role="table" data-mode="reflow" data-filter="true" data-input="#filterTable-raceinput" class="ui-responsive">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Namn</th>
+                        <th>År</th>
+                        <th>Klubb</th>
+                        <th>Tid</th>
+                        <th data-priority="persist">Q</th>
+                        <th>C</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>1</td><td>Simon Karlén</td><td>94</td><td>IF Göta Karlstad</td><td>15.21</td><td></td><td></td></tr>
+                    <tr><td>2</td><td>Jonas Arbinge</td><td>93</td><td>Hellas FK</td><td>14.02</td><td></td><td></td></tr>
+                    <tr><td>3</td><td>Erik Grundberg</td><td>94</td><td>Hammarby IF</td><td>13.41</td><td></td><td></td></tr>
+                    <tr><td>4</td><td>Björn Bamane</td><td>93</td><td>Spårvägens FK</td><td>13.02</td><td></td><td></td></tr>
+                    <tr><td>5</td><td>Oscar Wahlqvist</td><td>93</td><td>Örgryte IS</td><td>12.93</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div data-role="collapsible" data-filtertext="gruppfilter">
+                <h4>200 m</h4>
+                <table data-role="table" data-mode="reflow" data-filter="true" data-input="#filterTable-raceinput" class="ui-responsive">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Namn</th>
+                        <th>År</th>
+                        <th>Klubb</th>
+                        <th>Tid</th>
+                        <th data-priority="persist">Q</th>
+                        <th>C</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>1</td><td>Simon Karlén</td><td>94</td><td>IF Göta Karlstad</td><td>15.21</td><td></td><td></td></tr>
+                    <tr><td>2</td><td>Jonas Arbinge</td><td>93</td><td>Hellas FK</td><td>14.02</td><td></td><td></td></tr>
+                    <tr><td>3</td><td>Erik Grundberg</td><td>94</td><td>Hammarby IF</td><td>13.41</td><td></td><td></td></tr>
+                    <tr><td>4</td><td>Björn Bamane</td><td>93</td><td>Spårvägens FK</td><td>13.02</td><td></td><td></td></tr>
+                    <tr><td>5</td><td>Oscar Wahlqvist</td><td>93</td><td>Örgryte IS</td><td>12.93</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div data-role="footer">
+            <h1>Arrangörsklubb Tureberg FK</h1>
+        </div>
+    </div>
+
+    <div data-role="page" id="raceslist21">
+        <div data-role="header">
+            <a href="#arr-start" data-icon="back" class="ui-btn-left">Back</a>
+            <h1>SAYO Indoor 2014</h1>
+            <form>
+                    <input id="filterTable-raceinput2" data-type="search">
+            </form>
+        </div>
+        <div data-role="navbar" data-grid="d">
+                <ul>
+                    <li><a href="#receslist21" class="ui-btn-active">60 m</a></li>
+                    <li><a href="#raceslist22">200 m</a></li>
+                </ul>
+        </div>
+        <div data-role="content">
+                <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-raceinput2" class="ui-responsive table-stroke">
+                    <thead>
+                    <tr>
+                        <th>Place</th>
+                        <th>Namn</th>
+                        <th>År</th>
+                        <th>Klubb</th>
+                        <th>Tid</th>
+                        <th>Q</th>
+                        <th>C</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>1</td><td>Simon Karlén</td><td>94</td><td>IF Göta Karlstad</td><td>15.21</td><td></td><td></td></tr>
+                    <tr><td>2</td><td>Jonas Arbinge</td><td>93</td><td>Hellas FK</td><td>14.02</td><td></td><td></td></tr>
+                    <tr><td>3</td><td>Erik Grundberg</td><td>94</td><td>Hammarby IF</td><td>13.41</td><td></td><td></td></tr>
+                    <tr><td>4</td><td>Björn Bamane</td><td>93</td><td>Spårvägens FK</td><td>13.02</td><td></td><td></td></tr>
+                    <tr><td>5</td><td>Oscar Wahlqvist</td><td>93</td><td>Örgryte IS</td><td>12.93</td><td></td><td></td></tr>
+                    </tbody>
+                </table>
+        </div>
+
+        <div data-role="footer">
+            <h1>Arrangörsklubb Tureberg FK</h1>
+        </div>
+    </div>
+
+    <div data-role="page" id="raceslist22">
+        <div data-role="header">
+            <a href="#arr-start" data-icon="back" class="ui-btn-left">Back</a>
+            <h1>SAYO Indoor 2014</h1>
+            <form>
+                    <input id="filterTable-raceinput2" data-type="search">
+            </form>
+        </div>
+        <div data-role="navbar" data-grid="d">
+                <ul>
+                    <li><a href="#raceslist21">60 m</a></li>
+                    <li><a href="#raceslist22" class="ui-btn-active">200 m</a></li>
+                </ul>
+        </div>
+        <div data-role="content">
+            <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-raceinput2" class="ui-responsive table-stroke">
                 <thead>
                 <tr>
                     <th>Place</th>
@@ -129,7 +206,44 @@
                 <tr><td>5</td><td>Oscar Wahlqvist</td><td>93</td><td>Örgryte IS</td><td>12.93</td><td></td><td></td></tr>
                 </tbody>
             </table>
-            <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-gren8-b">
+        </div>
+
+        <div data-role="footer">
+            <h1>Arrangörsklubb Tureberg FK</h1>
+        </div>
+    </div>
+
+    <div data-role="page" id="gren8">
+        <div data-role="header">
+            <a href="#arr-start" data-icon="back" class="ui-btn-left">Back</a>
+            <h1>SAYO Indoor 2014</h1>
+        </div>
+        <div data-role="content">
+            <h1>M22 Tresteg</h1>
+            <form>
+                    <input id="filterTable-input" data-type="search">
+            </form>
+            <table data-role="table" data-mode="reflow" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-gren8-a">
+                <thead>
+                <tr>
+                    <th>Place</th>
+                    <th>Namn</th>
+                    <th>År</th>
+                    <th>Klubb</th>
+                    <th>Tid</th>
+                    <th>Q</th>
+                    <th>C</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td>1</td><td>Simon Karlén</td><td>94</td><td>IF Göta Karlstad</td><td>15.21</td><td></td><td></td></tr>
+                <tr><td>2</td><td>Jonas Arbinge</td><td>93</td><td>Hellas FK</td><td>14.02</td><td></td><td></td></tr>
+                <tr><td>3</td><td>Erik Grundberg</td><td>94</td><td>Hammarby IF</td><td>13.41</td><td></td><td></td></tr>
+                <tr><td>4</td><td>Björn Bamane</td><td>93</td><td>Spårvägens FK</td><td>13.02</td><td></td><td></td></tr>
+                <tr><td>5</td><td>Oscar Wahlqvist</td><td>93</td><td>Örgryte IS</td><td>12.93</td><td></td><td></td></tr>
+                </tbody>
+            </table>
+            <table data-role="table" data-mode="reflow" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-gren8-b">
                 <thead>
                 <th>Namn</th>
                 <th>1</th>
@@ -163,17 +277,17 @@
 <script type="text/template" id="res-page-template">
     <div data-role="page" id="grenid">
         <div data-role="header">
-            <img src="SAYOindoor_loggo.png">
-            <a href="#arr-start" data-icon="back" class="ui-btn-right">Back</a>
-            <h1>KlassX GrenY</h1>
+            <a href="#arr-start" data-icon="back" class="ui-btn-left">Back</a>
+            <h1>SAYO Indoor 2014</h1>
         </div>
 
         <div data-role="main" class="ui-content" id="res-page-content1">
+            <h1>KlassX GrenY</h1>
             <form>
                     <input id="filterTable-input" data-type="search">
             </form>
             <div data-role="content">
-                <table data-role="table" data-mode="columntoggle" data-filter="true" data-input="#filterTable-input" class="ui-responsive table-stroke" id="restabell-raceid">
+                <table data-role="table" data-mode="reflow" data-filter="true" data-input="#filterTable-input" class="ui-responsive" id="restabell-raceid-a">
                     <thead>
                     <tr>
                         <th>Place</th>
@@ -186,10 +300,10 @@
                     </tr>
                     </thead>
                     <tbody>
-                        race.resultlist
+                        <tr><td>race.resultlist</td></tr>
                     </tbody>
                 </table>
-                <table data-role="table" data-mode="columntoggle" >
+                <table data-role="table" data-mode="reflow" data-filter="true" data-input="#filterTable-input" class="ui-responsive" id="restabell-raceid-b">
                     <thead>
                     <th>Namn</th>
                     <th>1</th>
@@ -201,7 +315,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                        race.resultvalues
+                        <tr><td>race.resultvalues</td></tr>
                     </tbody>
                 </table>
         </div>
@@ -213,7 +327,7 @@
 </script>
 
 
-<script type="text/template" id="nav-list-template">
+<script type="text/template" id="nav-grouplist-template">
     <% for(var i=0; i<groups.length; i++) { %>
     <div data-role="collapsible" data-filtertext="<%=groups[i].groupfilter%>">
         <h3><%=groups[i].group%></h3>
