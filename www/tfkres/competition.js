@@ -4,46 +4,24 @@
 
 $(function () {
 
-    var Gren = Backbone.Model.extend({
-        name: "",
-        startlistURL: "",
-        resURL: ""
-    });
-    var Grenar = Backbone.Collection.extend({
-        model: Gren
-    });
-    var g = new Grenar("60m");
-
     var Race = Backbone.Model.extend({
         group: "",
         subgroup: "",
-        grenar: []
+        events: []
     });
     var Races = Backbone.Collection.extend({
-        model: Race,
-        url: 'competition.json'
-        //url: '/TFKfunk/www/tfkres/race.json'
+        model: Race
     });
-    /*
-    var races = new Races({
-        "group": "Pojkar",
-        "subgroup": "02",
-        "grenar": gs
-    });
-    */
-    var races = new Races();
-    races.fetch({async: false});
 
     var Competition = Backbone.Model.extend({
-        name: "",
-        races: []
+        //name: "",
+        //date: "",
+        //races: []
     });
-
-    var comp = new Competition({
-        "name": "Sayo Indoor 2015",
-        "races": races
+    var Competitions = Backbone.Collection.extend({
+        model: Competition,
+        url: 'competition.json'
     });
-
 
     var NavView = Backbone.View.extend({
         el: $("#nav"),
@@ -56,7 +34,9 @@ $(function () {
                 resulttemplate = this.resultTemplate;
 
             var grouplist = this.collection.map(function (x) {
-                return x.toJSON().group;
+                console.log(x);
+                //return x.toJSON().group;
+                return _.property("group")(x);
             });
             grouplist = _.unique(grouplist);
 
@@ -65,11 +45,13 @@ $(function () {
                 var group = grouplist[i];
 
                 var subgrouplist = this.collection.filter(function (x) {
-                    return x.toJSON().group == group;
+                    //return x.toJSON().group == group;
+                    return _.property("group")(x);
                 });
 
                 var subgroupstringlist = subgrouplist.map(function (x) {
-                    return x.toJSON().subgroup;
+                    //return x.toJSON().subgroup;
+                    return _.property("subgroup")(x);
                 });
 
                 var navlist = _.reduce(subgrouplist, function (memo, x) {
@@ -77,7 +59,8 @@ $(function () {
                 });
 
                 var subgroupfilter = _.map(subgrouplist, function (x){
-                    return x.toJSON().subgroup;
+                    //return x.toJSON().subgroup;
+                    return _.property("subgroup")(x);
                 });
 
                 subgroupfilter = _.reduce(subgroupfilter, function (memo, x) {
@@ -90,9 +73,7 @@ $(function () {
                 //console.log("group: "+group+", groupfilter: "+groupfilter+", subgroups: "+subgroupstringlist[2]);
             }
 
-            var navstruct = resulttemplate({groups: groups});
-            //var navstruct = resulttemplate({group: "TESTGROUP", groupfilter: "TESTGROUPFILTER", subgroup: "TESTSUBGROUP"});
-            //console.log(navstruct);
+            var navstruct = resulttemplate({groups: groups})
             headplace.append(navstruct);
             return this;
         }
@@ -106,15 +87,27 @@ $(function () {
         render: function () {
             var pagetemplate = this.resultpageTemplate;
 
-            //this.footer.html(this.statsTemplate({done: done, remaining: remaining}));
             $(this.el).append(pagetemplate());
             return this;
         }
     });
 
+    var comps = new Competitions();
+    comps.fetch({async: false});
+
     var page = new ResView;
     page.render();
 
-    var navigation = new NavView({collection: races});
-    navigation.render();
+    //console.log("antal tävlingsdagar: "+comps.length);
+
+    if (comps.length > 0) {
+        var races = comps.at(0).get("races");
+        //console.log(comps.at(0).get("name"));
+        //console.log(comps.at(0).get("date"));
+        //console.log(comps.at(0).get("races").length);
+        var navigation = new NavView({collection: races});
+        navigation.render();
+    };
+
+
 });
