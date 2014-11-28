@@ -46,7 +46,7 @@ $(function () {
 
                 var subgrouplist = this.collection.filter(function (x) {
                     //return x.toJSON().group == group;
-                    return _.property("group")(x);
+                    return _.property("group")(x) == group;
                 });
 
                 var subgroupstringlist = subgrouplist.map(function (x) {
