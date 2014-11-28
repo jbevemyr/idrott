@@ -34,7 +34,6 @@ $(function () {
                 resulttemplate = this.resultTemplate;
 
             var grouplist = this.collection.map(function (x) {
-                console.log(x);
                 return _.property("group")(x);
             });
             grouplist = _.unique(grouplist);
