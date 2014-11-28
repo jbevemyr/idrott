@@ -35,7 +35,6 @@ $(function () {
 
             var grouplist = this.collection.map(function (x) {
                 console.log(x);
-                //return x.toJSON().group;
                 return _.property("group")(x);
             });
             grouplist = _.unique(grouplist);
@@ -45,12 +44,10 @@ $(function () {
                 var group = grouplist[i];
 
                 var subgrouplist = this.collection.filter(function (x) {
-                    //return x.toJSON().group == group;
                     return _.property("group")(x) == group;
                 });
 
                 var subgroupstringlist = subgrouplist.map(function (x) {
-                    //return x.toJSON().subgroup;
                     return _.property("subgroup")(x);
                 });
 
@@ -59,7 +56,6 @@ $(function () {
                 });
 
                 var subgroupfilter = _.map(subgrouplist, function (x){
-                    //return x.toJSON().subgroup;
                     return _.property("subgroup")(x);
                 });
 
@@ -70,7 +66,6 @@ $(function () {
                 var groupfilter = group + " " + subgroupfilter;
 
                 groups.push({group: group, groupfilter: groupfilter, subgroups: subgroupstringlist});
-                //console.log("group: "+group+", groupfilter: "+groupfilter+", subgroups: "+subgroupstringlist[2]);
             }
 
             var navstruct = resulttemplate({groups: groups})
@@ -102,9 +97,6 @@ $(function () {
 
     if (comps.length > 0) {
         var races = comps.at(0).get("races");
-        //console.log(comps.at(0).get("name"));
-        //console.log(comps.at(0).get("date"));
-        //console.log(comps.at(0).get("races").length);
         var navigation = new NavView({collection: races});
         navigation.render();
     };
