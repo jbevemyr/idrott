@@ -51,6 +51,8 @@
 -define(EVENTS_DB, "/home/share/katrin/www/idrott/events.db.json").
 -define(EVENTS_DB_TMP, "/home/share/katrin/www/idrott/events.db.json.tmp").
 
+-define(DATAFILE, "/home/share/katrin/www/idrott/key_value.db").
+
 %%
 
 -record(post_state, {count=0, acc=[]}).
@@ -160,7 +162,8 @@ do_op(Cmd, L, Json) ->
 -record(state, {
           users=[],            %% list of #user{}
           events=[],
-          event_id=0
+          event_id=0,
+          data=[]              %% [{Key,Value}]
          }).
 
 %%%----------------------------------------------------------------------
@@ -194,7 +197,8 @@ init([]) ->
     random:seed(X, Y, Z),
     Users = read_users(),
     Events = read_events(),
-    {ok, #state{users=Users, events=Events}}.
+    Data = read_data(),
+    {ok, #state{users=Users, events=Events, data=Data}}.
 
 %%----------------------------------------------------------------------
 %% Func: handle_call/3
@@ -270,6 +274,26 @@ code_change(_OldVsn, S, _Extra) ->
 %%%----------------------------------------------------------------------
 
 %% http://idrott/idrott/login?user=johan&password=test
+do_cmd("put", L, Json, S) ->
+    Key = get_val("key", L, ""),
+    case lists:keymember(Key, 1, S#state.data) of
+        true ->
+            NewData = lists:keyreplace(Key, 1, S#state.data, {Key, Json});
+        false ->
+            NewData = [{Key,Json}|S#state.data]
+    end,
+    Res = {struct, [{status, "ok"}]},
+    save_data(NewData),
+    {Res, S#state{data=NewData}};
+do_cmd("get", L, _Json, S) ->
+    Key = get_val("key", L, ""),
+    case lists:keysearch(Key, 1, S#state.data) of
+        {value, {Key, Json}} ->
+            Res = Json;
+        false ->
+            Res = {struct, [{status, "error"}, {reason, "invalid password"}]}
+    end,
+    {Res, S};
 do_cmd("login", L, _Json, S) ->
     User = get_val("user", L, ""),
     Password = get_val("password", L, ""),
@@ -1220,3 +1244,14 @@ mail_users([U|Us], Subject, Message, SentTo, Rejected) ->
             ?liof("failed ~p\n", [_Error]),
             mail_users(Us, Subject, Message, SentTo, [U|Rejected])
     end.
+
+read_data() ->
+    case lists:read_file(?DATAFILE) of
+        {ok, Bin} ->
+            binary_to_term(Bin);
+        _ ->
+            []
+    end.
+
+save_data(Data) ->
+    file:write_file(?DATAFILE, term_to_binary(Data)).

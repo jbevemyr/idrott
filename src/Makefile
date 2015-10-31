@@ -8,7 +8,8 @@ endif
 
 MODULES=idrott \
 	ktime \
-	idrott_json2
+	idrott_json2 \
+	parse_xml
 
 EBIN_FILES=$(MODULES:%=../ebin/%.$(EMULATOR)) 
 

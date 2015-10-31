@@ -1,0 +1,70 @@
+out(A) ->
+    L = yaws_api:parse_query(A),
+    Id = systemet:get_val("id", L, ""),
+    Url = "http://idrott.bevemyr.com/test.html",
+    case url:get(Url) of
+        {200, _Headers, Content} ->
+            {ehtml, [], X} = parse_xml:h2e(lists:flatten(Content)),
+            {td, _, [NameStr]} = find_tag(td, X),
+            Name = strip(NameStr),
+            
+        _Other ->
+            failed
+    end.
+
+find_tag(Tag, Body) ->
+    find_nth_tag(0, Tag, Body).
+
+find_nth_tag(_N, _Tag, []) ->
+    false;
+find_nth_tag(0, Tag, [T={Tag, _Attr, _Body}|_]) ->
+    T;
+find_tag(0, Tag, [T={Tag, _Attr}|_]) ->
+    T;
+find_nth_tag(N, Tag, [T={Tag, _Attr, _Body}|Rest]) ->
+    find_nth_tag(N-1, Tag, Rest);
+find_tag(0, Tag, [T={Tag, _Attr}|Rest]) ->
+    find_nth_tag(N-1, Tag, Rest);
+find_tag(N, Tag, [{_Tag, _Attr}|Rest]) ->
+    find_tag(N, Tag, Rest);
+find_tag(N, Tag, [{_Tag, _Attr, Body}|Rest]) ->
+    case find_tag(N, Tag, Body) of
+        false ->
+            find_tag(N, Tag, Rest);
+        Elem ->
+            Elem
+    end;
+find_tag(_N, _Tag, _) ->
+    false.
+
+get_val(Key, L, Default) ->
+    case lists:keysearch(Key, 1, L) of
+        {value, {_, undefined}} -> Default;
+        {value, {_, Val}} -> Val;
+        {value, {_, _, [Val]}} -> Val;
+        _ -> Default
+    end.
+
+strip([]) ->
+    [];
+strip([C|Cs]) ->
+    case is_whitespace(C) of
+        true ->
+            strip(Cs);
+        false ->
+            lists:reverse(strip(lists:reverse(Cs)))
+    end.
+
+is_whitespace($ ) ->
+    true;
+is_whitespace($\t ) ->
+    true;
+is_whitespace($\n) ->
+    true;
+is_whitespace($\r) ->
+    true;
+is_whitespace(_) ->
+    false.
+
+
+
