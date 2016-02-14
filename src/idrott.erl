@@ -82,7 +82,7 @@ out(#arg{req = #http_request{method = 'POST'},
             case json2:decode_string(PostStr) of
                 {ok, Json} ->
                     L = yaws_api:parse_query(A),
-                    do_op(A#arg.appmoddata, L, Json);
+                    do_op(A#arg.appmoddata, L, Json, A);
                 _Reason ->
                     Res = {struct, [{status, "error"},
                                     {reason, "invalid json"}]},
@@ -98,7 +98,7 @@ out(#arg{req = #http_request{method = 'POST'},
     %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
     case json2:decode_string(dequote(DecodedClidata)) of
         {ok, Json} ->
-            do_op(A#arg.appmoddata, L, Json);
+            do_op(A#arg.appmoddata, L, Json, A);
         _Reason ->
             io:format("json=~p\n", [DecodedClidata]),
             io:format("got error ~p\n", [_Reason]),
@@ -112,7 +112,7 @@ out(#arg{req = #http_request{method = 'POST'}} = A) ->
     %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
     case json2:decode_string(dequote(Clidata)) of
         {ok, Json} ->
-            do_op(A#arg.appmoddata, L, Json);
+            do_op(A#arg.appmoddata, L, Json, A);
         _Reason ->
             io:format("json=~p\n", [Clidata]),
             io:format("got error ~p\n", [_Reason]),
@@ -130,12 +130,15 @@ out(A) ->
                 QueryL ++ yaws_api:parse_post(A)
         end,
     %% io:format("got appmod request: ~p\n", [A#arg.appmoddata]),
-    do_op(A#arg.appmoddata, L, []).
+    do_op(A#arg.appmoddata, L, [], A).
 
-do_op(Cmd, L, Json) ->
-    Res = gen_server:call(?SERVER, {Cmd, L, Json}, infinity),
-    rpcreply(Res).
-
+do_op(Cmd, L, Json, A) ->
+    case gen_server:call(?SERVER, {Cmd, L, Json, A}, infinity) of
+        Content = {content, _Type, _Data} ->
+            Content;
+        JsonAndHeaders ->
+            rpcreply(JsonAndHeaders)
+    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Gen server
@@ -224,9 +227,9 @@ handle_call(hard_reset, _From, S) ->
     Events = read_events(),
     {reply, ok, S#state{users=Users, events=Events}};
 
-handle_call({Cmd, L, Json}, _From, S) ->
+handle_call({Cmd, L, Json, A}, _From, S) ->
     try
-        {Res, NewS} = do_cmd(Cmd, L, Json, S),
+        {Res, NewS} = do_cmd(Cmd, L, Json, A, S),
         {reply, Res, NewS}
     catch
         X:Y ->
@@ -273,8 +276,22 @@ code_change(_OldVsn, S, _Extra) ->
 %%% Internal functions
 %%%----------------------------------------------------------------------
 
-%% http://idrott/idrott/login?user=johan&password=test
-do_cmd("put", L, Json, S) ->
+do_cmd(Spec="pdf/"++_, _L, _Json, _A, S) ->
+    case string:tokens(Spec, "/") of
+        ["pdf", Key|_] ->
+            case lists:keysearch(Key, 1, S#state.data) of
+                {value, {Key, Json}} ->
+                    PdfContentData = gen_pdf(Json),
+                    Res = {content, "application/pdf", PdfContentData};
+                false ->
+                    Res = {{struct, [{status, "error"}, {reason, "unknown key"}]}, []}
+            end;
+        _ ->
+            Res = {{struct, [{status, "error"},
+                             {reason, "malformed request"}]}, []}
+    end,
+    {Res, S};
+do_cmd("put", L, Json, _A, S) ->
     Key = get_val("key", L, ""),
     case lists:keymember(Key, 1, S#state.data) of
         true ->
@@ -284,33 +301,56 @@ do_cmd("put", L, Json, S) ->
     end,
     Res = {struct, [{status, "ok"}]},
     save_data(NewData),
-    {Res, S#state{data=NewData}};
-do_cmd("get", L, _Json, S) ->
+    {{Res,[]}, S#state{data=NewData}};
+do_cmd("delete", L, _Json, _A, S) ->
+    Key = get_val("key", L, ""),
+    case lists:keymember(Key, 1, S#state.data) of
+        true ->
+            NewData = lists:keydelete(Key, 1, S#state.data);
+        false ->
+            NewData = S#state.data
+    end,
+    Res = {struct, [{status, "ok"}]},
+    save_data(NewData),
+    {{Res,[]}, S#state{data=NewData}};
+do_cmd("get", L, _Json, _A, S) ->
     Key = get_val("key", L, ""),
     case lists:keysearch(Key, 1, S#state.data) of
         {value, {Key, Json}} ->
             Res = Json;
         false ->
-            Res = {struct, [{status, "error"}, {reason, "invalid password"}]}
+            Res = {struct, [{status, "error"}, {reason, "unknown key"}]}
     end,
-    {Res, S};
-do_cmd("login", L, _Json, S) ->
+    {{Res,[]}, S};
+%% http://idrott/idrott/login?user=johan&password=test
+do_cmd("login", L, _Json, _A, S) ->
     User = get_val("user", L, ""),
     Password = get_val("password", L, ""),
+    Remember = get_val("remember", L, "false"),
     Md5Pass = ?b2l(base64:encode(crypto:hash(md5, Password))),
     case get_user_by_name(User, S) of
+        U=#user{password = Md5Pass} when Remember == "true" ->
+            %% login successful
+            {Y,M,D} = date(),
+            Expires= format_expires_date({{Y+1,M,D},time()}),
+            Headers=[yaws_api:setcookie("sid", U#user.sid, "/", Expires)],
+            Res = {struct, [{status, "ok"}, {"sid", U#user.sid},
+                            {group, ?a2l(U#user.role)}]};
         U=#user{password = Md5Pass} ->
             %% login successful
+            Headers=[yaws_api:setcookie("sid", U#user.sid, "/")],
             Res = {struct, [{status, "ok"}, {"sid", U#user.sid},
                             {group, ?a2l(U#user.role)}]};
         #user{} ->
+            Headers=[],
             Res = {struct, [{status, "error"}, {reason, "invalid password"}]};
         _ ->
+            Headers=[],
             Res = {struct, [{status, "error"}, {reason, "unknown user"}]}
     end,
-    {Res, S};
+    {{Res,Headers}, S};
 %% http://idrott/idrott/send_reset_password?user=johan
-do_cmd("send_reset_password", L, _Json, S) ->
+do_cmd("send_reset_password", L, _Json, _A, S) ->
     User = get_val("user", L, ""),
     case get_user_by_name(User, S) of
         U=#user{} ->
@@ -331,9 +371,9 @@ do_cmd("send_reset_password", L, _Json, S) ->
             Res = {struct, [{state, "error"}, {reason, "unknown user"}]},
             NewS = S
     end,
-    {Res, NewS};
+    {{Res,[]}, NewS};
 %% http://idrott/idrott/reset_password?rpid=1234567890&password=test
-do_cmd("reset_password", L, _Json, S) ->
+do_cmd("reset_password", L, _Json, _A, S) ->
     Rpid = get_val("rpid", L, ""),
     Password = get_val("password", L, ""),
     case get_user_by_rpid(Rpid, S) of
@@ -344,19 +384,19 @@ do_cmd("reset_password", L, _Json, S) ->
                     Md5Pass = ?b2l(base64:encode(crypto:hash(md5, Password))),
                     NewU = U#user{password=Md5Pass},
                     Res = {struct, [{status, "ok"}, {user, user2object(U)}]},
-                    {Res, S#state{users=update_user(NewU, S#state.users)}};
+                    {{Res,[]}, S#state{users=update_user(NewU, S#state.users)}};
                true ->
                     Res = {struct, [{status, "error"},
                                     {reason, "password reset link has expired"}]},
-                    {Res, S}
+                    {{Res, []}, S}
             end;
         _ ->
             Res = {struct, [{status, "error"}, {reason, "unknown sid"}]},
-            {Res, S}
+            {{Res, []}, S}
     end;
 %% http://idrott/idrott/set_password?sid=1234567890&old_password=test&new_password=test2
-do_cmd("set_password", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("set_password", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     OldPass = get_val("old_password", L, ""),
     NewPass = get_val("new_password", L, ""),
     Md5OldPass = ?b2l(base64:encode(crypto:hash(md5, OldPass))),
@@ -366,14 +406,14 @@ do_cmd("set_password", L, _Json, S) ->
             %% successful auth of old pass
             NewU = U#user{password=Md5NewPass},
             Res = {struct, [{status, "ok"}]},
-            {Res, S#state{users=update_user(NewU, S#state.users)}};
+            {{Res,[]}, S#state{users=update_user(NewU, S#state.users)}};
         _ ->
             Res = {struct, [{status, "error"}, {reason, "unknown sid"}]},
-            {Res, S}
+            {{Res, []}, S}
     end;
 %% http://idrott/idrott/set_user_password?sid=1234567890&username=jb&password=test
-do_cmd("set_user_password", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("set_user_password", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     Username = get_val("username", L, ""),
     NewPass = get_val("new_password", L, ""),
     Md5NewPass = ?b2l(base64:encode(crypto:hash(md5, NewPass))),
@@ -384,24 +424,24 @@ do_cmd("set_user_password", L, _Json, S) ->
                     NewU = OU#user{password=Md5NewPass},
                     Res = {struct, [{status, "ok"}]},
                     NewS = S#state{users=update_user(NewU, S#state.users)},
-                    {Res, NewS};
+                    {{Res, []}, NewS};
                 false ->
                     Res = {struct, [{status, "error"},
                                     {reason, "unknown user"}]},
-                    {Res, S}
+                    {{Res, []}, S}
             end;
         #user{} ->
             Res = {struct, [{status, "error"},
                             {reason, "only allowed for admin user"}]},
-            {Res, S};
+            {{Res,[]}, S};
         _ ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]},
-            {Res, S}
+            {{Res,[]}, S}
     end;
 %% http://idrott/idrott/get_all_users?sid=1234567890
-do_cmd("get_all_users", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("get_all_users", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         #user{} ->
             %% login successful
@@ -412,10 +452,10 @@ do_cmd("get_all_users", L, _Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, S};
+    {{Res,[]}, S};
 %% http://idrott/idrott/get_user?sid=1234567890
-do_cmd("get_user", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("get_user", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} ->
             %% login successful
@@ -424,10 +464,10 @@ do_cmd("get_user", L, _Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, S};
+    {{Res, []}, S};
 %% http://idrott/idrott/get_named_user?sid=1234567890&username=jb
-do_cmd("get_named_user", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("get_named_user", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             Username = get_val("username", L, ""),
@@ -446,10 +486,10 @@ do_cmd("get_named_user", L, _Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, S};
+    {{Res,[]}, S};
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
-do_cmd("get_selected_users", L, Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("get_selected_users", L, Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             Users = get_user_by_select(Json, S),
@@ -466,11 +506,11 @@ do_cmd("get_selected_users", L, Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, NewS};
+    {{Res,[]}, NewS};
 
 %% http://idrott/idrott/send_reset_password?user=johan
-do_cmd("mail_selected_users", L, {struct, JsonL}, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("mail_selected_users", L, {struct, JsonL}, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             Selection = get_val("recievers", JsonL, []),
@@ -493,26 +533,26 @@ do_cmd("mail_selected_users", L, {struct, JsonL}, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, NewS};
+    {{Res, []}, NewS};
 
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
-do_cmd("set_user", L, Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("set_user", L, Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} ->
             %% login successful
             U2 = apply_user_ops(U,L),
             NewU = apply_user_json(U2, Json),
             Res = {struct, [{status, "ok"}]},
-            {Res, S#state{users=update_user(NewU, S#state.users)}};
+            {{Res,[]}, S#state{users=update_user(NewU, S#state.users)}};
         _ ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]},
-            {Res, S}
+            {{Res, []}, S}
     end;
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
-do_cmd("set_named_user", L, Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("set_named_user", L, Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             Username = get_val("username", L, ""),
@@ -536,10 +576,10 @@ do_cmd("set_named_user", L, Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, NewS};
+    {{Res, []}, NewS};
 %% http://idrott/idrott/add_user?sid=1234567890&username=jb&password=test&role=user&foo=bar
-do_cmd("add_user", L0, Json, S) ->
-    Sid = get_val("sid", L0, ""),
+do_cmd("add_user", L0, Json, A, S) ->
+    Sid = get_sid(A, L0),
     L = merge_attrs(L0, Json),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
@@ -586,10 +626,10 @@ do_cmd("add_user", L0, Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, NewS};
+    {{Res, []}, NewS};
 %% http://idrott/idrott/del_user?sid=1234567890&username=jb
-do_cmd("del_user", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("del_user", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             %% login successful
@@ -619,10 +659,10 @@ do_cmd("del_user", L, _Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, NewS};
+    {{Res, []}, NewS};
 %% http://idrott/idrott/get_all_events?sid=1234567890
-do_cmd("get_all_events", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("get_all_events", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         #user{} ->
             %% login successful
@@ -633,10 +673,10 @@ do_cmd("get_all_events", L, _Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown event id"}]}
     end,
-    {Res, S};
+    {{Res, []}, S};
 %% http://idrott/idrott/create_event?sid=1234567890
-do_cmd("create_event", L, Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("create_event", L, Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             %% login successful
@@ -655,9 +695,9 @@ do_cmd("create_event", L, Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown session id"}]}
     end,
-    {Res, NewS};
-do_cmd("change_event", L0, Json, S) ->
-    Sid = get_val("sid", L0, ""),
+    {{Res,[]}, NewS};
+do_cmd("change_event", L0, Json, A, S) ->
+    Sid = get_sid(A,L0),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             L = case Json of
@@ -687,9 +727,9 @@ do_cmd("change_event", L0, Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown session id"}]}
     end,
-    {Res, NewS};
-do_cmd("get_event", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+    {{Res,[]}, NewS};
+do_cmd("get_event", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         #user{} ->
             %% login successful
@@ -706,10 +746,10 @@ do_cmd("get_event", L, _Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown event id"}]}
     end,
-    {Res, S};
+    {{Res, []}, S};
 %% http://idrott/idrott/set_user?sid=1234567890&foo=bar
-do_cmd("get_selected_events", L, Json, S) ->
-    Sid = get_val("sid", L, ""),
+do_cmd("get_selected_events", L, Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             Events = get_event_by_select(Json, S),
@@ -726,9 +766,9 @@ do_cmd("get_selected_events", L, Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, NewS};
-do_cmd("del_event", L, _Json, S) ->
-    Sid = get_val("sid", L, ""),
+    {{Res, []}, NewS};
+do_cmd("del_event", L, _Json, A, S) ->
+    Sid = get_sid(A,L),
     case get_user_by_id(Sid, S) of
         U=#user{} when U#user.role == admin ->
             %% login successful
@@ -754,17 +794,17 @@ do_cmd("del_event", L, _Json, S) ->
             Res = {struct, [{status, "error"},
                             {reason, "unknown sid"}]}
     end,
-    {Res, NewS};
-do_cmd(Unknown, _L, _Json, S) ->
+    {{Res, []}, NewS};
+do_cmd(Unknown, _L, _Json, _A, S) ->
     Error = lists:flatten(io_lib:format("unknown request: ~p", [Unknown])),
     error_logger:format("~s", [Error]),
-    {{struct, [{"status", "error"}, {reason, Error}]}, S}.
+    {{{struct, [{"status", "error"}, {reason, Error}]}, []}, S}.
 
-rpcreply(Response) ->
+rpcreply({Response, ExtraHeaders}) ->
     X = json2:encode(Response),
     [{header, {cache_control, "no-cache"}},
-     {header, "Expires: -1"},
-     {html, X}].
+     {header, "Access-Control-Allow-Origin: *"},
+     {header, "Expires: -1"}]++ExtraHeaders++[{html, X}].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1225,7 +1265,7 @@ new_event_id(S) ->
             new_event_id(S#state{event_id=Id})
     end.
 
-    
+
 mail_users(Users, Subject, Message) ->
     mail_users(Users, Subject, Message, [], []).
 
@@ -1246,7 +1286,7 @@ mail_users([U|Us], Subject, Message, SentTo, Rejected) ->
     end.
 
 read_data() ->
-    case lists:read_file(?DATAFILE) of
+    case file:read_file(?DATAFILE) of
         {ok, Bin} ->
             binary_to_term(Bin);
         _ ->
@@ -1255,3 +1295,329 @@ read_data() ->
 
 save_data(Data) ->
     file:write_file(?DATAFILE, term_to_binary(Data)).
+
+format_expires_date({{Year, Month, Date}, {Hours, Minutes, Seconds}}) ->
+    lists:flatten(
+      io_lib:format("~s, ~p ~s ~p ~2.2.0w:~2.2.0w:~2.2.0w GMT",
+                    [weekday({Year, Month, Date}), Date,
+                     month(Month), Year, Hours, Minutes, Seconds])).
+
+weekday(Date) ->
+    int_to_wd(calendar:day_of_the_week(Date)).
+
+int_to_wd(1) ->
+    "Mon";
+int_to_wd(2) ->
+    "Tue";
+int_to_wd(3) ->
+    "Wed";
+int_to_wd(4) ->
+    "Thu";
+int_to_wd(5) ->
+    "Fri";
+int_to_wd(6) ->
+    "Sat";
+int_to_wd(7) ->
+    "Sun".
+
+month(1) ->
+    "Jan";
+month(2) ->
+    "Feb";
+month(3) ->
+    "Mar";
+month(4) ->
+    "Apr";
+month(5) ->
+    "May";
+month(6) ->
+    "Jun";
+month(7) ->
+    "Jul";
+month(8) ->
+    "Aug";
+month(9) ->
+    "Sep";
+month(10) ->
+    "Oct";
+month(11) ->
+    "Nov";
+month(12) ->
+    "Dec".
+
+get_sid(A, L) ->
+    case get_val("sid", L, "") of
+        "" ->
+            get_cookie_val("sid", A);
+        Sid ->
+            Sid
+    end.
+
+get_cookie_val(Cookie, Arg) ->
+    H = Arg#arg.headers,
+    yaws_api:find_cookie_val(Cookie, H#headers.cookie).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-define(HELVETICA, "Helvetica").
+-define(HELVETICA_BOLD, "Helvetica-Bold").
+-define(LANEWIDTH, 60).
+
+gen_pdf(Json) ->
+    %% ?liof("Json=~p\n", [Json]),
+    PDF = eg_pdf:new(),
+    eg_pdf:set_pagesize(PDF,a4),
+    eg_pdf:set_author(PDF, "idrott.bevemyr.com"),
+    eg_pdf:set_title(PDF, "Schema"),
+    eg_pdf:set_subject(PDF,"Schema"),
+    eg_pdf:set_keywords(PDF,"Schema"),
+
+    %% grid
+    %% grid(PDF),
+
+    body(PDF, Json),
+
+    {Serialized, NoPages} = eg_pdf:export(PDF),
+    ?liof("NoPages=~p\n", [NoPages]),
+    eg_pdf:delete(PDF),
+    Serialized.
+
+body(PDF, {struct, Vals}) ->
+    %% Process one day at a time
+    Days = get_days(Vals),
+    build_days(PDF, Days, Vals).
+
+build_days(_PDF, [], _Vals) ->
+    done;
+build_days(PDF, [Day|Days], Vals) ->
+    DayName0 = get_val("name", Day, ""),
+    DayName = unicode:characters_to_list(?l2b(DayName0)),
+    header(PDF, Vals, DayName),
+    print_day(PDF, Day, Vals),
+    if Days =/= [] ->
+            eg_pdf:new_page(PDF);
+       true ->
+            ok
+    end,
+    build_days(PDF, Days, Vals).
+
+print_day(PDF, Day, Vals) ->
+    Arenas = get_arenas(Vals),
+    Events = get_events(Vals),
+    DXA = get_dxa(Vals),
+    AXE = get_axe(Vals),
+    DayId = get_val("id", Day, ""),
+    [TodayDXA] = [TDXA || TDXA <- DXA,
+                          lists:member({"day", DayId}, TDXA)],
+    TodaysArenaIds = unpack(get_val("arenas", TodayDXA, "")),
+    TodaysArenas = [A || A <- Arenas,
+                         lists:member(get_val("id", A, ""), TodaysArenaIds)],
+    TodaysEvents = [E || E <- Events,
+                         lists:member({"day", DayId}, E)],
+    ColumnIds = [get_val("id", A, "") || A <- TodaysArenas],
+    StartTime = get_val("starttime", Day, 0),
+    ColumnPages = split_columns_on_pages(ColumnIds, 9),
+    print_day_pages(PDF, ColumnPages, Arenas, TodaysEvents, StartTime, AXE).
+
+split_columns_on_pages(ColumnIds, Size) ->
+    if length(ColumnIds) < Size ->
+            [ColumnIds];
+       true ->
+            Page = lists:sublist(ColumnIds, 1, Size),
+            Rest = lists:nthtail(Size, ColumnIds),
+            [Page|split_columns_on_pages(Rest, Size)]
+    end.
+
+print_day_pages(_PDF, [], _Arenas, _TodaysEvents, _StartTime, _AXE) ->
+    ok;
+print_day_pages(PDF, [ColumnIds|Pages], Arenas, TodaysEvents, StartTime, AXE) ->
+    PageEvents = add_column(TodaysEvents, AXE, ColumnIds, []),
+    PageArenas = [A || A <- Arenas,
+                       lists:member(get_val("id", A, ""), ColumnIds)],
+    box(PDF, {181, 217, 230}, {25, 790}, {?LANEWIDTH*length(ColumnIds), 10}),
+    print_events(PDF, PageEvents, StartTime, _PrevColor={0,0,0}),
+    arena_header(PDF, PageArenas, 0),
+    if length(Pages) > 0 ->
+            eg_pdf:new_page(PDF);
+       true ->
+            ok
+    end,
+    print_day_pages(PDF, Pages, Arenas, TodaysEvents, StartTime, AXE).
+
+print_events(_PDF, [], _StartTime, _PrevColor) ->
+    ok;
+print_events(PDF, [Event|Events], StartTime, PrevColor) ->
+    Column = get_val("column", Event, 0),
+    Duration = get_val("duration", Event, 0),
+    Class = unicode(get_val("class", Event, "")),
+    Color = get_color(Event, PrevColor),
+    Gren = unicode(get_val("gren", Event, "")),
+    EventStart = get_val("starttime", Event, 0),
+    Time = StartTime+EventStart,
+    XPos = 25+Column*?LANEWIDTH,
+    YPos = 785-scale(EventStart),
+    TimeStr = min_to_time(Time),
+    box(PDF, Color, {XPos, YPos-scale(Duration)},
+        {?LANEWIDTH, scale(Duration)}),
+    eg_pdf:set_line_width(PDF, 0.5),
+    box(PDF, {XPos, YPos-scale(Duration)},
+        {?LANEWIDTH, scale(Duration)}),
+    eg_pdf:set_line_width(PDF, 1),
+    if Duration < 7 ->
+             Text = lists:flatten([TimeStr," (", ?i2l(Duration), " m) ",
+                                  Class," ",Gren]),
+            FontSize = 5;
+       true ->
+            Text = lists:flatten([TimeStr," ", Class," ",Gren]),
+            FontSize = 7
+    end,
+    eg_pdf:set_font(PDF, ?HELVETICA, FontSize),
+    eg_pdf:moveAndShow(PDF, XPos+2, YPos-FontSize, Text),
+    if Duration > 10 ->
+            DurText = lists:flatten(["(",?i2l(Duration)," min)"]),
+            eg_pdf:set_font(PDF, ?HELVETICA, FontSize),
+            eg_pdf:moveAndShow(PDF, XPos+2, YPos-2*FontSize, DurText);
+       true ->
+            ok
+    end,
+    print_events(PDF, Events, StartTime, Color).
+
+add_column([], _AXE, _ColumnIds, Acc) ->
+    lists:reverse(Acc);
+add_column([Event|Events], AXE, ColumnIds, Acc) ->
+    EventId = get_val("id", Event, ""),
+    [ArenaId|_] = [get_val("arena", A, "") ||
+                      A <- AXE,
+                      lists:member(EventId, get_val("events", A, ""))],
+    case index_of(ArenaId, ColumnIds, 0) of
+        -1 ->
+            add_column(Events, AXE, ColumnIds, Acc);
+        Index ->
+            add_column(Events, AXE, ColumnIds, [[{"column", Index}|Event]|Acc])
+    end.
+
+index_of(_Id, [], _N) ->
+    -1;
+index_of(Id, [Id|_Ids], N) ->
+    N;
+index_of(Id, [_Id|Ids], N) ->
+    index_of(Id, Ids, N+1).
+
+arena_header(PDF, [], Nr) ->
+    box(PDF, {25,25}, {Nr*?LANEWIDTH, 760});
+arena_header(PDF, [Arena|Arenas], Nr) ->
+    Name0 = get_val("name", Arena, ""),
+    Name = unicode:characters_to_list(?l2b(Name0)),
+    XPos = 25+Nr*?LANEWIDTH,
+    eg_pdf:set_font(PDF, ?HELVETICA_BOLD, 8),
+    eg_pdf:moveAndShow(PDF, XPos, 792, Name),
+    eg_pdf:line(PDF, XPos+?LANEWIDTH, 25, XPos+?LANEWIDTH, 785),
+    arena_header(PDF, Arenas, Nr+1).
+
+header(PDF, Vals, DayName) ->
+    %% Header: event name and version
+    Name = get_val("name", Vals, ""),
+    Version = get_val("version", Vals, ""),
+    eg_pdf:set_font(PDF, ?HELVETICA_BOLD, 14),
+    eg_pdf:moveAndShow(PDF, 25, 814, Name++" "++DayName),
+    eg_pdf:set_font(PDF, ?HELVETICA, 10),
+    VsnTxt = "Version: "++Version,
+    VsnWidth = eg_pdf:get_string_width(PDF, ?HELVETICA, 10, VsnTxt),
+    eg_pdf:moveAndShow(PDF, 570-VsnWidth, 814, VsnTxt),
+    eg_pdf:set_stroke_color(PDF, {51,102,153}),
+    eg_pdf:set_line_width(PDF, 1.5),
+    eg_pdf:set_stroke_color(PDF, black),
+    eg_pdf:line(PDF, 25, 810, 570, 810),
+    eg_pdf:set_line_width(PDF, 1).
+
+box(PDF, Color, Pos, WH) ->
+    eg_pdf:set_fill_color(PDF, Color),
+    eg_pdf:rectangle(PDF, Pos, WH, fill),
+    eg_pdf:set_fill_color(PDF, black).
+
+box(PDF, Pos, WH) ->
+    eg_pdf:rectangle(PDF, Pos, WH, stroke).
+
+grid(PDF) ->
+    eg_pdf:save_state(PDF),
+    eg_pdf:set_fill_gray(PDF, 0.75),
+    eg_pdf:set_stroke_gray(PDF, 0.75),
+    eg_pdf:show_grid(PDF, a4),
+    eg_pdf:restore_state(PDF).
+
+get_days(Vals) ->
+    {array, Days} = get_val("days", Vals, ""),
+    [DVals || {struct, DVals} <- Days].
+
+get_arenas(Vals) ->
+    {array, Arenas} = get_val("arenas", Vals, ""),
+    [AVals || {struct, AVals} <- Arenas].
+
+get_events(Vals) ->
+    {array, Events} = get_val("events", Vals, ""),
+    [EVals || {struct, EVals} <- Events].
+
+get_dxa(Vals) ->
+    {array, DXA} = get_val("dxa", Vals, ""),
+    [unpack(DVals) || {struct, DVals} <- DXA].
+
+get_axe(Vals) ->
+    {array, AXE} = get_val("axe", Vals, ""),
+    [unpack(DVals) || {struct, DVals} <- AXE].
+
+unpack(Json) when is_list(Json) ->
+    unpack(Json, []);
+unpack({array, Elems}) ->
+    unpack(Elems, []);
+unpack({struct, Attr}) ->
+    unpack(Attr, []);
+unpack({Tag, Data}) ->
+    {Tag, unpack(Data)};
+unpack(Other) ->
+    Other.
+
+unpack([], Acc) ->
+    lists:reverse(Acc);
+unpack([J|Rest], Acc) ->
+    unpack(Rest, [unpack(J)|Acc]).
+
+unicode(Str) ->
+    unicode:characters_to_list(?l2b(Str)).
+
+min_to_time(Minutes) ->
+    Hours = Minutes div 60,
+    Mins = Minutes rem 60,
+    lists:flatten(
+      io_lib:format("~2.2.0w:~2.2.0w", [Hours, Mins])).
+
+scale(D) ->
+    round(D * 1.5).
+
+get_color(Event, PrevColor) ->
+    case get_val("color", Event, "") of
+        "" ->
+            pick_color(PrevColor);
+        Color ->
+            color_to_rgb(Color)
+    end.
+
+pick_color(PrevColor) ->
+    Palette = colors(),
+    case lists:nth(random:uniform(length(Palette)), Palette) of
+        PrevColor ->
+            pick_color(PrevColor);
+        Color ->
+            Color
+    end.
+
+colors() ->
+    [{215,223,1},
+     {255,191,0},
+     {1,223,215},
+     {247,254,46},
+     {211,211,211}].
+
+color_to_rgb([$#,R1,R2,G1,G2,B1,B2]) ->
+    {list_to_integer([R1,R2], 16),
+     list_to_integer([G1,G2], 16),
+     list_to_integer([B1,B2], 16)}.
